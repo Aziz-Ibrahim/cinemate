@@ -1,28 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth import login
+from django.views.generic import CreateView
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 from .forms import RegisterForm
 
 def home(request):
     return render(request, "users/home.html")
 
-def register_view(request):
-    if request.method == "POST":
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)     
-            return redirect("home")
-    else:
-        form = RegisterForm()
-    return render(request, "users/register.html", {"form": form})
+class RegisterView(CreateView):
+    template_name = "users/register.html"
+    form_class = RegisterForm
+    success_url = reverse_lazy("home")  # Redirect after successful registration
 
-def login_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect("home")
-    else:
-        form = AuthenticationForm()
-    return render(request, "users/login.html", {"form": form})
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)  # Log in the user automatically
+        return super().form_valid(form)
+
+class CustomLoginView(LoginView):
+    template_name = "users/login.html"
