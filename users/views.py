@@ -45,3 +45,4 @@ def add_favorite_movie(request, movie_id):
     if request.method == "POST":
         FavoriteMovie.objects.create(user=request.user, movie_id=movie_id)
         return redirect('profile') 
+    

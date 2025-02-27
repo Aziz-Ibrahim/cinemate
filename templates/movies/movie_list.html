@@ -7,12 +7,16 @@
         {% for movie in movies %}
         <div class="col-md-3">
             <div class="card">
-                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top"
-                    alt="{{ movie.title }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    <p class="card-text">Release Date: {{ movie.release_date }}</p>
-                    <p class="card-text">Rating: {{ movie.vote_average }}</p>
+                <div class="movie-card" data-movie-id="{{ movie.id }}">
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+                    <h3>{{ movie.title }}</h3>
+                    <p>Release: {{ movie.release_date }}</p>
+                    <p>Rating: ⭐{{ movie.vote_average }}</p>
+                    <button class="favorite-btn" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}"
+                        data-poster-path="{{ movie.poster_path }}" data-release-date="{{ movie.release_date }}"
+                        data-rating="{{ movie.vote_average }}">
+                        ❤️ Add to Favorites
+                    </button>
                 </div>
             </div>
         </div>
