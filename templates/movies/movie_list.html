@@ -1,26 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="GET" action="{% url 'movie_list' %}" class="search-bar">
-    <input type="text" name="search" value="{{ search_query }}" placeholder="Search movies..." />
-    <button type="submit" class="btn btn-outline-dark">Search</button>
-</form>
+<div class="container mt-4">
+    <!-- Debugging sort_by value -->
+    <p>Currently sorting by: {{ sort_by }}</p>  <!-- Debug line to display the sort_by value -->
 
-<h1>Popular Movies</h1>
-<div class="container">
     <div class="row">
+        <!-- Search Form -->
+        <div class="col-md-6">
+            <form method="get" action="{% url 'movies:movie_list' %}">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" value="{{ search_query }}" placeholder="Search movies">
+                    <button class="btn btn-dark" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sort Form -->
+        <div class="col-md-6">
+            <form method="get" action="{% url 'movies:movie_list' %}">
+                <div class="input-group">
+                    <select name="sort_by" id="sort_by" class="form-control" onchange="this.form.submit()">
+                        <option value="popularity" {% if sort_by == "popularity" %}selected{% endif %}>Popularity</option>
+                        <option value="vote_average" {% if sort_by == "vote_average" %}selected{% endif %}>Rating</option>
+                        <option value="release_date" {% if sort_by == "release_date" %}selected{% endif %}>Release Date</option>
+                        <option value="original_title" {% if sort_by == "original_title" %}selected{% endif %}>Title</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mt-4">
         {% for movie in movies %}
         <div class="col-md-3">
-            <div class="card">
-                <div class="movie-card" data-movie-id="{{ movie.id }}">
-                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
-                    <h5 class="card-title text-center">{{ movie.title }}</h5>
-                    <p>Release: {{ movie.release_date }}</p>
-                    <p>Rating: ⭐{{ movie.vote_average }}</p>
-                    <button class="favorite-btn" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}"
-                        data-poster-path="{{ movie.poster_path }}" data-release-date="{{ movie.release_date }}"
-                        data-rating="{{ movie.vote_average }}">
-                        ❤️ Add to Favorites
+            <div class="card mb-4">
+                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text">{{ movie.overview|truncatewords:20 }}</p>
+                    <a href="{% url 'movies:movie_detail' movie.id %}" class="btn btn-dark">More Details</a>
+                    <button class="btn btn-outline-danger" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}" data-poster="{{ movie.poster_path }}" data-release="{{ movie.release_date }}" data-rating="{{ movie.vote_average }}">
+                        <i class="fa fa-heart"></i> Add to Favorites
                     </button>
                 </div>
             </div>
@@ -28,6 +49,7 @@
         {% endfor %}
     </div>
 </div>
+
 
 
 {% endblock %}

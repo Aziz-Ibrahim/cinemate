@@ -27,7 +27,7 @@
                         <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'movie_list' %}">Movies</a>
+                        <a class="nav-link" href="{% url 'movies:movie_list' %}">Movies</a>
                     </li>
                     <li class="nav-item">
                         <form method="post" action="{% url 'logout' %}" style="display: inline;">
