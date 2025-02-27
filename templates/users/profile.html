@@ -6,4 +6,12 @@
     <p>Email: {{ user.email }}</p>
     <p><a href="{% url 'logout' %}" class="btn btn-dark">Logout</a></p>
 </div>
+<h3>Favorite Movies</h3>
+<ul>
+    {% for movie in favorite_movies %}
+    <li>Movie ID: {{ movie.movie_id }}</li> <!-- You can fetch more details based on the movie_id -->
+    {% empty %}
+    <li>No favorite movies yet!</li>
+    {% endfor %}
+</ul>
 {% endblock %}

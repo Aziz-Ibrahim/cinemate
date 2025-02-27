@@ -7,6 +7,7 @@ from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib.auth.views import LogoutView
+from .models import FavoriteMovie
 
 
 
@@ -37,4 +38,10 @@ class CustomLoginView(LoginView):
 
 @login_required
 def profile_view(request):
-    return render(request, "users/profile.html")
+    favorite_movies = FavoriteMovie.objects.filter(user=request.user)
+    return render(request, "users/profile.html", {"favorite_movies": favorite_movies})
+
+def add_favorite_movie(request, movie_id):
+    if request.method == "POST":
+        FavoriteMovie.objects.create(user=request.user, movie_id=movie_id)
+        return redirect('profile') 
