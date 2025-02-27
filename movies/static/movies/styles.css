@@ -1,0 +1,32 @@
+.card {
+    width: 18rem;
+    margin: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    display: inline-block;
+    /* Changed to inline-block for layout */
+}
+
+.card img {
+    width: 100%;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-text {
+    margin: 0;
+}
+
+.movie-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
