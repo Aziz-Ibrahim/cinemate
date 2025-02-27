@@ -4,14 +4,26 @@
 <div class="container mt-4">
     <h2>Welcome, {{ user.username }}!</h2>
     <p>Email: {{ user.email }}</p>
-    <p><a href="{% url 'logout' %}" class="btn btn-dark">Logout</a></p>
 </div>
 <h3>Favorite Movies</h3>
 <ul>
-    {% for movie in favorite_movies %}
-    <li>Movie ID: {{ movie.movie_id }}</li> <!-- You can fetch more details based on the movie_id -->
-    {% empty %}
-    <li>No favorite movies yet!</li>
-    {% endfor %}
+    <div class="row">
+        {% for movie in favorite_movies %}
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top"
+                    alt="{{ movie.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text">Release Year: {{ movie.release_date|date:"Y" }}</p>
+                    <p class="card-text">Rating: {{ movie.rating }}</p>
+                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-dark">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No favorite movies added yet.</p>
+        {% endfor %}
+    </div>
 </ul>
 {% endblock %}

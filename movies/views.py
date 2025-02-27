@@ -1,6 +1,6 @@
 import requests
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.http import JsonResponse
 from users.models import FavoriteMovie
@@ -44,3 +44,7 @@ def toggle_favorite(request):
         return JsonResponse({"status": "added"})
 
     return JsonResponse({"status": "error"}, status=400)
+
+def movie_detail(request, movie_id):
+    movie = get_object_or_404(FavoriteMovie, id=movie_id)  # Adjust the model if you're using a different one
+    return render(request, "movies/movie_detail.html", {"movie": movie})

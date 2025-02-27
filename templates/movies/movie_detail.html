@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ movie.title }}</h2>
+<img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+<p>Release Year: {{ movie.release_date|date:"Y" }}</p>
+<p>Rating: {{ movie.rating }}</p>
+<p>Description: {{ movie.description }}</p> <!-- Add this if you have a description field -->
+{% endblock %}
