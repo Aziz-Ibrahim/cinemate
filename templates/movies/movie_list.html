@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<form method="GET" action="{% url 'movie_list' %}" class="search-bar">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Search movies..." />
+    <button type="submit" class="btn btn-outline-dark">Search</button>
+</form>
+
 <h1>Popular Movies</h1>
 <div class="container">
     <div class="row">

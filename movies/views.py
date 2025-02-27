@@ -4,17 +4,39 @@ from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.http import JsonResponse
 from users.models import FavoriteMovie
+from django.db.models import Q
 
 @login_required
+@login_required
 def movie_list(request):
-    movies = get_popular_movies()
-    return render(request, "movies/movie_list.html", {"movies": movies})
+    search_query = request.GET.get('search', '')
+    
+    if search_query:
+        movies = search_movies(search_query)
+    else:
+        movies = get_popular_movies()
+
+    return render(request, "movies/movie_list.html", {"movies": movies, "search_query": search_query})
+
 
 def get_popular_movies():
     url = "https://api.themoviedb.org/3/movie/popular"
     params = {"api_key": settings.TMDB_API_KEY, "language": "en-US", "page": 1}
     response = requests.get(url, params=params)
     return response.json().get("results", [])
+
+
+def search_movies(query):
+    url = "https://api.themoviedb.org/3/search/movie"
+    params = {
+        "api_key": settings.TMDB_API_KEY,
+        "language": "en-US",
+        "query": query,
+        "page": 1
+    }
+    response = requests.get(url, params=params)
+    return response.json().get("results", [])
+
 
 
 @login_required
