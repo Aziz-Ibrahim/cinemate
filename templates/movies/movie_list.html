@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Popular Movies</h1>
+<div class="row">
+    {% for movie in movies %}
+    <div class="col-md-3">
+        <div class="card">
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top"
+                alt="{{ movie.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text">{{ movie.overview|truncatewords:20 }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
