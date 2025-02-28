@@ -2,9 +2,6 @@
 
 {% block content %}
 <div class="container mt-4">
-    <!-- Debugging sort_by value -->
-    <p>Currently sorting by: {{ sort_by }}</p>  <!-- Debug line to display the sort_by value -->
-
     <div class="row">
         <!-- Search Form -->
         <div class="col-md-6">
@@ -21,10 +18,10 @@
             <form method="get" action="{% url 'movies:movie_list' %}">
                 <div class="input-group">
                     <select name="sort_by" id="sort_by" class="form-control" onchange="this.form.submit()">
-                        <option value="popularity" {% if sort_by == "popularity" %}selected{% endif %}>Popularity</option>
-                        <option value="vote_average" {% if sort_by == "vote_average" %}selected{% endif %}>Rating</option>
-                        <option value="release_date" {% if sort_by == "release_date" %}selected{% endif %}>Release Date</option>
-                        <option value="original_title" {% if sort_by == "original_title" %}selected{% endif %}>Title</option>
+                        <option value="popularity.desc" {% if sort_by == "popularity.desc" %}selected{% endif %}>Popularity</option>
+                        <option value="vote_average.desc" {% if sort_by == "vote_average.desc" %}selected{% endif %}>Rating</option>
+                        <option value="release_date.desc" {% if sort_by == "release_date.desc" %}selected{% endif %}>Release Date</option>
+                        <option value="original_title.asc" {% if sort_by == "original_title.asc" %}selected{% endif %}>Title</option>
                     </select>
                 </div>
             </form>

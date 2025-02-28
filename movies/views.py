@@ -6,43 +6,38 @@ from django.http import JsonResponse
 from users.models import FavoriteMovie
 from django.db.models import Q
 
+
 @login_required
 def movie_list(request):
-    sort_by = request.GET.get('sort_by', 'popularity')  # Get sorting parameter from request (default is 'popularity')
-    search_query = request.GET.get('search', '')  # Get search query from request (default is empty)
+    sort_by = request.GET.get('sort_by', 'popularity')  # Default to 'popularity' if not provided
 
-    # Log the sort_by value to see if it's being passed correctly
-    print(f"Sort By: {sort_by}")
-    print(f"Search Query: {search_query}")
-    print(f"GET Parameters: {request.GET}")
-
-    if search_query:
-        movies = search_movies(search_query)  # Get movies by search query
-    else:
-        movies = get_all_movies(sort_by)  # Get all movies sorted by the 'sort_by' parameter
+    movies = get_all_movies(sort_by)  # Fetch movies with sorting
 
     return render(request, "movies/movie_list.html", {
         "movies": movies,
-        "sort_by": sort_by,
-        "search_query": search_query
+        "sort_by": sort_by
     })
 
-def get_popular_movies():
-    url = "https://api.themoviedb.org/3/movie/popular"
-    params = {"api_key": settings.TMDB_API_KEY, "language": "en-US", "page": 1}
-    response = requests.get(url, params=params)
-    return response.json().get("results", [])
+# def get_popular_movies():
+#     url = "https://api.themoviedb.org/3/movie/popular"
+#     params = {"api_key": settings.TMDB_API_KEY, "language": "en-US", "page": 1}
+#     response = requests.get(url, params=params)
+#     return response.json().get("results", [])
 
-def get_all_movies(sort_by=' '):
+def get_all_movies(sort_by="popularity.desc"):
     url = "https://api.themoviedb.org/3/discover/movie"
     params = {
         "api_key": settings.TMDB_API_KEY,
         "language": "en-US",
-        "sort_by": sort_by,  # Use the sort_by parameter here to dynamically change sorting
+        "sort_by": sort_by,  # Make sure this value is correct
         "page": 1
     }
+    
     response = requests.get(url, params=params)
+    
     return response.json().get("results", [])
+
+
 
 
 def search_movies(query):
