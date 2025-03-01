@@ -5,37 +5,33 @@ from django.conf import settings
 from django.http import JsonResponse
 from users.models import FavoriteMovie
 from django.db.models import Q
-
+from django.http import JsonResponse
 
 @login_required
 def movie_list(request):
-    sort_by = request.GET.get('sort_by', 'popularity')  # Default to 'popularity' if not provided
+    sort_by = request.GET.get("sort_by", "popularity.desc")
+    page = int(request.GET.get("page", 1))  # Get current page
 
-    movies = get_all_movies(sort_by)  # Fetch movies with sorting
+    movies, total_pages = get_all_movies(sort_by, page)
 
-    return render(request, "movies/movie_list.html", {
-        "movies": movies,
-        "sort_by": sort_by
-    })
+    # If it's an AJAX request, return JSON instead of rendering a template
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'movies': movies, 'current_page': page, 'total_pages': total_pages})
 
-# def get_popular_movies():
-#     url = "https://api.themoviedb.org/3/movie/popular"
-#     params = {"api_key": settings.TMDB_API_KEY, "language": "en-US", "page": 1}
-#     response = requests.get(url, params=params)
-#     return response.json().get("results", [])
+    return render(request, "movies/movie_list.html", {"movies": movies, "sort_by": sort_by})
 
-def get_all_movies(sort_by="popularity.desc"):
+def get_all_movies(sort_by="popularity.desc", page=1):
     url = "https://api.themoviedb.org/3/discover/movie"
     params = {
         "api_key": settings.TMDB_API_KEY,
         "language": "en-US",
-        "sort_by": sort_by,  # Make sure this value is correct
-        "page": 1
+        "sort_by": sort_by,
+        "page": page,
     }
-    
     response = requests.get(url, params=params)
-    
-    return response.json().get("results", [])
+    data = response.json()
+    return data.get("results", []), data.get("total_pages", 1)  # Return movies & total pages
+
 
 
 

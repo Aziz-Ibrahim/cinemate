@@ -43,3 +43,45 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+//infinite scroll
+let currentPage = 1;
+let totalPages = Infinity; // Set initially to a large number
+
+window.addEventListener("scroll", function () {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50 && currentPage < totalPages) {
+        loadMoreMovies();
+    }
+});
+
+function loadMoreMovies() {
+    let sortBy = document.getElementById("sort_by").value;
+
+    fetch(`/movies/?sort_by=${sortBy}&page=${currentPage + 1}`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.movies.length > 0) {
+            let movieContainer = document.querySelector(".row.mt-4");
+            data.movies.forEach(movie => {
+                let movieCard = document.createElement("div");
+                movieCard.className = "col-md-3";
+                movieCard.innerHTML = `
+                    <div class="card mb-4">
+                        <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" class="card-img-top" alt="${movie.title}">
+                        <div class="card-body">
+                            <h5 class="card-title">${movie.title}</h5>
+                            <p class="card-text">${movie.overview.substring(0, 100)}...</p>
+                            <a href="/movies/${movie.id}/" class="btn btn-primary">More Details</a>
+                        </div>
+                    </div>`;
+                movieContainer.appendChild(movieCard);
+            });
+
+            currentPage++;
+            totalPages = data.total_pages; // ✅ Fixing total_pages assignment
+        }
+    })
+    .catch(error => console.error("Error fetching movies:", error));
+}

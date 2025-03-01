@@ -45,3 +45,7 @@
     padding: 10px;
     cursor: pointer;
 }
+
+.btn-wrapper {
+    line-height: 1;
+}

@@ -28,25 +28,33 @@
         </div>
     </div>
 
-    <div class="row mt-4">
-        {% for movie in movies %}
-        <div class="col-md-3">
-            <div class="card mb-4">
-                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    <p class="card-text">{{ movie.overview|truncatewords:20 }}</p>
-                    <a href="{% url 'movies:movie_detail' movie.id %}" class="btn btn-dark">More Details</a>
-                    <button class="btn btn-outline-danger" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}" data-poster="{{ movie.poster_path }}" data-release="{{ movie.release_date }}" data-rating="{{ movie.vote_average }}">
-                        <i class="fa fa-heart"></i> Add to Favorites
-                    </button>
+    <div class="container mt-4">
+        <div class="row mt-4" id="movie-container">
+            {% for movie in movies %}
+            <div class="col-md-3 movie-card">
+                <div class="card mb-4">
+                    <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.title }}</h5>
+                        <p class="card-text">{{ movie.overview|truncatewords:20 }}</p>
+                        <div class="btn-wrapper text-center d-flex justify-content-between">
+                            <a href="{% url 'movies:movie_detail' movie.id %}" class="btn btn-dark card-link">Show More</a>
+                            <button class="btn btn-outline-danger card-link" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}" data-poster="{{ movie.poster_path }}" data-release="{{ movie.release_date }}" data-rating="{{ movie.vote_average }}">
+                                <i class="fa fa-heart"></i> Add to List
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+    
+        <!-- Loading Indicator -->
+        <div id="loading" style="text-align: center; display: none;">
+            <p>Loading more movies...</p>
+        </div>
     </div>
 </div>
-
 
 
 {% endblock %}
