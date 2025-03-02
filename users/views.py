@@ -21,7 +21,10 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("home")  # Redirect after successful registration
 
     def form_valid(self, form):
-        user = form.save()
+        user = form.save(commit=False)  # Don't save to DB yet
+        user.first_name = form.cleaned_data["first_name"]
+        user.last_name = form.cleaned_data["last_name"]
+        user.save()  # Now save the user with first & last name
         login(self.request, user)  # Log in the user automatically
         return super().form_valid(form)
 

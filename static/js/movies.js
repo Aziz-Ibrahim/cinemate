@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     data.movies.forEach(movie => {
                         let movieCard = document.createElement("div");
-                        movieCard.className = "col-md-3 d-flex";
+                        movieCard.className = "col-12 col-md-4 col-lg-3 card-deck d-flex";
                         movieCard.innerHTML = `
         <div class="card mb-4 shadow-sm" style="height: 100%;">
             <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/movie-card-placeholder-img.png'}" class="card-img-top" alt="${movie.title}" style="object-fit: cover; height: 300px;">
