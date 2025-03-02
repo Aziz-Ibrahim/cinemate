@@ -8,19 +8,18 @@
 <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
 <p><strong>Overview:</strong> {{ movie.overview }}</p>
 
-<!--  Watch Providers -->
-{% if watch_providers %}
-    <h3>Watch on:</h3>
-    <ul>
-        {% for country, details in watch_providers.items %}
-            <li><strong>{{ country }}:</strong>
-                {% for provider in details.flatrate %}
-                    {{ provider.provider_name }}
-                {% endfor %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+<!-- Cast -->
+<h3>Cast:</h3>
+<div class="row">
+    {% for actor in cast %}
+        <div class="col-sm text-center">
+            <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle" alt="{{ actor.name }}">
+            <p class="mt-2"><strong>{{ actor.name }}</strong></p>
+            <p class="text-muted">{{ actor.character }}</p>
+        </div>
+    {% endfor %}
+</div>
+
 
 <!--  Videos (Trailers) -->
 <div id="trailerCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -53,6 +52,22 @@
         <p><strong>{{ review.author }}</strong>: {{ review.content|truncatewords:50 }}</p>
     {% endfor %}
 {% endif %}
+
+
+<!--  Watch Providers -->
+{% if watch_providers %}
+    <h3>Watch on:</h3>
+    <ul>
+        {% for country, details in watch_providers.items %}
+            <li><strong>{{ country }}:</strong>
+                {% for provider in details.flatrate %}
+                    {{ provider.provider_name }}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 
 <!--  Similar Movies -->
 <h3>Similar Movies</h3>

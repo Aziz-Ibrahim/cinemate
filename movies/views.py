@@ -77,21 +77,34 @@ def toggle_favorite(request):
 
     return JsonResponse({"status": "error"}, status=400)
 
+def get_movie_details(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+    params = {
+        "api_key": settings.TMDB_API_KEY,
+        "append_to_response": "credits,watch/providers,similar,videos,reviews"
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return response.json()
+    return {}
+
+
 def movie_detail(request, movie_id):
     api_key = settings.TMDB_API_KEY
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&append_to_response=videos,reviews,similar,watch/providers"
     country_code = "US"
-    
+    movie = get_movie_details(movie_id)
+
     response = requests.get(url)
     if response.status_code != 200:
         return render(request, "movies/movie_detail.html", {"error": "Movie not found"})
 
-    movie = response.json()
-
     # Extract watch providers safely
     watch_providers = movie.get("watch/providers", {}).get("results", {}).get(country_code, {})
+    cast = movie.get("credits", {}).get("cast", [])[:10]
 
     return render(request, "movies/movie_detail.html", {
         "movie": movie,
-        "watch_providers": watch_providers  # Passing to template separately
+        "watch_providers": watch_providers,  # Passing to template separately
+        "cast": cast,
     })

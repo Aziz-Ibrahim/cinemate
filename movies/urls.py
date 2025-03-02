@@ -8,4 +8,5 @@ app_name = "movies" # This is the namespace for the movies app
 urlpatterns = [
     path("", movie_list, name="movie_list"),
     path("<int:movie_id>/", movie_detail, name="movie_detail"),
+    path("toggle_favorite/", toggle_favorite, name="toggle_favorite"),
 ]
