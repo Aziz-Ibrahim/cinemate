@@ -5,9 +5,12 @@
     border-radius: 5px;
     overflow: hidden;
     display: inline-block;
-    /* Changed to inline-block for layout */
+    transition: transform 0.5s;
 }
 
+.card:hover {
+    transform: scale(1.05);
+}
 .card img {
     width: 100%;
 }

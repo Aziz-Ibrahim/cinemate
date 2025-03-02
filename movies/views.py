@@ -78,5 +78,20 @@ def toggle_favorite(request):
     return JsonResponse({"status": "error"}, status=400)
 
 def movie_detail(request, movie_id):
-    movie = get_object_or_404(FavoriteMovie, id=movie_id)  # Adjust the model if you're using a different one
-    return render(request, "movies/movie_detail.html", {"movie": movie})
+    api_key = settings.TMDB_API_KEY
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&append_to_response=videos,reviews,similar,watch/providers"
+    country_code = "US"
+    
+    response = requests.get(url)
+    if response.status_code != 200:
+        return render(request, "movies/movie_detail.html", {"error": "Movie not found"})
+
+    movie = response.json()
+
+    # Extract watch providers safely
+    watch_providers = movie.get("watch/providers", {}).get("results", {}).get(country_code, {})
+
+    return render(request, "movies/movie_detail.html", {
+        "movie": movie,
+        "watch_providers": watch_providers  # Passing to template separately
+    })

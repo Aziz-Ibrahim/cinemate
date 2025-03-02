@@ -1,9 +1,96 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<h2>{{ movie.title }}</h2>
-<img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
-<p>Release Year: {{ movie.release_date|date:"Y" }}</p>
-<p>Rating: {{ movie.rating }}</p>
-<p>Description: {{ movie.description }}</p> <!-- Add this if you have a description field -->
+<h1>{{ movie.title }}</h1>
+<img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="{{ movie.title }}">
+<p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+<p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
+<p><strong>Overview:</strong> {{ movie.overview }}</p>
+
+<!--  Watch Providers -->
+{% if watch_providers %}
+    <h3>Watch on:</h3>
+    <ul>
+        {% for country, details in watch_providers.items %}
+            <li><strong>{{ country }}:</strong>
+                {% for provider in details.flatrate %}
+                    {{ provider.provider_name }}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<!--  Videos (Trailers) -->
+<div id="trailerCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <h3>Trailers:</h3>
+        {% for video in movie.videos.results %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <iframe width="100%" height="400" 
+                        src="https://www.youtube.com/embed/{{ video.key }}" 
+                        frameborder="0" allowfullscreen>
+                </iframe>
+            </div>
+        {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#trailerCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#trailerCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+
+<!--  Reviews -->
+{% if movie.reviews.results %}
+    <h3>Reviews:</h3>
+    {% for review in movie.reviews.results %}
+        <p><strong>{{ review.author }}</strong>: {{ review.content|truncatewords:50 }}</p>
+    {% endfor %}
+{% endif %}
+
+<!--  Similar Movies -->
+<h3>Similar Movies</h3>
+<div id="similarMoviesCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% for movie in movie.similar.results %}
+            {% if forloop.first or forloop.counter0|divisibleby:4 %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="row">
+            {% endif %}
+            
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ movie.title }}</h6>
+                                    <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">View</a>
+                                </div>
+                            </div>
+                        </div>
+            
+            {% if forloop.last or forloop.counter|divisibleby:4 %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#similarMoviesCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#similarMoviesCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<script src="{% static 'js/movie_details.js' %}"></script>
+
 {% endblock %}
