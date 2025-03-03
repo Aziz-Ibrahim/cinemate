@@ -4,9 +4,17 @@
     box-sizing: border-box;
 }
 
+.hero {
+    background-image: url('../images/cinemate-hero-img.jpg');
+    background-size: cover; /* Resize the image */
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 500px; /* Adjust as needed */
+}
+
 .container-wrapper {
     width: 90%;
-    max-width: 1600px; /* Optional: Limits width on large screens */
+    max-width: 1600px; /* Limit the width */
     margin: 20px auto; /* Centers the content */
     padding: 20px;
     background: #fff;
