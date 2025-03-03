@@ -53,10 +53,17 @@ def search_movies(query):
 def toggle_favorite(request):
     if request.method == "POST":
         movie_id = request.POST.get("movie_id")
+        try:
+            movie_id = int(movie_id) #convert to int.
+        except ValueError:
+            print("Error: movie_id is not a valid integer.")
+            return JsonResponse({"status": "error"}, status=400)
         title = request.POST.get("title")
         poster_path = request.POST.get("poster_path")
         release_date = request.POST.get("release_date")
         rating = request.POST.get("rating")
+
+        print(f"Movie ID before save: {movie_id}") # Check movie ID here
 
         favorite, created = FavoriteMovie.objects.get_or_create(
             user=request.user,

@@ -1,11 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const movieId = new URLSearchParams(window.location.search).get("id");
-    if (!movieId) {
-        console.error("Movie ID not found in URL");
-        return;
+    const path = window.location.pathname;
+    console.log("Current URL Path:", path); // Log the full path
+
+    const movieIdMatch = path.match(/\/movies\/(\d+)\/?$/);
+    if (movieIdMatch) {
+        const movieId = movieIdMatch[1];
+        console.log("Extracted Movie ID:", movieId);
+    } else {
+        console.warn("Movie ID not found in URL. Check if the URL format is correct.");
     }
 
-    fetchMovieDetails(movieId);
+    fetchMovieDetails(movieIdMatch);
 });
 
 function fetchMovieDetails(movieId) {

@@ -16,3 +16,6 @@ class FavoriteMovie(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.title}"
+
+    class Meta:
+        unique_together = ('user', 'movie_id') #ensures that a user cannot have duplicate movies.
