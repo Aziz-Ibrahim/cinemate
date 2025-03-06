@@ -27,10 +27,10 @@
                             <form method="get" action="{% url 'movies:movie_list' %}" id="sortForm">
                                 <select class="form-select" id="sortSelect" name="sort_by" onchange="document.getElementById('sortForm').submit()">
                                     <option value="" disabled selected>Choose...</option>
-                                    <option value="popularity.desc" {% if sort_by == "popularity.desc" %}selected{% endif %}>Popularity</option>
-                                    <option value="vote_average.desc" {% if sort_by == "vote_average.desc" %}selected{% endif %}>Rating</option>
+                                    <option value="popularity.desc" {% if sort_by == "popularity.desc" %}selected{% endif %}>Most Popular</option>
+                                    <option value="vote_average.desc" {% if sort_by == "vote_average.desc" %}selected{% endif %}>Heighest Rating</option>
                                     <option value="release_date.desc" {% if sort_by == "release_date.desc" %}selected{% endif %}>Release Date</option>
-                                    <option value="original_title.asc" {% if sort_by == "original_title.asc" %}selected{% endif %}>Title</option>
+                                    <option value="original_title.asc" {% if sort_by == "original_title.asc" %}selected{% endif %}>Title A-Z</option>
                                 </select>
                             </form>
                         </div>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-            </div>> 
+            </div> 
         </div>        
     </div>
 
