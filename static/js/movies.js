@@ -1,189 +1,167 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
+    initializeMovieDetails();
+    initializeReviewForm();
+    attachFavoriteButtonListeners();
+    setupInfiniteScroll();
+});
+
+/** Fetch and display movie details */
+function initializeMovieDetails() {
     const path = window.location.pathname;
     const movieIdMatch = path.match(/\/movies\/(\d+)\//);
 
     if (movieIdMatch && movieIdMatch[1]) {
         const movieId = movieIdMatch[1];
 
-        // Fetch movie details from your Django API
         fetch(`/movie_detail_api/${movieId}/`)
             .then(response => response.json())
             .then(data => {
-                // Display movie details on the page
-                console.log(data); // Log the movie data
-                // Update the DOM with the movie details
                 document.getElementById("movie-title").textContent = data.title;
                 document.getElementById("movie-overview").textContent = data.overview;
                 document.getElementById("movie-rating").textContent = data.vote_average;
                 document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
-
             })
-            .catch(error => {
-                console.error("Error fetching movie details:", error);
-            });
+            .catch(error => console.error("Error fetching movie details:", error));
     }
+}
 
-
-document.addEventListener("DOMContentLoaded", function () {
+/** Handles review form submission */
+function initializeReviewForm() {
     const reviewForm = document.getElementById("review-form");
-    
-    if (reviewForm) {
-        reviewForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-    
-            let formData = new FormData(reviewForm);
-            let movieId = window.location.pathname.split("/")[2]; // Extract movie_id from URL
-    
-            fetch(`/movies/${movieId}/submit_review/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken"),
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    location.reload(); // Refresh page to show the new review
-                } else {
-                    alert("Error submitting review. Please try again.");
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
-    }
-    
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== "") {
-                let cookies = document.cookie.split(";");
-                for (let i = 0; i < cookies.length; i++) {
-                    let cookie = cookies[i].trim();
-                    if (cookie.startsWith(name + "=")) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-    });
-    
+    if (!reviewForm) return;
 
-    function attachFavoriteButtonListeners() {
-        document.querySelectorAll(".favorite-btn").forEach(button => {
-            button.removeEventListener("click", toggleFavorite);
-            button.addEventListener("click", toggleFavorite);
-        });
-    }
+    reviewForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(reviewForm);
+        const movieId = window.location.pathname.split("/")[2];
 
-    function toggleFavorite() {
-        let movieId = this.dataset.movieId;
-        let title = this.dataset.title;
-        let posterPath = this.dataset.posterpath;  // Fixed dataset case
-        let releaseDate = this.dataset.releasedate;  // Fixed dataset case
-        let rating = this.dataset.rating;
-
-        const formData = new URLSearchParams();
-        formData.append("movie_id", movieId);
-        formData.append("title", title || "");
-        formData.append("poster_path", posterPath || "");
-        formData.append("release_date", releaseDate || "");
-        formData.append("rating", rating || "0");
-
-        fetch("/movies/toggle_favorite/", {
+        fetch(`/movies/${movieId}/submit_review/`, {
             method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: formData.toString()
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
-            if (data.status === "added") {
-                this.innerHTML = '<i class="fa fa-heart"></i> Remove from List';
-            } else if (data.status === "removed") {
-                this.innerHTML = '<i class="fa fa-heart"></i> Add to List';
-            }
+            if (data.status === "success") location.reload();
+            else alert("Error submitting review. Please try again.");
         })
-        .catch(error => console.error("Error:", error));
-    }
+        .catch(error => console.error("Error submitting review:", error));
+    });
+}
 
-    attachFavoriteButtonListeners();
+/** Handles adding/removing favorite movies */
+function attachFavoriteButtonListeners() {
+    document.querySelectorAll(".favorite-btn").forEach(button => {
+        button.removeEventListener("click", toggleFavorite);
+        button.addEventListener("click", toggleFavorite);
+    });
+}
 
+function toggleFavorite() {
+    const movieId = this.dataset.movieId;
+    const formData = new URLSearchParams({
+        "movie_id": movieId,
+        "title": this.dataset.title || "",
+        "poster_path": this.dataset.posterpath || "",
+        "release_date": this.dataset.releasedate || "",
+        "rating": this.dataset.rating || "0"
+    });
 
+    fetch("/movies/toggle_favorite/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: formData.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        this.innerHTML = `<i class="fa fa-heart"></i> ${data.status === "added" ? "Remove from List" : "Add to List"}`;
+    })
+    .catch(error => console.error("Error toggling favorite:", error));
+}
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            let cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.startsWith(name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
+/** Infinite Scroll Setup */
+function setupInfiniteScroll() {
     let currentPage = 1;
     let totalPages = Infinity;
 
     window.addEventListener("scroll", function () {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50 && currentPage < totalPages) {
-            loadMoreMovies();
+            loadMoreMovies(currentPage);
         }
     });
 
-    function loadMoreMovies() {
-        let sortBySelect = document.getElementById("sort_by");
+    function loadMoreMovies(page) {
+        const sortBySelect = document.getElementById("sortSelect");
         if (!sortBySelect) {
             console.error("Sort by select element not found.");
             return;
         }
 
-        let sortBy = sortBySelect.value;
-
-        fetch(`/movies/?sort_by=${sortBy}&page=${currentPage + 1}`, {
+        fetch(`/movies/?sort_by=${sortBySelect.value}&page=${currentPage + 1}`, {
             headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(response => response.json())
+        .then(response => {
+            // console.log("Raw response:", response);  
+            return response.text();  // Read response as text (not JSON yet)
+        })
+        .then(text => {
+            // console.log("Response text:", text);
+            return JSON.parse(text);  // Try parsing it as JSON
+        })
         .then(data => {
             if (data.movies.length > 0) {
-                let movieContainer = document.querySelector(".row.mt-4");
-                let movieRow = document.createElement("div");
-                movieRow.className = "row g-4";
-
-                data.movies.forEach(movie => {
-                    let movieCard = document.createElement("div");
-                    movieCard.className = "col-12 col-md-4 col-lg-3 card-deck d-flex";
-                    movieCard.innerHTML = `
-                        <div class="card mb-4 shadow-sm" style="height: 100%;">
-                            <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/movie-card-placeholder-img.png'}" class="card-img-top" alt="${movie.title}" style="object-fit: cover; height: 300px;">
-                            <div class="card-body d-flex flex-column justify-content-between">
-                                <h5 class="card-title">${movie.title}</h5>
-                                <p class="card-text">${movie.overview.split(" ").slice(0, 20).join(" ")}...</p>
-                                <div class="btn-wrapper text-center d-flex justify-content-between">
-                                    <a href="/movies/${movie.id}/" class="btn btn-dark card-link">Show More</a>
-                                    <button class="btn btn-outline-danger card-link favorite-btn" data-movie-id="${movie.id}" data-title="${movie.title}" data-posterpath="${movie.poster_path}" data-releasedate="${movie.release_date}" data-rating="${movie.vote_average}">
-                                        <i class="fa fa-heart"></i> Add to List
-                                    </button>
-                                </div>
-                            </div>
-                        </div>`;
-                    movieRow.appendChild(movieCard);
-                });
-
-                movieContainer.appendChild(movieRow);
+                appendMoviesToDOM(data.movies);
                 currentPage++;
                 totalPages = data.total_pages;
-
                 attachFavoriteButtonListeners();
             }
         })
-        .catch(error => console.error("Error fetching movies:", error));
+        .catch(error => console.error("Error fetching more movies:", error));
+                
     }
-});
+}
+
+/** Appends new movies to the DOM */
+function appendMoviesToDOM(movies) {
+    const movieContainer = document.querySelector(".row.mt-4");
+    const movieRow = document.createElement("div");
+    movieRow.className = "row g-4";
+
+    movies.forEach(movie => {
+        const movieCard = document.createElement("div");
+        movieCard.className = "col-12 col-md-4 col-lg-3 card-deck d-flex";
+        movieCard.innerHTML = `
+            <div class="card mb-4 shadow-sm" style="height: 100%;">
+                <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/movie-card-placeholder-img.png'}"
+                    class="card-img-top" alt="${movie.title}" style="object-fit: cover; height: 300px;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title">${movie.title}</h5>
+                    <p class="card-text">${movie.overview.split(" ").slice(0, 20).join(" ")}...</p>
+                    <div class="btn-wrapper text-center d-flex justify-content-between">
+                        <a href="/movies/${movie.id}/" class="btn btn-dark card-link">Show More</a>
+                        <button class="btn btn-outline-danger card-link favorite-btn" 
+                                data-movie-id="${movie.id}" data-title="${movie.title}" 
+                                data-posterpath="${movie.poster_path}" 
+                                data-releasedate="${movie.release_date}" 
+                                data-rating="${movie.vote_average}">
+                            <i class="fa fa-heart"></i> Add to List
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        movieRow.appendChild(movieCard);
+    });
+
+    movieContainer.appendChild(movieRow);
+}
+
+/** Helper function to get CSRF token */
+function getCookie(name) {
+    return document.cookie.split("; ").reduce((cookieValue, cookie) => {
+        if (cookie.startsWith(name + "=")) return decodeURIComponent(cookie.split("=")[1]);
+        return cookieValue;
+    }, null);
+}
