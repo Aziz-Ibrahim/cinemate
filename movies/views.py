@@ -17,28 +17,29 @@ def get_movie_genres():
 @login_required
 def movie_list(request):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=403)  # Prevents HTML redirect
+        return JsonResponse({"error": "Authentication required"}, status=403)
 
+    search_query = request.GET.get("search", "").strip()
     sort_by = request.GET.get("sort_by", "popularity.desc")
     genre_id = request.GET.get("genre", "")
     page = int(request.GET.get("page", 1))
 
-    movies, total_pages = get_all_movies(sort_by, genre_id, page)
+    if search_query:
+        movies = search_movies(search_query)  # ✅ Use search_movies function
+        total_pages = 1  # Search results usually return only one page
+    else:
+        movies, total_pages = get_all_movies(sort_by, genre_id, page)
 
-    # Detect AJAX request
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return JsonResponse({
-            "movies": movies,
-            "total_pages": total_pages,
-        })  # ✅ Returns JSON, not HTML
+        return JsonResponse({"movies": movies, "total_pages": total_pages})
 
-    # Regular page load
     genres = get_movie_genres()
     return render(request, "movies/movie_list.html", {
         "movies": movies,
         "sort_by": sort_by,
         "genres": genres,
         "selected_genre": int(genre_id) if genre_id else "",
+        "search_query": search_query,  # ✅ Pass search query back to template
     })
 
 
