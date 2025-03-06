@@ -23,4 +23,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("movies/", include(("movies.urls", "movies"))),  
     path("users/", include("users.urls")), 
+    path("reviews/", include(("reviews.urls", "reviews"))),  # Added reviews app
 ]
+

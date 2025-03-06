@@ -21,10 +21,54 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error("Error fetching movie details:", error);
             });
-    } else {
-        console.error("Movie ID not found in URL");
     }
 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const reviewForm = document.getElementById("review-form");
+    
+    if (reviewForm) {
+        reviewForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+    
+            let formData = new FormData(reviewForm);
+            let movieId = window.location.pathname.split("/")[2]; // Extract movie_id from URL
+    
+            fetch(`/movies/${movieId}/submit_review/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    location.reload(); // Refresh page to show the new review
+                } else {
+                    alert("Error submitting review. Please try again.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    }
+    
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                let cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+    
 
     function attachFavoriteButtonListeners() {
         document.querySelectorAll(".favorite-btn").forEach(button => {
@@ -39,12 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let posterPath = this.dataset.posterpath;  // Fixed dataset case
         let releaseDate = this.dataset.releasedate;  // Fixed dataset case
         let rating = this.dataset.rating;
-
-        console.log("Movie ID sent:", movieId);  // Debugging log
-        console.log("Title:", title);
-        console.log("Poster Path:", posterPath);
-        console.log("Release Date:", releaseDate);
-        console.log("Rating:", rating);
 
         const formData = new URLSearchParams();
         formData.append("movie_id", movieId);

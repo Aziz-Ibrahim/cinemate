@@ -105,3 +105,8 @@
     padding: 10px;
     cursor: pointer;
 }
+
+.star-rating {
+    color: gold;
+    font-weight: bold;
+}

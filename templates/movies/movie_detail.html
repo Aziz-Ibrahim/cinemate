@@ -8,15 +8,109 @@
 <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
 <p><strong>Overview:</strong> {{ movie.overview }}</p>
 
+<!-- Reviews -->
+<div class="container">
+    <div class="row">
+        <h2> Movie Reviews</h2>
+        <!-- Cinemate Reviews -->
+        <div class="col-md-6">
+            <h3>Cinemate Reviews</h3>
+            <div id="reviews">
+                {% for review in reviews %}
+                <div class="review">
+                    <p><strong>{{ review.user.username }}</strong> rated:
+                        <span class="star-rating">{{ review.rating }}</span> ★
+                    </p>
+                    <p>{{ review.review_text }}</p>
+                    <p><small>{{ review.created_at|date:"F j, Y, g:i a" }}</small></p>
+                </div>
+                <hr>
+                {% empty %}
+                <p>No reviews yet. Be the first to review!</p>
+                {% endfor %}
+            </div>
+
+            {% if user.is_authenticated %}
+            <h3>Leave a Review</h3>
+            <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="rating">Rating:</label>
+                    {{ review_form.rating }}
+                </div>
+                <div class="form-group">
+                    <label for="review_text">Your Review:</label>
+                    {{ review_form.review_text }}
+                </div>
+                <button type="submit" class="btn btn-dark">Submit Review</button>
+            </form>
+            
+            {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            {% if movie.reviews.results %}
+            <h3>TMDB Reviews:</h3>
+            {% for review in movie.reviews.results %}
+            <p><strong>{{ review.author }}</strong>: {{ review.content|truncatewords:50 }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!--  Watch Providers -->
+{% if watch_providers %}
+<h3>Watch on:</h3>
+<ul>
+    {% for country, details in watch_providers.items %}
+    <li><strong>{{ country }}:</strong>
+        {% for provider in details.flatrate %}
+        {{ provider.provider_name }}
+        {% endfor %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<!-- <h2>User Reviews</h2>
+    <div id="reviews">
+        {% for review in reviews %}
+        <div class="review">
+            <p><strong>{{ review.user.username }}</strong> rated:
+                <span class="star-rating">{{ review.rating }}</span> ★
+            </p>
+            <p>{{ review.review_text }}</p>
+            <p><small>{{ review.created_at|date:"F j, Y, g:i a" }}</small></p>
+        </div>
+        <hr>
+        {% empty %}
+        <p>No reviews yet. Be the first to review!</p>
+        {% endfor %}
+    </div>
+
+{% if user.is_authenticated %}
+<h3>Leave a Review</h3>
+<form id="review-form">
+    {{ review_form.as_p }}
+    <button type="submit" class="btn btn-dark">Submit Review</button>
+</form>
+{% else %}
+<p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
+{% endif %} -->
+
+
 <!-- Cast -->
 <h3>Cast:</h3>
 <div class="row">
     {% for actor in cast %}
-        <div class="col-sm text-center">
-            <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle" alt="{{ actor.name }}">
-            <p class="mt-2"><strong>{{ actor.name }}</strong></p>
-            <p class="text-muted">{{ actor.character }}</p>
-        </div>
+    <div class="col-sm text-center">
+        <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle"
+            alt="{{ actor.name }}">
+        <p class="mt-2"><strong>{{ actor.name }}</strong></p>
+        <p class="text-muted">{{ actor.character }}</p>
+    </div>
     {% endfor %}
 </div>
 
@@ -26,12 +120,11 @@
     <div class="carousel-inner">
         <h3>Trailers:</h3>
         {% for video in movie.videos.results %}
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <iframe width="100%" height="400" 
-                        src="https://www.youtube.com/embed/{{ video.key }}" 
-                        frameborder="0" allowfullscreen>
-                </iframe>
-            </div>
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <iframe width="100%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0"
+                allowfullscreen>
+            </iframe>
+        </div>
         {% endfor %}
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#trailerCarousel" data-bs-slide="prev">
@@ -46,27 +139,7 @@
 
 
 <!--  Reviews -->
-{% if movie.reviews.results %}
-    <h3>Reviews:</h3>
-    {% for review in movie.reviews.results %}
-        <p><strong>{{ review.author }}</strong>: {{ review.content|truncatewords:50 }}</p>
-    {% endfor %}
-{% endif %}
 
-
-<!--  Watch Providers -->
-{% if watch_providers %}
-    <h3>Watch on:</h3>
-    <ul>
-        {% for country, details in watch_providers.items %}
-            <li><strong>{{ country }}:</strong>
-                {% for provider in details.flatrate %}
-                    {{ provider.provider_name }}
-                {% endfor %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
 
 
 <!--  Similar Movies -->
@@ -74,25 +147,26 @@
 <div id="similarMoviesCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
         {% for movie in movie.similar.results %}
-            {% if forloop.first or forloop.counter0|divisibleby:4 %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <div class="row">
-            {% endif %}
-            
-                        <div class="col-md-3">
-                            <div class="card">
-                                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
-                                <div class="card-body">
-                                    <h6 class="card-title">{{ movie.title }}</h6>
-                                    <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">View</a>
-                                </div>
-                            </div>
+        {% if forloop.first or forloop.counter0|divisibleby:4 %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="row">
+                {% endif %}
+
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
+                            alt="{{ movie.title }}">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ movie.title }}</h6>
+                            <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">View</a>
                         </div>
-            
-            {% if forloop.last or forloop.counter|divisibleby:4 %}
                     </div>
                 </div>
-            {% endif %}
+
+                {% if forloop.last or forloop.counter|divisibleby:4 %}
+            </div>
+        </div>
+        {% endif %}
         {% endfor %}
     </div>
 
