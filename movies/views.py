@@ -8,20 +8,32 @@ from users.models import FavoriteMovie
 from reviews.models import Review
 from reviews.forms import ReviewForm
 
+def get_movie_genres():
+    url = "https://api.themoviedb.org/3/genre/movie/list"
+    params = {"api_key": settings.TMDB_API_KEY, "language": "en-US"}
+    response = requests.get(url, params=params)
+    return response.json().get("genres", [])
+
 @login_required
 def movie_list(request):
     sort_by = request.GET.get("sort_by", "popularity.desc")
-    page = int(request.GET.get("page", 1))  # Get current page
+    genre_id = request.GET.get("genre", "")
+    page = int(request.GET.get("page", 1))
 
-    movies, total_pages = get_all_movies(sort_by, page)
+    movies, total_pages = get_all_movies(sort_by, genre_id, page)
+    
+    genres = get_movie_genres()
 
-    # If it's an AJAX request, return JSON instead of rendering a template
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'movies': movies, 'current_page': page, 'total_pages': total_pages})
+    return render(request, "movies/movie_list.html", {
+        "movies": movies,
+        "sort_by": sort_by,
+        "genres": genres,
+        "selected_genre": int(genre_id) if genre_id else "",
+    })
 
-    return render(request, "movies/movie_list.html", {"movies": movies, "sort_by": sort_by})
 
-def get_all_movies(sort_by="popularity.desc", page=1):
+
+def get_all_movies(sort_by="popularity.desc", genre_id="", page=1):
     url = "https://api.themoviedb.org/3/discover/movie"
     params = {
         "api_key": settings.TMDB_API_KEY,
@@ -29,9 +41,13 @@ def get_all_movies(sort_by="popularity.desc", page=1):
         "sort_by": sort_by,
         "page": page,
     }
+    if genre_id:
+        params["with_genres"] = genre_id
+
     response = requests.get(url, params=params)
     data = response.json()
-    return data.get("results", []), data.get("total_pages", 1)  # Return movies & total pages
+    return data.get("results", []), data.get("total_pages", 1)
+
 
 def search_movies(query):
     url = "https://api.themoviedb.org/3/search/movie"
