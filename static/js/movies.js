@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     initializeMovieDetails();
     initializeReviewForm();
-    attachFavoriteButtonListeners();
     setupInfiniteScroll();
 });
 
@@ -49,14 +48,14 @@ function initializeReviewForm() {
     });
 }
 
-/** Handles adding/removing favorite movies */
-function attachFavoriteButtonListeners() {
-    document.querySelectorAll(".favorite-btn").forEach(button => {
-        button.removeEventListener("click", toggleFavorite);
-        button.addEventListener("click", toggleFavorite);
-    });
-}
+/** Event delegation for favorite button clicks */
+document.addEventListener("click", function (event) {
+    const target = event.target.closest(".favorite-btn");
+    if (!target) return; // Ignore clicks outside favorite buttons
+    toggleFavorite.call(target);
+});
 
+/** Handles adding/removing favorite movies */
 function toggleFavorite() {
     const movieId = this.dataset.movieId;
     const formData = new URLSearchParams({
@@ -103,24 +102,16 @@ function setupInfiniteScroll() {
         fetch(`/movies/?sort_by=${sortBySelect.value}&page=${currentPage + 1}`, {
             headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(response => {
-            // console.log("Raw response:", response);  
-            return response.text();  // Read response as text (not JSON yet)
-        })
-        .then(text => {
-            // console.log("Response text:", text);
-            return JSON.parse(text);  // Try parsing it as JSON
-        })
+        .then(response => response.text())  
+        .then(text => JSON.parse(text))  
         .then(data => {
             if (data.movies.length > 0) {
                 appendMoviesToDOM(data.movies);
                 currentPage++;
                 totalPages = data.total_pages;
-                attachFavoriteButtonListeners();
             }
         })
         .catch(error => console.error("Error fetching more movies:", error));
-                
     }
 }
 
