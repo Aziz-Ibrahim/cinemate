@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("Movie ID not found in URL. Check if the URL format is correct.");
     }
 
-    fetchMovieDetails(movieIdMatch);
+    fetchMovieDetails(movieIdMatch[1]);
 });
 
 function fetchMovieDetails(movieId) {

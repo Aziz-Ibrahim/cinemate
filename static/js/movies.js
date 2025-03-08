@@ -12,17 +12,22 @@ function initializeMovieDetails() {
     if (movieIdMatch && movieIdMatch[1]) {
         const movieId = movieIdMatch[1];
 
-        fetch(`/movie_detail_api/${movieId}/`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("movie-title").textContent = data.title;
-                document.getElementById("movie-overview").textContent = data.overview;
-                document.getElementById("movie-rating").textContent = data.vote_average;
-                document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
-            })
-            .catch(error => console.error("Error fetching movie details:", error));
+        fetch(`/movies/${movieId}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("movie-title").textContent = data.title;
+            document.getElementById("movie-overview").textContent = data.overview;
+            document.getElementById("movie-rating").textContent = data.vote_average;
+            document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
+        })
+        .catch(error => console.error("Error fetching movie details:", error));
     }
-}
+}    
 
 /** Handles review form submission */
 function initializeReviewForm() {

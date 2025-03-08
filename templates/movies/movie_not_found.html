@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Movie Not Found</h2>
+    <p>Sorry, the movie you are looking for does not exist in our database.</p>
+    <p><a href="{% url 'movies:movie_list' %}">Return to Movie List</a></p>
+
+{% endblock %}
