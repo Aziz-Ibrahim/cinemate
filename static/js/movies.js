@@ -1,10 +1,16 @@
+/**
+ * Executes initialization functions after the DOM content is fully loaded.
+ */
 document.addEventListener("DOMContentLoaded", function () {
     initializeMovieDetails();
     initializeReviewForm();
     setupInfiniteScroll();
 });
 
-/** Fetch and display movie details */
+/**
+ * Fetches and displays movie details from the server.
+ * Parses the movie ID from the URL and updates the DOM with movie information.
+ */
 function initializeMovieDetails() {
     const path = window.location.pathname;
     const movieIdMatch = path.match(/\/movies\/(\d+)\//);
@@ -13,23 +19,26 @@ function initializeMovieDetails() {
         const movieId = movieIdMatch[1];
 
         fetch(`/movies/${movieId}/`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById("movie-title").textContent = data.title;
-            document.getElementById("movie-overview").textContent = data.overview;
-            document.getElementById("movie-rating").textContent = data.vote_average;
-            document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
-        })
-        .catch(error => console.error("Error fetching movie details:", error));
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("movie-title").textContent = data.title;
+                document.getElementById("movie-overview").textContent = data.overview;
+                document.getElementById("movie-rating").textContent = data.vote_average;
+                document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
+            })
+            .catch(error => console.error("Error fetching movie details:", error));
     }
-}    
+}
 
-/** Handles review form submission */
+/**
+ * Initializes the review form submission handler.
+ * Prevents default form submission and sends review data to the server via AJAX.
+ */
 function initializeReviewForm() {
     const reviewForm = document.getElementById("review-form");
     if (!reviewForm) return;
@@ -44,23 +53,29 @@ function initializeReviewForm() {
             headers: { "X-CSRFToken": getCookie("csrftoken") },
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") location.reload();
-            else alert("Error submitting review. Please try again.");
-        })
-        .catch(error => console.error("Error submitting review:", error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") location.reload();
+                else alert("Error submitting review. Please try again.");
+            })
+            .catch(error => console.error("Error submitting review:", error));
     });
 }
 
-/** Event delegation for favorite button clicks */
+/**
+ * Sets up event delegation for favorite button clicks.
+ * Listens for click events on the document and triggers the toggleFavorite function for elements with the 'favorite-btn' class.
+ */
 document.addEventListener("click", function (event) {
     const target = event.target.closest(".favorite-btn");
     if (!target) return; // Ignore clicks outside favorite buttons
     toggleFavorite.call(target);
 });
 
-/** Handles adding/removing favorite movies */
+/**
+ * Toggles the favorite status of a movie.
+ * Sends an AJAX request to the server to add or remove the movie from the user's favorites.
+ */
 function toggleFavorite() {
     const movieId = this.dataset.movieId;
     const formData = new URLSearchParams({
@@ -79,14 +94,17 @@ function toggleFavorite() {
         },
         body: formData.toString()
     })
-    .then(response => response.json())
-    .then(data => {
-        this.innerHTML = `<i class="fa fa-heart"></i> ${data.status === "added" ? "Remove from List" : "Add to List"}`;
-    })
-    .catch(error => console.error("Error toggling favorite:", error));
+        .then(response => response.json())
+        .then(data => {
+            this.innerHTML = `<i class="fa fa-heart"></i> ${data.status === "added" ? "Remove from List" : "Add to List"}`;
+        })
+        .catch(error => console.error("Error toggling favorite:", error));
 }
 
-/** Infinite Scroll Setup */
+/**
+ * Sets up infinite scroll functionality for loading more movies.
+ * Loads additional movie data when the user scrolls to the bottom of the page.
+ */
 function setupInfiniteScroll() {
     let currentPage = 1;
     let totalPages = Infinity;
@@ -97,6 +115,10 @@ function setupInfiniteScroll() {
         }
     });
 
+    /**
+     * Loads more movies from the server and appends them to the DOM.
+     * @param {number} page - The page number to load.
+     */
     function loadMoreMovies(page) {
         const sortBySelect = document.getElementById("sortSelect");
         if (!sortBySelect) {
@@ -107,20 +129,23 @@ function setupInfiniteScroll() {
         fetch(`/movies/?sort_by=${sortBySelect.value}&page=${currentPage + 1}`, {
             headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(response => response.text())  
-        .then(text => JSON.parse(text))  
-        .then(data => {
-            if (data.movies.length > 0) {
-                appendMoviesToDOM(data.movies);
-                currentPage++;
-                totalPages = data.total_pages;
-            }
-        })
-        .catch(error => console.error("Error fetching more movies:", error));
+            .then(response => response.text())
+            .then(text => JSON.parse(text))
+            .then(data => {
+                if (data.movies.length > 0) {
+                    appendMoviesToDOM(data.movies);
+                    currentPage++;
+                    totalPages = data.total_pages;
+                }
+            })
+            .catch(error => console.error("Error fetching more movies:", error));
     }
 }
 
-/** Appends new movies to the DOM */
+/**
+ * Appends movie cards to the DOM.
+ * @param {Array} movies - An array of movie objects to append.
+ */
 function appendMoviesToDOM(movies) {
     const movieContainer = document.querySelector(".row.mt-4");
     const movieRow = document.createElement("div");
@@ -154,7 +179,11 @@ function appendMoviesToDOM(movies) {
     movieContainer.appendChild(movieRow);
 }
 
-/** Helper function to get CSRF token */
+/**
+ * Retrieves the value of a cookie by name.
+ * @param {string} name - The name of the cookie to retrieve.
+ * @returns {string|null} - The cookie value or null if not found.
+ */
 function getCookie(name) {
     return document.cookie.split("; ").reduce((cookieValue, cookie) => {
         if (cookie.startsWith(name + "=")) return decodeURIComponent(cookie.split("=")[1]);
