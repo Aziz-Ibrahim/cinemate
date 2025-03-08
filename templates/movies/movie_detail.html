@@ -32,6 +32,8 @@
 
             {% if user.is_authenticated %}
             <h3>Leave a Review</h3>
+
+            {% if movie and movie.id %}
             <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
                 {% csrf_token %}
                 <div class="form-group">
@@ -44,7 +46,10 @@
                 </div>
                 <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
-            
+            {% else %}
+            <p>Error: Movie ID is missing. Unable to submit a review.</p>
+            {% endif %}
+
             {% else %}
             <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
             {% endif %}
@@ -73,33 +78,6 @@
     {% endfor %}
 </ul>
 {% endif %}
-
-<!-- <h2>User Reviews</h2>
-    <div id="reviews">
-        {% for review in reviews %}
-        <div class="review">
-            <p><strong>{{ review.user.username }}</strong> rated:
-                <span class="star-rating">{{ review.rating }}</span> ★
-            </p>
-            <p>{{ review.review_text }}</p>
-            <p><small>{{ review.created_at|date:"F j, Y, g:i a" }}</small></p>
-        </div>
-        <hr>
-        {% empty %}
-        <p>No reviews yet. Be the first to review!</p>
-        {% endfor %}
-    </div>
-
-{% if user.is_authenticated %}
-<h3>Leave a Review</h3>
-<form id="review-form">
-    {{ review_form.as_p }}
-    <button type="submit" class="btn btn-dark">Submit Review</button>
-</form>
-{% else %}
-<p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
-{% endif %} -->
-
 
 <!-- Cast -->
 <h3>Cast:</h3>
