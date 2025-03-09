@@ -1,9 +1,12 @@
+/* Universal */
+
 *{
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
 
+/* Home page */
 .hero {
     background-image: url('../images/cinemate-hero-img.jpg');
     background-size: cover; /* Resize the image */
@@ -12,6 +15,7 @@
     height: 500px; /* Adjust as needed */
 }
 
+/* Movie List Page */
 .container-wrapper {
     width: 90%;
     max-width: 1600px; /* Limit the width */
@@ -105,6 +109,8 @@
     padding: 10px;
     cursor: pointer;
 }
+
+/* Movie Details Page */
 
 .star-rating {
     color: gold;

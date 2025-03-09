@@ -63,17 +63,21 @@
     </div>
 </div>
 <!--  Watch Providers -->
-{% if watch_providers %}
-<h3>Watch on:</h3>
-<ul>
-    {% for country, details in watch_providers.items %}
-    <li><strong>{{ country }}:</strong>
-        {% for provider in details.flatrate %}
-        {{ provider.provider_name }}
+{% if watch_providers.buy or watch_providers.rent or watch_providers.flatrate %}
+    <h3>Where to Watch</h3>
+    <ul>
+        {% for provider in watch_providers.flatrate %}
+            <li>{{ provider.provider_name }}</li>
         {% endfor %}
-    </li>
-    {% endfor %}
-</ul>
+        {% for provider in watch_providers.buy %}
+            <li>Buy: {{ provider.provider_name }}</li>
+        {% endfor %}
+        {% for provider in watch_providers.rent %}
+            <li>Rent: {{ provider.provider_name }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No streaming providers available for this movie.</p>
 {% endif %}
 
 <!-- Cast -->
@@ -91,15 +95,16 @@
 
 
 <!--  Videos (Trailers) -->
-<div id="trailerCarousel" class="carousel slide" data-bs-ride="carousel">
+<div id="trailerCarousel" class="carousel slide">
     <div class="carousel-inner">
         <h3>Trailers:</h3>
         {% for video in movie.videos.results %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-            <iframe width="100%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0"
-                allowfullscreen>
+        <div class="carousel-item {% if forloop.first %}active{% endif %} text-center">
+            <iframe width="70%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" 
+                frameborder="0" allowfullscreen>
             </iframe>
         </div>
+        
         {% endfor %}
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#trailerCarousel" data-bs-slide="prev">
@@ -114,7 +119,7 @@
 
 <!--  Similar Movies -->
 <h3>Similar Movies</h3>
-<div id="similarMoviesCarousel" class="carousel slide" data-bs-ride="carousel">
+<div id="similarMoviesCarousel" class="carousel slide">
     <div class="carousel-inner">
         {% for movie in movie.similar.results %}
         {% if forloop.first or forloop.counter0|divisibleby:4 %}

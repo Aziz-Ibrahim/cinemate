@@ -88,7 +88,7 @@ def get_movie_details(movie_id):
     params = {
         "api_key": TMDB_API_KEY,
         "language": "en-US",
-        "append_to_response": "credits,watch/providers"
+        "append_to_response": "credits,watch/providers,videos,reviews,similar"
     }
     response = requests.get(url, params=params)
 
@@ -96,6 +96,7 @@ def get_movie_details(movie_id):
         return response.json()
     
     return None  # Return None if the movie is not found
+
 
 
 def movie_detail(request, movie_id):

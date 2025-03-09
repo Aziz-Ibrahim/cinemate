@@ -31,12 +31,13 @@ function fetchMovieDetails(movieId) {
             document.getElementById("overview").textContent = data.overview;
 
             displayWatchProviders(data.watch_providers);
-            displayVideos(data.videos);
-            displayReviews(data.reviews);
-            displaySimilarMovies(data.similar_movies);
+            displayVideos(data.videos.results);   // Fix
+            displayReviews(data.reviews.results); // Fix
+            displaySimilarMovies(data.similar.results); // Fix
         })
         .catch(error => console.error("Error fetching movie details:", error));
 }
+
 
 /**
  * Displays watch providers in the designated container.
