@@ -51,7 +51,7 @@
         {% else %}
             <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
         {% endif %}
-
+        </div>
         <div class="col-md-6">
             {% if movie.reviews.results %}
             <h3>TMDB Reviews:</h3>
@@ -62,20 +62,32 @@
         </div>
     </div>
 </div>
-<!--  Watch Providers -->
-{% if watch_providers.buy or watch_providers.rent or watch_providers.flatrate %}
-    <h3>Where to Watch</h3>
-    <ul>
-        {% for provider in watch_providers.flatrate %}
-            <li>{{ provider.provider_name }}</li>
-        {% endfor %}
+
+<!-- Watch Providers Section -->
+<h3>Where to Watch</h3>
+{% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
+    <div class="d-flex flex-wrap justify-content-start">
+        <div class="provider-logo">
+            <p>Buy:</p>
         {% for provider in watch_providers.buy %}
-            <li>Buy: {{ provider.provider_name }}</li>
+            <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" 
+                    alt="{{ provider.provider_name }}" 
+                    class="img-fluid rounded">
+            </a>
         {% endfor %}
+        </div>
+        <div class="provider-logo">
+            <p>Rent:</p>
         {% for provider in watch_providers.rent %}
-            <li>Rent: {{ provider.provider_name }}</li>
+            <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" 
+                    alt="{{ provider.provider_name }}" 
+                    class="img-fluid rounded">
+            </a>
         {% endfor %}
-    </ul>
+        </div>
+    </div>
 {% else %}
     <p>No streaming providers available for this movie.</p>
 {% endif %}

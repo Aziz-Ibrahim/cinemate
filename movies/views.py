@@ -109,13 +109,22 @@ def movie_detail(request, movie_id):
     movie = get_movie_details(movie_id)
     if not movie:
         return render(request, "movies/movie_not_found.html", {"movie_id": movie_id})
+    
+    watch_providers_data = movie.get("watch/providers", {}).get("results", {}).get("GB", {})
+    watch_providers = {}
 
     # Retrieve reviews for the movie
     reviews = Review.objects.filter(movie_id=movie_id).order_by("-created_at")
     review_form = ReviewForm()
 
     # Extract relevant movie data safely
-    watch_providers = movie.get("watch/providers", {}).get("results", {}).get("US", {})
+    # Add a generic JustWatch link for each provider
+    for provider_type in ["buy", "rent"]:
+        providers_list = watch_providers_data.get(provider_type, [])
+        for provider in providers_list:
+            provider["link"] = f"https://www.themoviedb.org/movie/{movie_id}/watch"  # Generic TMDB JustWatch link
+        watch_providers[provider_type] = providers_list
+    # Add cast members
     cast = movie.get("credits", {}).get("cast", [])[:10]  # Limit to top 10 cast members
 
     return render(request, "movies/movie_detail.html", {
