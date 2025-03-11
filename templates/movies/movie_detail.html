@@ -2,16 +2,56 @@
 {% load static %}
 
 {% block content %}
-<h1>{{ movie.title }}</h1>
-<img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="{{ movie.title }}">
-<p><strong>Release Date:</strong> {{ movie.release_date }}</p>
-<p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
-<p><strong>Overview:</strong> {{ movie.overview }}</p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="{{ movie.title }}">
+        </div>
+        <div class="col-md-6">
+            <div>
+                <h1 class="display-1">{{ movie.title }}</h1>
+                <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
+                <p><strong>Overview:</strong> {{ movie.overview }}</p>
+            </div>
+            <div>
+                <!-- Watch Providers Section -->
+                <h3>Where to Watch</h3>
+                {% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
+                <div class="d-flex flex-wrap justify-content-start">
+                    <div class="provider-logo">
+                        <p>Buy:</p>
+                        {% for provider in watch_providers.buy %}
+                        <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+                            <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}"
+                                class="img-fluid rounded">
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <div class="provider-logo">
+                        <p>Rent:</p>
+                        {% for provider in watch_providers.rent %}
+                        <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+                            <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}"
+                                class="img-fluid rounded">
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <p>No streaming providers available for this movie.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
 <!-- Reviews -->
 <div class="container">
     <div class="row">
-        <h2>Movie Reviews</h2>
+        <h2 class="display-4 text-center">Movie Reviews</h2>
 
         <!-- Cinemate Reviews -->
         <div class="col-md-6">
@@ -55,7 +95,7 @@
                     <textarea name="review_text" id="review_text" class="form-control"
                         aria-label="Write your review here" placeholder="Write your review here">
                     {% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}
-                </textarea>
+                    </textarea>
                 </div>
                 <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
@@ -97,33 +137,8 @@
 
     </div>
 </div>
-
-<!-- Watch Providers Section -->
-<h3>Where to Watch</h3>
-{% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
-<div class="d-flex flex-wrap justify-content-start">
-    <div class="provider-logo">
-        <p>Buy:</p>
-        {% for provider in watch_providers.buy %}
-        <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-            <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}"
-                class="img-fluid rounded">
-        </a>
-        {% endfor %}
-    </div>
-    <div class="provider-logo">
-        <p>Rent:</p>
-        {% for provider in watch_providers.rent %}
-        <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-            <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}"
-                class="img-fluid rounded">
-        </a>
-        {% endfor %}
-    </div>
-</div>
-{% else %}
-<p>No streaming providers available for this movie.</p>
-{% endif %}
+<!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
 <!-- Cast -->
 <h3>Cast:</h3>
@@ -138,6 +153,8 @@
     {% endfor %}
 </div>
 
+<!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
 <!--  Videos (Trailers) -->
 <div id="trailerCarousel" class="carousel slide">
@@ -161,6 +178,9 @@
         <span class="visually-hidden">Next</span>
     </button>
 </div>
+
+<!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
 <!-- Similar Movies -->
 <h3>Similar Movies</h3>
