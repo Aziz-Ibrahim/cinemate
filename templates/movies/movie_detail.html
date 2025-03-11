@@ -18,10 +18,18 @@
             <h3>Cinemate Reviews</h3>
             <div id="reviews">
                 {% for review in reviews %}
-                <div class="review">
-                    <p><strong>{{ review.user.username }}</strong> wrote:</p>
+                <div class="review p-3 mb-3 border rounded">
+                    <div class="d-flex align-items-center mb-2">
+                        <a href="{% url 'user_profile' review.user.username %}" class="fw-bold me-2">{{
+                            review.user.username }}</a>
+                        <span class="text-muted">{{ review.created_at|date:"F j, Y" }}</span>
+                    </div>
+                    {% if review.rating %}
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
+                    </div>
+                    {% endif %}
                     <p>{{ review.review_text }}</p>
-                    <p><small>{{ review.created_at|date:"F j, Y, g:i a" }}</small></p>
                 </div>
                 <hr>
                 {% empty %}
@@ -32,93 +40,89 @@
             {% if user.is_authenticated %}
             <h3>Leave a Review</h3>
             {% if movie.id %}
-                <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
-                    {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <label class="input-group-text" for="rating">Your Rating</label>
-                        <select class="form-select" id="rating" name="rating">
-                            {% for value, label in review_form.fields.rating.choices %}
-                                <option value="{{ value }}" {% if review_form.rating.value == value %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="input-group mb-4">
-                        <span class="input-group-text">Your review</span>
-                        <textarea name="review_text" id="review_text" class="form-control" aria-label="Write your review here" placeholder="Write your review here">
-                            {% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}
-                        </textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-dark">Submit Review</button>
-                </form>
+            <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="rating">Your Rating</label>
+                    <select class="form-select" id="rating" name="rating">
+                        {% for value, label in review_form.fields.rating.choices %}
+                        <option value="{{ value }}" {% if review_form.rating.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">Your review</span>
+                    <textarea name="review_text" id="review_text" class="form-control"
+                        aria-label="Write your review here" placeholder="Write your review here">
+                    {% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}
+                </textarea>
+                </div>
+                <button type="submit" class="btn btn-dark">Submit Review</button>
+            </form>
             {% else %}
-                <p>Error: Movie ID is missing. Review cannot be submitted.</p>
+            <p>Error: Movie ID is missing. Review cannot be submitted.</p>
             {% endif %}
-        {% else %}
+            {% else %}
             <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
-        {% endif %}
+            {% endif %}
         </div>
+
 
         <!-- TMDB Reviews -->
         <div class="col-md-6">
             {% if movie.reviews.results %}
-                <h3>TMDB Reviews:</h3>
-                {% for review in movie.reviews.results %}
-                    <div class="tmdb-review p-3 mb-3 border rounded">
-                        <p>
-                            <strong>
-                                <a href="https://www.themoviedb.org/u/{{ review.author }}" target="_blank">
-                                    {{ review.author }}
-                                </a>
-                            </strong> 
-                            - <small>{{ review.created_at|date:"F j, Y" }}</small>
-                        </p>
-                        
-                        {% if review.author_details.rating %}
-                            <p>⭐ {{ review.author_details.rating }}/10</p>
-                        {% endif %}
-                        
-                        <p>{{ review.content|truncatewords:20 }}</p>
-                    </div>
-                {% endfor %}
+            <h3>TMDB Reviews:</h3>
+            {% for review in movie.reviews.results %}
+            <div class="tmdb-review p-3 mb-3 border rounded">
+                <p>
+                    <strong>
+                        <a href="https://www.themoviedb.org/u/{{ review.author }}" target="_blank">
+                            {{ review.author }}
+                        </a>
+                    </strong>
+                    - <small>{{ review.created_at|date:"F j, Y" }}</small>
+                </p>
+
+                {% if review.author_details.rating %}
+                <p>⭐ {{ review.author_details.rating }}/10</p>
+                {% endif %}
+
+                <p>{{ review.content|truncatewords:20 }}</p>
+            </div>
+            {% endfor %}
             {% else %}
-                <p>No TMDB reviews available.</p>
+            <p>No TMDB reviews available.</p>
             {% endif %}
         </div>
-        
+
     </div>
 </div>
 
 <!-- Watch Providers Section -->
 <h3>Where to Watch</h3>
 {% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
-    <div class="d-flex flex-wrap justify-content-start">
-        <div class="provider-logo">
-            <p>Buy:</p>
+<div class="d-flex flex-wrap justify-content-start">
+    <div class="provider-logo">
+        <p>Buy:</p>
         {% for provider in watch_providers.buy %}
-            <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" 
-                    alt="{{ provider.provider_name }}" 
-                    class="img-fluid rounded">
-            </a>
+        <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+            <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}"
+                class="img-fluid rounded">
+        </a>
         {% endfor %}
-        </div>
-        <div class="provider-logo">
-            <p>Rent:</p>
-        {% for provider in watch_providers.rent %}
-            <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" 
-                    alt="{{ provider.provider_name }}" 
-                    class="img-fluid rounded">
-            </a>
-        {% endfor %}
-        </div>
     </div>
+    <div class="provider-logo">
+        <p>Rent:</p>
+        {% for provider in watch_providers.rent %}
+        <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+            <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}"
+                class="img-fluid rounded">
+        </a>
+        {% endfor %}
+    </div>
+</div>
 {% else %}
-    <p>No streaming providers available for this movie.</p>
+<p>No streaming providers available for this movie.</p>
 {% endif %}
 
 <!-- Cast -->
@@ -141,11 +145,11 @@
         <h3>Trailers:</h3>
         {% for video in movie.videos.results %}
         <div class="carousel-item {% if forloop.first %}active{% endif %} text-center">
-            <iframe width="70%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" 
-                frameborder="0" allowfullscreen>
+            <iframe width="70%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0"
+                allowfullscreen>
             </iframe>
         </div>
-        
+
         {% endfor %}
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#trailerCarousel" data-bs-slide="prev">

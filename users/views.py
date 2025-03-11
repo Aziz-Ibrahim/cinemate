@@ -6,7 +6,8 @@ from django.urls import reverse_lazy
 from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.contrib.auth.views import LogoutView
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 from .models import FavoriteMovie
 
 
@@ -39,10 +40,19 @@ class CustomLoginView(LoginView):
         return reverse("profile")
 
 
-@login_required
-def profile_view(request):
-    favorite_movies = FavoriteMovie.objects.filter(user=request.user)
-    return render(request, "users/profile.html", {"favorite_movies": favorite_movies})
+def profile_view(request, username=None):
+    if username:
+        profile_user = get_object_or_404(User, username=username)
+    else:
+        if not request.user.is_authenticated:
+            return redirect("login")  # Redirect guests trying to access /profile/
+        profile_user = request.user  # Show logged-in user's profile
+
+    favorite_movies = FavoriteMovie.objects.filter(user=profile_user)
+    return render(request, "users/profile.html", {
+        "profile_user": profile_user,
+        "favorite_movies": favorite_movies,
+    })
 
 def add_favorite_movie(request, movie_id):
     if request.method == "POST":

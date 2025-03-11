@@ -6,6 +6,7 @@ urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", CustomLoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
-    path("profile/", profile_view, name="profile"),
+    path("profile/", profile_view, name="profile"),  # Logged-in user's profile
+    path("profile/<str:username>/", profile_view, name="user_profile"),  # Any user's profile
     path('add_favorite/<int:movie_id>/', add_favorite_movie, name='add_favorite'),
 ]
