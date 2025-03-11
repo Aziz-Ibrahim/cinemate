@@ -11,16 +11,15 @@
 <!-- Reviews -->
 <div class="container">
     <div class="row">
-        <h2> Movie Reviews</h2>
+        <h2>Movie Reviews</h2>
+
         <!-- Cinemate Reviews -->
         <div class="col-md-6">
             <h3>Cinemate Reviews</h3>
             <div id="reviews">
                 {% for review in reviews %}
                 <div class="review">
-                    <p><strong>{{ review.user.username }}</strong> rated:
-                        <span class="star-rating">{{ review.rating }}</span> ★
-                    </p>
+                    <p><strong>{{ review.user.username }}</strong> wrote:</p>
                     <p>{{ review.review_text }}</p>
                     <p><small>{{ review.created_at|date:"F j, Y, g:i a" }}</small></p>
                 </div>
@@ -35,14 +34,24 @@
             {% if movie.id %}
                 <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
                     {% csrf_token %}
-                    <div class="form-group">
-                        <label for="rating">Rating:</label>
-                        {{ review_form.rating }}
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="rating">Your Rating</label>
+                        <select class="form-select" id="rating" name="rating">
+                            {% for value, label in review_form.fields.rating.choices %}
+                                <option value="{{ value }}" {% if review_form.rating.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label for="review_text">Your Review:</label>
-                        {{ review_form.review_text }}
+                    
+                    <div class="input-group mb-4">
+                        <span class="input-group-text">Your review</span>
+                        <textarea name="review_text" id="review_text" class="form-control" aria-label="Write your review here" placeholder="Write your review here">
+                            {% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}
+                        </textarea>
                     </div>
+                    
                     <button type="submit" class="btn btn-dark">Submit Review</button>
                 </form>
             {% else %}
@@ -52,6 +61,8 @@
             <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
         {% endif %}
         </div>
+
+        <!-- TMDB Reviews -->
         <div class="col-md-6">
             {% if movie.reviews.results %}
             <h3>TMDB Reviews:</h3>
@@ -59,6 +70,10 @@
             <p><strong>{{ review.author }}</strong>: {{ review.content|truncatewords:50 }}</p>
             {% endfor %}
             {% endif %}
+
+            <!-- Display TMDB Rating -->
+            <h3>TMDB Rating</h3>
+            <p>{{ movie.vote_average }}/10 ({{ movie.vote_count }} votes)</p>
         </div>
     </div>
 </div>
@@ -129,6 +144,7 @@
     </button>
 </div>
 
+<!-- Similar Movies -->
 <h3>Similar Movies</h3>
 <div class="horizontal-scroll-container">
     <div class="horizontal-scroll-content">
