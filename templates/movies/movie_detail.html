@@ -65,16 +65,30 @@
         <!-- TMDB Reviews -->
         <div class="col-md-6">
             {% if movie.reviews.results %}
-            <h3>TMDB Reviews:</h3>
-            {% for review in movie.reviews.results %}
-            <p><strong>{{ review.author }}</strong>: {{ review.content|truncatewords:50 }}</p>
-            {% endfor %}
+                <h3>TMDB Reviews:</h3>
+                {% for review in movie.reviews.results %}
+                    <div class="tmdb-review p-3 mb-3 border rounded">
+                        <p>
+                            <strong>
+                                <a href="https://www.themoviedb.org/u/{{ review.author }}" target="_blank">
+                                    {{ review.author }}
+                                </a>
+                            </strong> 
+                            - <small>{{ review.created_at|date:"F j, Y" }}</small>
+                        </p>
+                        
+                        {% if review.author_details.rating %}
+                            <p>⭐ {{ review.author_details.rating }}/10</p>
+                        {% endif %}
+                        
+                        <p>{{ review.content|truncatewords:20 }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No TMDB reviews available.</p>
             {% endif %}
-
-            <!-- Display TMDB Rating -->
-            <h3>TMDB Rating</h3>
-            <p>{{ movie.vote_average }}/10 ({{ movie.vote_count }} votes)</p>
         </div>
+        
     </div>
 </div>
 

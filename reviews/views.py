@@ -32,7 +32,7 @@ def submit_review(request, movie_id):
             else:
                 print(f"Error submitting rating: {response.json()}")
 
-            return redirect("movie_detail", movie_id=movie_id)
+            return redirect("movies:movie_detail", movie_id=movie_id)
     else:
         form = ReviewForm()
     
