@@ -1,0 +1,29 @@
+import requests
+from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+
+TMDB_API_KEY = settings.TMDB_API_KEY 
+
+def actor_detail(request, actor_id):
+    actor_url = f"https://api.themoviedb.org/3/person/{actor_id}?api_key={TMDB_API_KEY}&append_to_response=movie_credits,external_ids"
+    response = requests.get(actor_url)
+    
+    if response.status_code != 200:
+        return render(request, "actors/actor_not_found.html", {"actor_id": actor_id})
+
+    actor = response.json()
+
+    # Extract social media links
+    social_links = {
+        "imdb": f"https://www.imdb.com/name/{actor['external_ids'].get('imdb_id')}" if actor['external_ids'].get('imdb_id') else None,
+        "twitter": f"https://twitter.com/{actor['external_ids'].get('twitter_id')}" if actor['external_ids'].get('twitter_id') else None,
+        "instagram": f"https://instagram.com/{actor['external_ids'].get('instagram_id')}" if actor['external_ids'].get('instagram_id') else None,
+        "facebook": f"https://facebook.com/{actor['external_ids'].get('facebook_id')}" if actor['external_ids'].get('facebook_id') else None,
+    }
+
+    return render(request, "actors/actor_detail.html", {
+        "actor": actor,
+        "movies": actor.get("movie_credits", {}).get("cast", []),
+        "social_links": social_links,
+    })
+

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="https://image.tmdb.org/t/p/w300/{{ actor.profile_path }}" alt="{{ actor.name }}" class="rounded">
+        </div>
+        <div class="col-md-6">
+            <h1>{{ actor.name }}</h1>
+    
+            <p><strong>Date of Birth:</strong> {{ actor.birthday }}</p>
+            <p><strong>Biography:</strong> {{ actor.biography }}</p>
+            {% if social_links %}
+            <div class="social-links mt-3">
+                <h5>Follow {{ actor.name }}</h5>
+                <div class="d-flex gap-3">
+                    {% if social_links.imdb %}
+                        <a href="{{ social_links.imdb }}" target="_blank" class="text-dark">
+                            <i class="fab fa-imdb fa-2x"></i>
+                        </a>
+                    {% endif %}
+                    {% if social_links.twitter %}
+                        <a href="{{ social_links.twitter }}" target="_blank" class="text-primary">
+                            <i class="fab fa-twitter fa-2x"></i>
+                        </a>
+                    {% endif %}
+                    {% if social_links.instagram %}
+                        <a href="{{ social_links.instagram }}" target="_blank" class="text-danger">
+                            <i class="fab fa-instagram fa-2x"></i>
+                        </a>
+                    {% endif %}
+                    {% if social_links.facebook %}
+                        <a href="{{ social_links.facebook }}" target="_blank" class="text-primary">
+                            <i class="fab fa-facebook fa-2x"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        </div> 
+
+        <!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+
+
+    <h3>Movies</h3>
+    <div class="horizontal-scroll-container">
+        <div class="row">
+            <div class="horizontal-scroll-content">
+                {% for movie in movies %}  {# Loop through the actor's movies #}
+                    <div class="col-md-3">
+                        <div class="card mb-4 shadow-sm" style="height: 100%;">
+                            {% if movie.poster_path %}
+                                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
+                                    alt="{{ movie.title }}">
+                            {% else %}
+                                <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
+                                    alt="No Image Available">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <h6 class="card-title">{{ movie.title }}</h6><br>
+                                <div class="btn-wrapper text-center d-flex justify-content-between">
+                                    <a href="{% url 'movies:movie_detail' movie.id %}" class="btn btn-dark btn-sm">Show More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+
+
+        <!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+
+    <h3>Similar Actors</h3>
+    <div class="row">
+        {% for actor in similar_actors %}
+            <div class="col-md-3">
+                <a href="{% url 'actor_detail' actor.id %}">
+                    <img src="https://image.tmdb.org/t/p/w200/{{ actor.profile_path }}" class="img-fluid">
+                    <p>{{ actor.name }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

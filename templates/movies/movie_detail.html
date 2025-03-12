@@ -12,7 +12,13 @@
     <div class="content-container">
         <div class="row">
             <div class="col-md-6">
-                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="{{ movie.title }}">
+                {% if movie.poster_path %}
+                        <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
+                            alt="{{ movie.title }}">
+                        {% else %}
+                        <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
+                            alt="No Image Available">
+                        {% endif %}
             </div>
             <div class="col-md-6">
                 <div>
@@ -150,9 +156,15 @@
 <div class="row">
     {% for actor in cast %}
     <div class="col-sm text-center">
+        {% if actor.profile_path %}
         <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle"
             alt="{{ actor.name }}">
-        <p class="mt-2"><strong>{{ actor.name }}</strong></p>
+            {% else %}
+            <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded-circle"
+                alt="No Image Available">
+            {% endif %}
+        <p class="mt-2"><strong><a href="{% url 'actor_detail' actor.id %}">{{ actor.name }}</a>
+        </strong></p>
         <p class="text-muted">{{ actor.character }}</p>
     </div>
     {% endfor %}
