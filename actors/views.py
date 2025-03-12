@@ -13,6 +13,9 @@ def actor_detail(request, actor_id):
 
     actor = response.json()
 
+    similar_actors = get_similar_actors_by_genre(actor.get("movie_credits", {}))
+
+
     # Extract social media links
     social_links = {
         "imdb": f"https://www.imdb.com/name/{actor['external_ids'].get('imdb_id')}" if actor['external_ids'].get('imdb_id') else None,
@@ -25,5 +28,49 @@ def actor_detail(request, actor_id):
         "actor": actor,
         "movies": actor.get("movie_credits", {}).get("cast", []),
         "social_links": social_links,
+        "similar_actors": similar_actors,
     })
 
+def get_similar_actors_by_genre(movie_credits):
+    """Fetches actors based on shared movie genres."""
+    genre_count = {}
+
+    for movie in movie_credits.get("cast", []):
+        for genre in movie.get("genre_ids", []):
+            genre_count[genre] = genre_count.get(genre, 0) + 1
+
+    # Get the top 2 genres
+    top_genres = sorted(genre_count, key=genre_count.get, reverse=True)[:2]
+
+    if not top_genres:
+        return []
+
+    genre_query = "|".join(map(str, top_genres))  # Format for API query
+    url = f"https://api.themoviedb.org/3/discover/movie?api_key={TMDB_API_KEY}&with_genres={genre_query}"
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return []
+
+    movies = response.json().get("results", [])
+
+    # Extract unique actors from those movies
+    similar_actors = []
+    seen_actor_ids = set()
+
+    for movie in movies[:5]:  # Limit the number of movies checked
+        movie_details_url = f"https://api.themoviedb.org/3/movie/{movie['id']}/credits?api_key={TMDB_API_KEY}"
+        movie_response = requests.get(movie_details_url)
+
+        if movie_response.status_code == 200:
+            cast = movie_response.json().get("cast", [])[:5]  # Limit actors per movie
+            for actor in cast:
+                if actor["id"] not in seen_actor_ids:
+                    similar_actors.append({
+                        "id": actor["id"],
+                        "name": actor["name"],
+                        "profile_path": actor.get("profile_path"),
+                    })
+                    seen_actor_ids.add(actor["id"])
+
+    return similar_actors[:10]  # Limit results
