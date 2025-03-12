@@ -139,20 +139,6 @@
     transition: opacity 1s ease-in-out; /* Smooth transition */
 }
 
-.logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-.logo-image {
-    max-height: 50px; /* Adjust as needed */
-    margin: 0 10px;
-    transition: opacity 1s ease-in-out;
-}
-
 .content-container {
     position: relative;
     z-index: 2; /* Place content above overlay and images */
