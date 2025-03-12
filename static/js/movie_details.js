@@ -39,6 +39,36 @@ function fetchMovieDetails(movieId) {
 }
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    const backdrops = document.querySelectorAll('.backdrop-image');
+    let index = 0;
+
+    function showNextBackdrop() {
+        backdrops.forEach(backdrop => backdrop.style.opacity = 0); // Hide all
+        backdrops[index].style.opacity = 1; // Show current
+        index = (index + 1) % backdrops.length; // Loop through images
+    }
+
+    if(backdrops.length > 0){
+      showNextBackdrop(); // Show initial image
+      setInterval(showNextBackdrop, 5000); // Change image every 5 seconds
+    }
+
+    const logos = document.querySelectorAll('.logo-image');
+    let logoIndex = 0;
+
+    function showNextLogo() {
+        logos.forEach(logo => logo.style.opacity = 0); // Hide all
+        logos[logoIndex].style.opacity = 1; // Show current
+        logoIndex = (logoIndex + 1) % logos.length; // Loop through images
+    }
+
+    if(logos.length > 0){
+      showNextLogo(); // Show initial image
+      setInterval(showNextLogo, 3000); // Change image every 3 seconds
+    }
+});
+
 /**
  * Displays watch providers in the designated container.
  * @param {Array} providers - An array of watch provider objects.
