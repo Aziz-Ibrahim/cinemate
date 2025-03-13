@@ -161,21 +161,6 @@ def get_movie_images(movie_id):
         print(f"Error fetching movie images: {e}")
         return {} # Return an empty dictionary in case of an error
 
-# def get_movie_details(movie_id):
-#     """
-#     fetches all movie details. replace with your api call.
-#     """
-#     api_key = "TMDB_API_KEY" #replace with your api key
-#     url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&append_to_response=credits,watch/providers"
-
-#     try:
-#         response = requests.get(url)
-#         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-#         return response.json()
-#     except requests.exceptions.RequestException as e:
-#         print(f"Error fetching movie details: {e}")
-#         return {}
-
 
 def movie_detail_api(request, movie_id):
     """

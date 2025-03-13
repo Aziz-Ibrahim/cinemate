@@ -180,6 +180,33 @@ function appendMoviesToDOM(movies) {
 }
 
 /**
+ * Adds a "Back to Top" button that appears when the user scrolls down.
+ * The button smoothly scrolls the page back to the top when clicked.
+ *
+ * Behavior:
+ * - Listens for the DOM to fully load.
+ * - Shows the button when the user scrolls down 300px or more.
+ * - Hides the button when the user scrolls above 300px.
+ * - Smoothly scrolls to the top when the button is clicked.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    const backToTopButton = document.getElementById("back-to-top");
+
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > 300) {
+            backToTopButton.style.display = "flex";
+        } else {
+            backToTopButton.style.display = "none";
+        }
+    });
+
+    backToTopButton.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});
+
+
+/**
  * Retrieves the value of a cookie by name.
  * @param {string} name - The name of the cookie to retrieve.
  * @returns {string|null} - The cookie value or null if not found.
