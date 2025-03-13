@@ -1,9 +1,19 @@
-/* Universal */
+/* Google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Chokokutai&family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Galindo&family=Kalam:wght@300;400;700&family=LXGW+WenKai+Mono+TC&family=Luckiest+Guy&family=Outfit:wght@100..900&family=Sora:wght@100..800&family=Stick&display=swap');
 
+
+/* Universal */
 *{
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+}
+
+body {
+    font-family: 'Exo 2', sans-serif;
+    line-height: 1.6;
+    background: #f4f4f4;
+    color: #333;
 }
 
 /* Base */
@@ -198,7 +208,7 @@
 
 .carousel-control-prev,
 .carousel-control-next {
-  background-color: rgba(255, 255, 255, 0.2); /* Optional: Very light background */
+  background-color: rgba(255, 255, 255, 0.2); /* Very light background */
 }
 
 /* Similar movies section */
@@ -215,6 +225,6 @@
 .horizontal-scroll-content .col-md-3 {
     display: inline-block; /* Make each movie card inline-block */
     float: none; /* Prevent cards from floating */
-    margin-right: 10px; /* Adjust spacing as needed */
+    margin-right: 10px; /* Add spacing */
     width: auto; /* Allow cards to take their natural width */
 }
