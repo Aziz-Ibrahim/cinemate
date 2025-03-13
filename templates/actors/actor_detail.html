@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6">
-            <img src="https://image.tmdb.org/t/p/w300/{{ actor.profile_path }}" alt="{{ actor.name }}" class="card-img-top">
+            <img src="https://image.tmdb.org/t/p/w300/{{ actor.profile_path }}" alt="{{ actor.name }}" class="card-img-top rounded">
         </div>
         <div class="col-md-6">
             <h1>{{ actor.name }}</h1>
@@ -88,7 +88,7 @@
                     {% else %}
                         <p style="color: red;">Error: Missing actor ID!</p> <!-- Display an error message if the actor ID is missing -->
                     {% endif %}
-                        <img src="https://image.tmdb.org/t/p/w200/{{ actor.profile_path }}" class="img-fluid">
+                        <img src="https://image.tmdb.org/t/p/w200/{{ actor.profile_path }}" class="img-fluid rounded" alt="{{ actor.name }}">
                         <p>{{ actor.name }}</p>
                     {% if actor.id %}  
                         </a>  
