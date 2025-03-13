@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import FavoriteMovie
+from .models import FavoriteMovie, Profile
 
 
 
@@ -16,16 +16,32 @@ from .models import FavoriteMovie
 def home(request):
     return render(request, "users/home.html")
 
+
 class RegisterView(CreateView):
+    """
+    Handles user registration using Django's built-in CreateView.
+    Automatically creates a user profile and logs in the user after registration.
+    """
     template_name = "users/register.html"
     form_class = RegisterForm
     success_url = reverse_lazy("home")  # Redirect after successful registration
 
     def form_valid(self, form):
+        """
+        Process valid form submission:
+        - Saves the user instance
+        - Creates a Profile with the selected country
+        - Logs in the user automatically
+        """
         user = form.save(commit=False)  # Don't save to DB yet
         user.first_name = form.cleaned_data["first_name"]
         user.last_name = form.cleaned_data["last_name"]
-        user.save()  # Now save the user with first & last name
+        user.save()  # Save user first
+
+        # Assign country to the user's profile
+        country = form.cleaned_data.get("country")
+        Profile.objects.create(user=user, country=country)
+
         login(self.request, user)  # Log in the user automatically
         return super().form_valid(form)
 

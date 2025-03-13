@@ -34,8 +34,21 @@
                 <div>
                     <h3>Where to Watch</h3>
                     {% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
-                        <div class="d-flex flex-wrap justify-content-start">
-                            <div class="provider-logo">
+                    <div class="d-flex flex-wrap justify-content-start">
+                        
+                        {% if watch_providers.flatrate %}
+                            <div class="provider-logo me-3">
+                                <p>Stream:</p>
+                                {% for provider in watch_providers.flatrate %}
+                                    <a href="{{ provider.link }}" target="_blank" class="provider-logo">
+                                        <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                
+                        {% if watch_providers.buy %}
+                            <div class="provider-logo me-3">
                                 <p>Buy:</p>
                                 {% for provider in watch_providers.buy %}
                                     <a href="{{ provider.link }}" target="_blank" class="provider-logo">
@@ -43,6 +56,9 @@
                                     </a>
                                 {% endfor %}
                             </div>
+                        {% endif %}
+                
+                        {% if watch_providers.rent %}
                             <div class="provider-logo">
                                 <p>Rent:</p>
                                 {% for provider in watch_providers.rent %}
@@ -51,10 +67,13 @@
                                     </a>
                                 {% endfor %}
                             </div>
-                        </div>
-                    {% else %}
-                        <p>No streaming providers available for this movie.</p>
-                    {% endif %}
+                        {% endif %}
+                
+                    </div>
+                {% else %}
+                    <p>No streaming providers available for this movie in your country.</p>
+                {% endif %}
+                
                 </div>
             </div>
         </div>

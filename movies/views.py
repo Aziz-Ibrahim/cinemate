@@ -114,39 +114,41 @@ def get_movie_details(movie_id):
 def movie_detail(request, movie_id):
     """
     Fetch movie details, including images (backdrops and logos), and display them on the movie detail page.
-    Includes reviews, cast, and watch providers.
+    Includes reviews, cast, and watch providers based on the user's country.
     """
     print(f"DEBUG: Fetching details for TMDB Movie ID: {movie_id}")  # Debugging log
 
-    # Fetch movie details from your API (replace with your actual API call)
-    movie = get_movie_details(movie_id) #your function that fetches movie details from api.
+    # Fetch movie details
+    movie = get_movie_details(movie_id)
     if not movie:
         return render(request, "movies/movie_not_found.html", {"movie_id": movie_id})
 
     # Fetch images (backdrops and logos)
     images = get_movie_images(movie_id)
     backdrops = images.get("backdrops", [])
-    logos = []
-    for image in images.get("logos", []):
-        if image.get("iso_639_1") == "en":
-            logos.append(image)
+    logos = [image for image in images.get("logos", []) if image.get("iso_639_1") == "en"]
 
-    watch_providers_data = movie.get("watch/providers", {}).get("results", {}).get("GB", {})
+    # Get the user's country if logged in, otherwise default to "GB" (United Kingdom)
+    user_country = "GB"
+    if request.user.is_authenticated and hasattr(request.user, "profile"):
+        user_country = request.user.profile.country.code  # If `profile.country` is a CountryField
+
+    # Fetch watch providers based on the user's country
+    watch_providers_data = movie.get("watch/providers", {}).get("results", {}).get(user_country, {})
     watch_providers = {}
+    
+    for provider_type in ["flatrate","buy", "rent"]:
+        providers_list = watch_providers_data.get(provider_type, [])
+        for provider in providers_list:
+            provider["link"] = f"https://www.themoviedb.org/movie/{movie_id}/watch"  # Generic TMDB JustWatch link
+        watch_providers[provider_type] = providers_list
 
     # Retrieve reviews for the movie
     reviews = Review.objects.filter(movie_id=movie_id).order_by("-created_at")
     review_form = ReviewForm()
 
-    # Extract relevant movie data safely
-    # Add a generic JustWatch link for each provider
-    for provider_type in ["buy", "rent"]:
-        providers_list = watch_providers_data.get(provider_type, [])
-        for provider in providers_list:
-            provider["link"] = f"https://www.themoviedb.org/movie/{movie_id}/watch"  # Generic TMDB JustWatch link
-        watch_providers[provider_type] = providers_list
-    # Add cast members
-    cast = movie.get("credits", {}).get("cast", [])[:10]  # Limit to top 10 cast members
+    # Fetch cast members (limit to top 10)
+    cast = movie.get("credits", {}).get("cast", [])[:10]
 
     return render(request, "movies/movie_detail.html", {
         "movie": movie,
@@ -157,6 +159,7 @@ def movie_detail(request, movie_id):
         "backdrops": backdrops,
         "logos": logos,
     })
+
 
 def get_movie_images(movie_id):
     """
