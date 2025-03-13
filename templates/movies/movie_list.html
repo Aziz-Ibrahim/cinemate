@@ -8,7 +8,7 @@
         <div class="col-md-6">
             <form method="get" action="{% url 'movies:movie_list' %}">
                 <div class="input-group">
-                    <input type="text" class="form-control" name="search" value="{{ search_query }}"
+                    <input type="text" class="form-control" name="search" value="{{ search_query|default_if_none:'' }}"
                         placeholder="Search movies">
                     <button class="btn btn-dark" type="submit">Search</button>
                 </div>

@@ -20,6 +20,18 @@ def get_movie_genres():
     return response.json().get("genres", [])
 
 
+def trending_movies(request):
+    """Fetches trending movies from TMDB and renders the trending page."""
+    url = f"https://api.themoviedb.org/3/trending/movie/week?api_key={TMDB_API_KEY}"
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return render(request, "movies/trending.html", {"movies": []})
+
+    movies = response.json().get("results", [])
+
+    return render(request, "movies/trending.html", {"movies": movies})
+
 @login_required
 def movie_list(request):
     """
