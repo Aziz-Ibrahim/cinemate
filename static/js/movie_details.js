@@ -102,6 +102,79 @@ function displayReviews(reviews) {
         : "<p>No reviews available.</p>";
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Open Edit Modal with existing review data
+    document.querySelectorAll(".edit-review-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const reviewId = this.getAttribute("data-review-id");
+            const reviewText = this.getAttribute("data-review-text");
+            const reviewRating = this.getAttribute("data-review-rating");
+
+            document.getElementById("edit-review-id").value = reviewId;
+            document.getElementById("edit-review-text").value = reviewText;
+            document.getElementById("edit-review-rating").value = reviewRating;
+
+            let modal = new bootstrap.Modal(document.getElementById("editReviewModal"));
+            modal.show();
+        });
+    });
+
+    // Handle Review Update AJAX
+    document.getElementById("editReviewForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const reviewId = document.getElementById("edit-review-id").value;
+        const reviewText = document.getElementById("edit-review-text").value;
+        const reviewRating = document.getElementById("edit-review-rating").value;
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+        fetch(`/reviews/update/${reviewId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ review_text: reviewText, rating: reviewRating })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`review-text-${reviewId}`).textContent = reviewText;
+                let modal = bootstrap.Modal.getInstance(document.getElementById("editReviewModal"));
+                modal.hide();
+            } else {
+                alert("Error updating review.");
+            }
+        });
+    });
+
+    // Handle Review Delete AJAX
+    document.querySelectorAll(".delete-review-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const reviewId = this.getAttribute("data-review-id");
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            if (confirm("Are you sure you want to delete this review?")) {
+                fetch(`/reviews/delete/${reviewId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`review-${reviewId}`).remove();
+                    } else {
+                        alert("Error deleting review.");
+                    }
+                });
+            }
+        });
+    });
+});
+
+
 /**
  * Displays similar movies in the designated container.
  * @param {Array} movies - An array of similar movie objects.

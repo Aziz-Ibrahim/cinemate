@@ -1,6 +1,9 @@
 import requests
+import json
+from django.http import JsonResponse
 from django.conf import settings
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Review
 from .forms import ReviewForm
 
@@ -37,3 +40,28 @@ def submit_review(request, movie_id):
         form = ReviewForm()
     
     return render(request, "reviews/submit_review.html", {"form": form})
+
+
+@login_required
+def update_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        review.review_text = data.get("review_text", review.review_text)
+        review.rating = data.get("rating", review.rating)
+        review.save()
+
+        return JsonResponse({"success": True, "review_text": review.review_text})
+
+    return JsonResponse({"success": False})
+
+@login_required
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+
+    if request.method == "POST":
+        review.delete()
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"success": False})

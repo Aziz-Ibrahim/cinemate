@@ -65,10 +65,10 @@
     <div class="row">
         <!-- Cinemate Reviews -->
         <div class="col-md-6">
-            <h3>Cinemate Reviews</h3>
+            <h4>Cinemate Reviews</h4>
             <div id="reviews">
                 {% for review in reviews %}
-                <div class="review p-3 mb-3 border rounded">
+                <div class="review p-3 mb-3 border rounded" id="review-{{ review.id }}">
                     <div class="d-flex align-items-center mb-2">
                         <a href="{% url 'user_profile' review.user.username %}" class="fw-bold me-2 link-dark text-decoration-none">
                             {{ review.user.username }}
@@ -76,17 +76,30 @@
                         <span class="text-muted">{{ review.created_at|date:"F j, Y" }}</span>
                     </div>
                     {% if review.rating %}
-                    <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
+                    </div>
                     {% endif %}
-                    <p>{{ review.review_text }}</p>
+                    <p id="review-text-{{ review.id }}">{{ review.review_text }}</p>
+        
+                    {% if request.user == review.user %}
+                    <!-- Edit & Delete Buttons -->
+                    <button class="btn btn-sm btn-outline-dark edit-review-btn" data-review-id="{{ review.id }}" data-review-text="{{ review.review_text }}" data-review-rating="{{ review.rating }}">
+                        Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary delete-review-btn" data-review-id="{{ review.id }}">
+                        Delete
+                    </button>
+                    {% endif %}
                 </div>
+                <hr>
                 {% empty %}
-                <p class="text-muted">No reviews yet. Be the first to review!</p>
+                <p>No reviews yet. Be the first to review!</p>
                 {% endfor %}
             </div>
 
             {% if user.is_authenticated %}
-            <h3>Leave a Review</h3>
+            <h4>Leave a Review</h4>
             {% if movie.id %}
             <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
                 {% csrf_token %}
@@ -114,7 +127,7 @@
 
         <!-- TMDB Reviews -->
         <div class="col-md-6">
-            <h3>TMDB Reviews</h3>
+            <h4>TMDB Reviews</h4>
             <div id="tmdb-reviews">
                 {% if movie.reviews.results %}
                 {% for review in movie.reviews.results %}
@@ -204,7 +217,7 @@
         <div class="horizontal-scroll-content d-flex">
             {% for movie in movie.similar.results %}
             <div class="col-md-3">
-                <div class="card mb-4 shadow-sm" style="height: 100%;">
+                <div class="card mb-4 shadow-sm" style="">
                     {% if movie.poster_path %}
                     <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
                     {% else %}
@@ -224,6 +237,38 @@
         </div>
     </div>
 </section>
+
+
+<!-- Edit Review Modal -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editReviewForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit-review-id">
+                    <div class="mb-3">
+                        <label for="edit-review-text" class="form-label">Your Review</label>
+                        <textarea class="form-control" id="edit-review-text" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-review-rating" class="form-label">Your Rating</label>
+                        <select class="form-select" id="edit-review-rating">
+                            {% for value, label in review_form.fields.rating.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-dark">Update Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script src="{% static 'js/movie_details.js' %}"></script>
