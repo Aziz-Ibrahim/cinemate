@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% block extra_head %}
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+{% endblock %}
 
 {% block content %}
 <div class="container details-container">
@@ -77,7 +81,7 @@
                     </div>
                     {% if review.rating %}
                     <div class="d-flex align-items-center mb-2">
-                        <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
+                        <span class="badge bg-warning text-dark">{{ review.rating }}/10</span>
                     </div>
                     {% endif %}
                     <p id="review-text-{{ review.id }}">{{ review.review_text }}</p>
@@ -103,18 +107,39 @@
             {% if movie.id %}
             <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
                 {% csrf_token %}
-                <div class="mb-3">
-                    <label for="rating" class="form-label">Your Rating</label>
-                    <select class="form-select" id="rating" name="rating">
-                        {% for value, label in review_form.fields.rating.choices %}
-                        <option value="{{ value }}" {% if review_form.rating.value == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
+                
+                <!-- Star Rating System -->
+                <fieldset class="rate">
+                    <input type="radio" id="rating10" name="rating" value="10" {% if form.rating.value == "10" %}checked{% endif %}/>
+                    <label for="rating10" title="5 stars"></label>
+                    <input type="radio" id="rating9" name="rating" value="9" {% if form.rating.value == "9" %}checked{% endif %}/>
+                    <label class="half" for="rating9" title="4.5 stars"></label>
+                    <input type="radio" id="rating8" name="rating" value="8" {% if form.rating.value == "8" %}checked{% endif %}/>
+                    <label for="rating8" title="4 stars"></label>
+                    <input type="radio" id="rating7" name="rating" value="7" {% if form.rating.value == "7" %}checked{% endif %}/>
+                    <label class="half" for="rating7" title="3.5 stars"></label>
+                    <input type="radio" id="rating6" name="rating" value="6" {% if form.rating.value == "6" %}checked{% endif %}/>
+                    <label for="rating6" title="3 stars"></label>
+                    <input type="radio" id="rating5" name="rating" value="5" {% if form.rating.value == "5" %}checked{% endif %}/>
+                    <label class="half" for="rating5" title="2.5 stars"></label>
+                    <input type="radio" id="rating4" name="rating" value="4" {% if form.rating.value == "4" %}checked{% endif %}/>
+                    <label for="rating4" title="2 stars"></label>
+                    <input type="radio" id="rating3" name="rating" value="3" {% if form.rating.value == "3" %}checked{% endif %}/>
+                    <label class="half" for="rating3" title="1.5 stars"></label>
+                    <input type="radio" id="rating2" name="rating" value="2" {% if form.rating.value == "2" %}checked{% endif %}/>
+                    <label for="rating2" title="1 star"></label>
+                    <input type="radio" id="rating1" name="rating" value="1" {% if form.rating.value == "1" %}checked{% endif %}/>
+                    <label class="half" for="rating1" title="0.5 stars"></label>
+                </fieldset>
+            
+                <!-- Review Textarea -->
+                <div class="input-group mb-4">
+                    <span class="input-group-text">Your Review</span>
+                    <textarea name="review_text" id="review_text" class="form-control"
+                        aria-label="Write your review here" placeholder="Write your review here">{% if form.review_text.value and form.review_text.value != 'None' %}{{ form.review_text.value }}{% endif %}</textarea>
                 </div>
-                <div class="mb-4">
-                    <label for="review_text" class="form-label">Your Review</label>
-                    <textarea name="review_text" id="review_text" class="form-control" placeholder="Write your review here">{% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}</textarea>
-                </div>
+            
+                <!-- Submit Button -->
                 <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
             {% else %}
@@ -217,7 +242,7 @@
         <div class="horizontal-scroll-content d-flex">
             {% for movie in movie.similar.results %}
             <div class="col-md-3">
-                <div class="card mb-4 shadow-sm" style="">
+                <div class="card mb-4 shadow-sm" style="height: 100%;">
                     {% if movie.poster_path %}
                     <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
                     {% else %}

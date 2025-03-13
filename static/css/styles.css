@@ -1,6 +1,8 @@
 /* Google fonts */
 @import url('https://fonts.googleapis.com/css2?family=Chokokutai&family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Galindo&family=Kalam:wght@300;400;700&family=LXGW+WenKai+Mono+TC&family=Luckiest+Guy&family=Outfit:wght@100..900&family=Sora:wght@100..800&family=Stick&display=swap');
 
+/* FontAwesome */
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 
 /* Universal */
 *{
@@ -195,6 +197,52 @@ body {
 .provider-logo:hover {
     transform: scale(1.1);
 }
+
+/* Review form */
+
+/* Ratings widget */
+.rate {
+    display: flex; /* Align stars in a row */
+    flex-direction: row-reverse; /* Keep right-to-left order */
+    justify-content: center;
+    gap: 0px; /* Adjust spacing */
+}
+
+.rate > label {
+    float: none; /* Remove float */
+    position: relative;
+}
+/* Hide radio */
+.rate > input {
+    display: none;
+}
+
+/* The star of the show */
+.rate > label:before {
+    display: inline-block;
+    font-size: 1.1rem;
+    padding: .3rem .2rem;
+    margin: 0;
+    cursor: pointer;
+    font-family: FontAwesome;
+    content: "\f005 "; /* full star */
+}
+/* Half star trick */
+.rate .half:before {
+    content: "\f089 "; /* half star no outline */
+    position: absolute;
+    padding-right: 0;
+}
+/* Click + hover color */
+input:checked ~ label, /* color current and previous stars on checked */
+label:hover, label:hover ~ label { color: #ffc107;  } /* color previous stars on hover */
+
+/* Hover highlights */
+input:checked + label:hover, input:checked ~ label:hover, /* highlight current and previous stars */
+input:checked ~ label:hover ~ label, /* highlight previous selected stars for new rating */
+label:hover ~ input:checked ~ label /* highlight previous selected stars */ { color: #ffc107;  }
+
+
 
 /* Trailers section */
 .carousel-control-prev-icon,

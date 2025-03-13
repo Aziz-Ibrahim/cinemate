@@ -9,13 +9,17 @@ from .forms import ReviewForm
 
 TMDB_API_KEY = settings.TMDB_API_KEY
 
+@login_required
 def submit_review(request, movie_id):
+    # Check if user already has a review for this movie
+    existing_review = Review.objects.filter(movie_id=movie_id, user=request.user).first()
+
     if request.method == "POST":
-        form = ReviewForm(request.POST)
+        form = ReviewForm(request.POST, instance=existing_review)  # Prefill if exists
         if form.is_valid():
             review = form.save(commit=False)
             review.user = request.user
-            review.movie_id = movie_id
+            review.movie_id = movie_id  # Store movie ID from TMDB
             review.save()
 
             # Convert rating to TMDB’s scale (1-5 → 2-10)
@@ -24,7 +28,7 @@ def submit_review(request, movie_id):
             # Send rating to TMDB
             tmdb_url = f"https://api.themoviedb.org/3/movie/{movie_id}/rating"
             headers = {
-                "Authorization": f"Bearer {TMDB_API_KEY}",
+                "Authorization": f"Bearer {settings.TMDB_API_KEY}",
                 "Content-Type": "application/json"
             }
             payload = {"value": user_rating}
@@ -37,9 +41,9 @@ def submit_review(request, movie_id):
 
             return redirect("movies:movie_detail", movie_id=movie_id)
     else:
-        form = ReviewForm()
-    
-    return render(request, "reviews/submit_review.html", {"form": form})
+        form = ReviewForm(instance=existing_review)  # Prefill form with existing review
+
+    return render(request, "movies/movie_detail.html", {"form": form, "movie_id": movie_id})
 
 
 @login_required

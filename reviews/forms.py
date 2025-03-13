@@ -1,13 +1,11 @@
 from django import forms
 from .models import Review
-from django import forms
-from .models import Review
 
 class ReviewForm(forms.ModelForm):
+    RATING_CHOICES = [(i, f"{i}/10") for i in range(0, 11)]  # 0 to 10
+
+    rating = forms.ChoiceField(choices=RATING_CHOICES, widget=forms.RadioSelect)
+
     class Meta:
         model = Review
-        fields = ["review_text", "rating"]
-        widgets = {
-            "rating": forms.Select(attrs={"class": "form-select"}),
-            "review_text": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Write your review here"}),
-        }
+        fields = ["rating", "review_text"]
