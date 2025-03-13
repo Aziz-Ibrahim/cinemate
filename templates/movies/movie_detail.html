@@ -59,11 +59,10 @@
 <!-- Horizontal Line -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
-<!-- Reviews -->
-<div class="container">
+<!-- Reviews Section -->
+<section class="container mt-4">
+    <h2 class="display-4 text-center">Movie Reviews</h2>
     <div class="row">
-        <h2 class="display-4 text-center">Movie Reviews</h2>
-
         <!-- Cinemate Reviews -->
         <div class="col-md-6">
             <h3>Cinemate Reviews</h3>
@@ -71,20 +70,18 @@
                 {% for review in reviews %}
                 <div class="review p-3 mb-3 border rounded">
                     <div class="d-flex align-items-center mb-2">
-                        <a href="{% url 'user_profile' review.user.username %}" class="fw-bold me-2 link-dark text-decoration-none">{{
-                            review.user.username }}</a>
+                        <a href="{% url 'user_profile' review.user.username %}" class="fw-bold me-2 link-dark text-decoration-none">
+                            {{ review.user.username }}
+                        </a>
                         <span class="text-muted">{{ review.created_at|date:"F j, Y" }}</span>
                     </div>
                     {% if review.rating %}
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
-                    </div>
+                    <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
                     {% endif %}
                     <p>{{ review.review_text }}</p>
                 </div>
-                <hr>
                 {% empty %}
-                <p>No reviews yet. Be the first to review!</p>
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
                 {% endfor %}
             </div>
 
@@ -93,136 +90,141 @@
             {% if movie.id %}
             <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
                 {% csrf_token %}
-                <div class="input-group mb-3">
-                    <label class="input-group-text" for="rating">Your Rating</label>
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Your Rating</label>
                     <select class="form-select" id="rating" name="rating">
                         {% for value, label in review_form.fields.rating.choices %}
                         <option value="{{ value }}" {% if review_form.rating.value == value %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="input-group mb-4">
-                    <span class="input-group-text">Your review</span>
-                    <textarea name="review_text" id="review_text" class="form-control"
-                        aria-label="Write your review here" placeholder="Write your review here">
-                    {% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}
-                    </textarea>
+                <div class="mb-4">
+                    <label for="review_text" class="form-label">Your Review</label>
+                    <textarea name="review_text" id="review_text" class="form-control" placeholder="Write your review here">{% if review_form.review_text.value %}{{ review_form.review_text.value }}{% endif %}</textarea>
                 </div>
                 <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
             {% else %}
-            <p>Error: Movie ID is missing. Review cannot be submitted.</p>
+            <p class="text-danger">Error: Movie ID is missing. Review cannot be submitted.</p>
             {% endif %}
             {% else %}
             <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
             {% endif %}
         </div>
 
-
         <!-- TMDB Reviews -->
         <div class="col-md-6">
-            {% if movie.reviews.results %}
-            <h3>TMDB Reviews:</h3>
+            <h3>TMDB Reviews</h3>
             <div id="tmdb-reviews">
+                {% if movie.reviews.results %}
                 {% for review in movie.reviews.results %}
                 <div class="tmdb-review p-3 mb-3 border rounded">
                     <div class="d-flex align-items-center mb-2">
                         <a href="https://www.themoviedb.org/u/{{ review.author }}" target="_blank" class="fw-bold me-2 link-dark text-decoration-none">
                             {{ review.author }}
                         </a>
-                        <span>{{ review.created_at|date:"F j, Y" }}</span>
+                        <span class="text-muted">{{ review.created_at|date:"F j, Y" }}</span>
                     </div>
                     {% if review.author_details.rating %}
-                    <div class="d-flex">
-                        <span class="badge bg-warning text-dark"> {{ review.author_details.rating }}/10</span>
-                    </div>
+                    <span class="badge bg-warning text-dark">{{ review.author_details.rating }}/10</span>
                     {% endif %}
                     <p>{{ review.content|truncatewords:20 }}</p>
                 </div>
                 {% endfor %}
                 {% else %}
-                <p>No TMDB reviews available.</p>
+                <p class="text-muted">No reviews available.</p>
                 {% endif %}
             </div>
         </div>
     </div>
-</div>
+</section>
+
 <!-- Horizontal Line -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
-<!-- Cast -->
-<h3>Cast:</h3>
-<div class="row">
-    {% for actor in cast %}
-    <div class="col-sm text-center">
-        {% if actor.profile_path %}
-        <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle"
-            alt="{{ actor.name }}">
+
+<!-- Cast Section -->
+<section class="container">
+    <h3>Cast</h3>
+    <div class="row text-center">
+        {% for actor in cast %}
+        <div class="col-sm">
+            {% if actor.profile_path %}
+            <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle" alt="{{ actor.name }}">
             {% else %}
-            <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded-circle"
-                alt="No Image Available">
+            <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded-circle" alt="No Image Available">
             {% endif %}
-        <p class="mt-2"><strong><a href="{% url 'actor_detail' actor.id %}" class="link-dark">{{ actor.name }}</a>
-        </strong></p>
-        <p class="text-muted">{{ actor.character }}</p>
-    </div>
-    {% endfor %}
-</div>
-
-<!-- Horizontal Line -->
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
-
-<!--  Videos (Trailers) -->
-<div id="trailerCarousel" class="carousel slide">
-    <div class="carousel-inner">
-        <h3>Trailers:</h3>
-        {% for video in movie.videos.results %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %} text-center">
-            <iframe width="70%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0"
-                allowfullscreen>
-            </iframe>
+            <p class="mt-2">
+                <strong><a href="{% url 'actor_detail' actor.id %}" class="link-dark">{{ actor.name }}</a></strong>
+            </p>
+            <p class="text-muted">{{ actor.character }}</p>
         </div>
-
+        {% empty %}
+        <p class="text-muted">No cast information available.</p>
         {% endfor %}
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#trailerCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#trailerCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
+</section>
 
 <!-- Horizontal Line -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
-<!-- Similar Movies -->
-<h3>Similar Movies</h3>
-<div class="horizontal-scroll-container">
-    <div class="horizontal-scroll-content">
-        {% for movie in movie.similar.results %}
-        <div class="col-md-3">
-            <div class="card mb-4 shadow-sm" style="height: 100%;">
-                {% if movie.poster_path %}
-                <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
-                    alt="{{ movie.title }}">
-                {% else %}
-                <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
-                    alt="No Image Available">
-                {% endif %}
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <h6 class="card-title">{{ movie.title }}</h6><br>
-                    <div class="btn-wrapper text-center d-flex justify-content-between">
-                        <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">Show More</a>
+<!-- Trailers Section -->
+<section class="container">
+    <h3>Trailers</h3>
+    {% if movie.videos.results %}
+    <div id="trailerCarousel" class="carousel slide">
+        <div class="carousel-inner">
+            {% for video in movie.videos.results %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %} text-center">
+                <iframe width="70%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0" allowfullscreen></iframe>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#trailerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#trailerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    {% else %}
+    <p class="text-muted">No trailers available.</p>
+    {% endif %}
+</section>
+
+<!-- Horizontal Line -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+
+<!-- Similar Movies Section -->
+<section class="container">
+    <h3>Similar Movies</h3>
+    <div class="horizontal-scroll-container">
+        <div class="horizontal-scroll-content d-flex">
+            {% for movie in movie.similar.results %}
+            <div class="col-md-3">
+                <div class="card mb-4 shadow-sm" style="height: 100%;">
+                    {% if movie.poster_path %}
+                    <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                    {% else %}
+                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top" alt="No Image Available">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h6 class="card-title">{{ movie.title }}</h6>
+                        <div class="btn-wrapper text-center d-flex justify-content-between">
+                            <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">Show More</a>
+                        </div>
                     </div>
                 </div>
             </div>
+            {% empty %}
+            <p class="text-muted">No similar movies found.</p>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
+</section>
+
 
 <script src="{% static 'js/movie_details.js' %}"></script>
 
