@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from users.models import FavoriteMovie
 from reviews.models import Review
 from reviews.forms import ReviewForm
+from users.models import Profile
 
 # Constants for TMDB API
 TMDB_API_KEY = settings.TMDB_API_KEY
@@ -103,12 +104,11 @@ def get_movie_details(movie_id):
         "append_to_response": "credits,watch/providers,videos,reviews,similar"
     }
     response = requests.get(url, params=params)
-
+    
     if response.status_code == 200:
         return response.json()
     
     return None  # Return None if the movie is not found
-
 
 
 def movie_detail(request, movie_id):
@@ -116,7 +116,7 @@ def movie_detail(request, movie_id):
     Fetch movie details, including images (backdrops and logos), and display them on the movie detail page.
     Includes reviews, cast, and watch providers based on the user's country.
     """
-    print(f"DEBUG: Fetching details for TMDB Movie ID: {movie_id}")  # Debugging log
+    print("DEBUG: movie_detail view is running")
 
     # Fetch movie details
     movie = get_movie_details(movie_id)
@@ -129,19 +129,28 @@ def movie_detail(request, movie_id):
     logos = [image for image in images.get("logos", []) if image.get("iso_639_1") == "en"]
 
     # Get the user's country if logged in, otherwise default to "GB" (United Kingdom)
-    user_country = "GB"
-    if request.user.is_authenticated and hasattr(request.user, "profile"):
-        user_country = request.user.profile.country.code  # If `profile.country` is a CountryField
+    user_country = "GB"  # Default country
+    if request.user.is_authenticated:
+        try:
+            user_country = request.user.profile.country.code or "GB"  # ✅ Ensure fallback
+            print(f"DEBUG: Logged-in user's country is {user_country}")
+        except Profile.DoesNotExist:
+            print("WARNING: User has no profile, defaulting to 'GB'")
 
     # Fetch watch providers based on the user's country
     watch_providers_data = movie.get("watch/providers", {}).get("results", {}).get(user_country, {})
+    print(f"DEBUG: Checking watch providers for country: {user_country}")
+    print(f"DEBUG: Available countries: {list(movie.get('watch/providers', {}).get('results', {}).keys())}")
+
     watch_providers = {}
-    
-    for provider_type in ["flatrate","buy", "rent"]:
+    for provider_type in ["flatrate", "buy", "rent"]:
         providers_list = watch_providers_data.get(provider_type, [])
         for provider in providers_list:
             provider["link"] = f"https://www.themoviedb.org/movie/{movie_id}/watch"  # Generic TMDB JustWatch link
         watch_providers[provider_type] = providers_list
+
+    if not any(watch_providers.values()):
+        print(f"WARNING: No watch providers found for country {user_country}")
 
     # Retrieve reviews for the movie
     reviews = Review.objects.filter(movie_id=movie_id).order_by("-created_at")
@@ -158,6 +167,7 @@ def movie_detail(request, movie_id):
         "cast": cast,
         "backdrops": backdrops,
         "logos": logos,
+        "user_country": user_country,  # Pass user country for debugging in template
     })
 
 
