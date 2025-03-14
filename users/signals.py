@@ -4,16 +4,12 @@ from django.contrib.auth.models import User
 from .models import Profile
 
 @receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    """
-    Signal to create a Profile when a new User is created.
-    """
+def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        print(f"DEBUG: Profile created via signal for {instance.username}")
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
-    """
-    Signal to save the Profile whenever the User instance is updated.
-    """
+    """Save the Profile when the User is saved."""
     instance.profile.save()

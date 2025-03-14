@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import FavoriteMovie, Profile
+from django.contrib import messages
 
 
 
@@ -24,7 +25,7 @@ class RegisterView(CreateView):
     """
     template_name = "users/register.html"
     form_class = RegisterForm
-    success_url = reverse_lazy("home")  # Redirect after successful registration
+    success_url = reverse_lazy("login")  # Redirect after successful registration
 
     def form_valid(self, form):
         """
@@ -32,18 +33,26 @@ class RegisterView(CreateView):
         - Saves the user instance
         - Creates a Profile with the selected country
         - Logs in the user automatically
+        - Redirects to the login page
         """
-        user = form.save(commit=False)  # Don't save to DB yet
-        user.first_name = form.cleaned_data["first_name"]
-        user.last_name = form.cleaned_data["last_name"]
-        user.save()  # Save user first
+        print("DEBUG: Form is valid, creating user...")  # Debugging message
+
+        user = form.save()  # Save user immediately
+        print(f"DEBUG: User {user.username} created successfully!")
 
         # Assign country to the user's profile
         country = form.cleaned_data.get("country")
-        Profile.objects.create(user=user, country=country)
+        profile, created = Profile.objects.get_or_create(user=user, defaults={"country": country})
+
+        if created:
+            print(f"DEBUG: Profile created for {user.username} with country {country}")
+        else:
+            print(f"WARNING: Profile already existed for {user.username}")
 
         login(self.request, user)  # Log in the user automatically
-        return super().form_valid(form)
+        print("DEBUG: User logged in successfully, redirecting...")
+
+        return redirect(self.success_url)
 
 
 class CustomLoginView(LoginView):
