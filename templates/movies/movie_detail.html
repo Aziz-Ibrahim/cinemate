@@ -15,18 +15,18 @@
 
     <div class="content-container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6 mb-4 mb-md-0">
                 {% if movie.poster_path %}
-                        <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
-                            alt="{{ movie.title }}">
-                        {% else %}
-                        <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
-                            alt="No Image Available">
-                        {% endif %}
+                    <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="img-fluid rounded"
+                        alt="{{ movie.title }}">
+                {% else %}
+                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded"
+                        alt="No Image Available">
+                {% endif %}
             </div>
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div>
-                    <h1 class="display-1">{{ movie.title }}</h1>
+                    <h1 class="display-4 display-md-1">{{ movie.title }}</h1>
                     <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
                     <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
                     <p><strong>Overview:</strong> {{ movie.overview }}</p>
@@ -34,46 +34,52 @@
                 <div>
                     <h3>Where to Watch</h3>
                     {% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
-                    <div class="d-flex flex-wrap justify-content-start">
-                        
-                        {% if watch_providers.flatrate %}
-                            <div class="provider-logo me-3">
-                                <p>Stream:</p>
-                                {% for provider in watch_providers.flatrate %}
-                                    <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-                                        <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
-                                    </a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                
-                        {% if watch_providers.buy %}
-                            <div class="provider-logo me-3">
-                                <p>Buy:</p>
-                                {% for provider in watch_providers.buy %}
-                                    <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-                                        <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
-                                    </a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                
-                        {% if watch_providers.rent %}
-                            <div class="provider-logo">
-                                <p>Rent:</p>
-                                {% for provider in watch_providers.rent %}
-                                    <a href="{{ provider.link }}" target="_blank" class="provider-logo">
-                                        <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
-                                    </a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                
-                    </div>
-                {% else %}
-                    <p>No streaming providers available for this movie in your country.</p>
-                {% endif %}
-                
+                        <div class="d-flex flex-wrap justify-content-start">
+        
+                            {% if watch_providers.flatrate %}
+                                <div class="provider-logo me-3 mb-2">
+                                    <p>Stream:</p>
+                                    <div class="d-flex flex-wrap">
+                                        {% for provider in watch_providers.flatrate %}
+                                            <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
+                                                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+        
+                            {% if watch_providers.buy %}
+                                <div class="provider-logo me-3 mb-2">
+                                    <p>Buy:</p>
+                                    <div class="d-flex flex-wrap">
+                                        {% for provider in watch_providers.buy %}
+                                            <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
+                                                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+        
+                            {% if watch_providers.rent %}
+                                <div class="provider-logo mb-2">
+                                    <p>Rent:</p>
+                                    <div class="d-flex flex-wrap">
+                                        {% for provider in watch_providers.rent %}
+                                            <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
+                                                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+        
+                        </div>
+                    {% else %}
+                        <p>No streaming providers available for this movie in your country.</p>
+                    {% endif %}
+        
                 </div>
             </div>
         </div>
@@ -205,19 +211,19 @@
     <h3>Cast</h3>
     <div class="row text-center">
         {% for actor in cast %}
-        <div class="col-sm">
-            {% if actor.profile_path %}
-            <img src="https://image.tmdb.org/t/p/w185/{{ actor.profile_path }}" class="img-fluid rounded-circle" alt="{{ actor.name }}">
-            {% else %}
-            <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded-circle" alt="No Image Available">
-            {% endif %}
-            <p class="mt-2">
-                <strong><a href="{% url 'actor_detail' actor.id %}" class="link-dark">{{ actor.name }}</a></strong>
-            </p>
-            <p class="text-muted">{{ actor.character }}</p>
-        </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                {% if actor.profile_path %}
+                    <img src="https://image.tmdb.org/t/p/w92/{{ actor.profile_path }}" class="img-fluid rounded-circle" alt="{{ actor.name }}" style="max-width: 100px;">
+                {% else %}
+                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded-circle" alt="No Image Available" style="max-width: 100px;">
+                {% endif %}
+                <p class="mt-2">
+                    <strong><a href="{% url 'actor_detail' actor.id %}" class="link-dark">{{ actor.name }}</a></strong>
+                </p>
+                <p class="text-muted">{{ actor.character }}</p>
+            </div>
         {% empty %}
-        <p class="text-muted">No cast information available.</p>
+            <p class="text-muted">No cast information available.</p>
         {% endfor %}
     </div>
 </section>
