@@ -1,20 +1,22 @@
 import logging
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.views.generic import CreateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
-from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import FavoriteMovie, Profile
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import User
 from django.contrib import messages
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from django import forms
+from .forms import RegisterForm
+from .models import FavoriteMovie, Profile
 
 
 
-# Create your views here.
+
+# Home view.
 def home(request):
     return render(request, "users/home.html")
 
@@ -24,6 +26,8 @@ def home(request):
 logging.basicConfig(level=logging.DEBUG)  # Configure logging
 logger = logging.getLogger(__name__)  # Get logger for this module
 
+
+#Registeration view
 class RegisterView(CreateView):
     """
     Handles user registration using Django's built-in CreateView.
@@ -60,14 +64,41 @@ class RegisterView(CreateView):
         messages.error(self.request, "There were errors in your form. Please check below.")
         return render(self.request, self.template_name, {"form": form})
 
+#log in view
+
+class CustomLoginForm(forms.Form):
+    identifier = forms.CharField(
+        label="Username or Email",
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter username or email"})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "id": "password-field", "placeholder": "Enter password"})
+    )
+
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
+    authentication_form = None  # Disable default form
 
-    def form_valid(self, form):
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        form = CustomLoginForm(request.POST)
+        if form.is_valid():
+            identifier = form.cleaned_data['identifier']
+            password = form.cleaned_data['password']
 
-    def get_success_url(self):
-        return reverse("profile")
+            # Check if identifier is email or username
+            user = None
+            if User.objects.filter(email=identifier).exists():
+                user = User.objects.get(email=identifier)
+            elif User.objects.filter(username=identifier).exists():
+                user = User.objects.get(username=identifier)
+
+            # Authenticate user
+            if user and authenticate(request, username=user.username, password=password):
+                login(request, user)
+                return redirect("profile")
+
+        return render(request, self.template_name, {"form": form, "error": "Invalid username/email or password."})
+
 
 
 def profile_view(request, username=None):
@@ -89,3 +120,20 @@ def add_favorite_movie(request, movie_id):
         FavoriteMovie.objects.create(user=request.user, movie_id=movie_id)
         return redirect('profile') 
     
+
+@login_required
+def change_password(request):
+    """Allows the user to change their password."""
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keeps user logged in
+            messages.success(request, "✅ Your password has been updated successfully.")
+            return redirect("profile")
+        else:
+            messages.error(request, "❌ Error updating password. Please check the form.")
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, "users/change_password.html", {"form": form})

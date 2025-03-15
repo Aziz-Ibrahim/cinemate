@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django_countries.fields import CountryField
@@ -45,10 +46,30 @@ class RegisterForm(UserCreationForm):
         for field in self.fields.values():
             field.widget.attrs.update({"class": "form-control"})  # Adds Bootstrap styling
 
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'})
+class LoginForm(forms.Form):  # No need to inherit from AuthenticationForm
+    identifier = forms.CharField(
+        label="Username or Email",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter username or email'})
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'})
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        identifier = cleaned_data.get('identifier')
+        password = cleaned_data.get('password')
+
+        # Validate user input (username or email)
+        user = None
+        if User.objects.filter(email=identifier).exists():
+            user = User.objects.get(email=identifier)
+        elif User.objects.filter(username=identifier).exists():
+            user = User.objects.get(username=identifier)
+
+        if user:
+            authenticated_user = authenticate(username=user.username, password=password)
+            if authenticated_user:
+                return cleaned_data
+
+        raise forms.ValidationError("Invalid username/email or password.")
