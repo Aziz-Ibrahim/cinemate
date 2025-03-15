@@ -1,17 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h2>Register</h2>
-            <form method="post" action="{% url 'register' %}">
+            <h2 class="mb-4">Register</h2>
+            <form method="post" action="{% url 'register' %}" class="p-4 rounded shadow-sm">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit">Register</button>
+                <button type="submit" class="btn btn-dark">Register</button>
             </form>
-            
         </div>
     </div>
 </div>
+<script src="{% static 'js/forms.js' %}"></script>
 {% endblock %}
