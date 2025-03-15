@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.views.generic import CreateView
@@ -18,6 +19,11 @@ def home(request):
     return render(request, "users/home.html")
 
 
+
+# Set up logging for debugging
+logging.basicConfig(level=logging.DEBUG)  # Configure logging
+logger = logging.getLogger(__name__)  # Get logger for this module
+
 class RegisterView(CreateView):
     """
     Handles user registration using Django's built-in CreateView.
@@ -25,35 +31,34 @@ class RegisterView(CreateView):
     """
     template_name = "users/register.html"
     form_class = RegisterForm
-    success_url = reverse_lazy("login")  # Redirect after successful registration
+    success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        """
-        Process valid form submission:
-        - Saves the user instance
-        - Creates a Profile with the selected country
-        - Logs in the user automatically
-        - Redirects to the login page
-        """
-        print("DEBUG: Form is valid, creating user...")  # Debugging message
+        logger.debug("✅ DEBUG: Form is valid, creating user...")
 
-        user = form.save()  # Save user immediately
-        print(f"DEBUG: User {user.username} created successfully!")
+        user = form.save()
+        logger.debug(f"✅ DEBUG: User {user.username} created successfully!")
 
-        # Assign country to the user's profile
+        # ✅ Ensure country is stored in Profile
         country = form.cleaned_data.get("country")
-        profile, created = Profile.objects.get_or_create(user=user, defaults={"country": country})
+        profile, created = Profile.objects.get_or_create(user=user)
+        profile.country = country  # ✅ Explicitly set country
+        profile.save()  # ✅ Save profile with country
 
-        if created:
-            print(f"DEBUG: Profile created for {user.username} with country {country}")
-        else:
-            print(f"WARNING: Profile already existed for {user.username}")
+        logger.debug(f"✅ DEBUG: Profile saved with country: {profile.country}")
 
-        login(self.request, user)  # Log in the user automatically
-        print("DEBUG: User logged in successfully, redirecting...")
+        login(self.request, user)
+        messages.success(self.request, "Registration successful! Please log in.")
 
         return redirect(self.success_url)
 
+
+    def form_invalid(self, form):
+        logger.error("❌ DEBUG: Register form is invalid!")
+        logger.error(f"Form Errors: {form.errors}")  # Log errors in the terminal
+        
+        messages.error(self.request, "There were errors in your form. Please check below.")
+        return render(self.request, self.template_name, {"form": form})
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
