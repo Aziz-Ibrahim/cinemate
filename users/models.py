@@ -14,7 +14,7 @@ class Profile(models.Model):
 
 class FavoriteMovie(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    movie_id = models.CharField(max_length=100)
+    movie_id = models.IntegerField()
     title = models.CharField(max_length=255, default="Unknown Movie")
     poster_path = models.CharField(max_length=500, blank=True, null=True)
     release_date = models.CharField(max_length=10, blank=True, null=True)
