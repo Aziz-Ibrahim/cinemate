@@ -35,19 +35,22 @@
                             Movies
                         </a>
                         <ul class="dropdown-menu">
+                            {% if user.is_authenticated %}
                             <li><a class="dropdown-item" href="{% url 'movies:movie_list' %}">Browse All Movies</a></li>
+                            {% endif %}
                             <li><a class="dropdown-item" href="{% url 'movies:trending' %}">Trending Now</a></li>
                         </ul>
                     </li>
-
-                    <!-- Search Icon -->
+    
+                    {% if user.is_authenticated %}
+                    <!-- Search Icon (Only for logged-in users) -->
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
                             <i class="fa-solid fa-search"></i>
                         </a>
                     </li>
-
-                    {% if user.is_authenticated %}
+    
+                    <!-- Profile & Logout for Logged-in Users -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                     </li>
@@ -58,6 +61,7 @@
                         </form>
                     </li>
                     {% else %}
+                    <!-- Login & Register for Guests -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Login</a>
                     </li>
@@ -69,6 +73,7 @@
             </div>
         </div>
     </nav>
+    
 
 
     <!-- Page Content -->
