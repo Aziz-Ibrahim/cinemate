@@ -1,0 +1,1 @@
+web: gunicorn cinemate.wsgi --log-file -
