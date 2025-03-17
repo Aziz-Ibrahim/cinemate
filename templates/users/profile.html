@@ -2,40 +2,53 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>My Profile</h2>
-    <div class="row">
-        <div class="col-md-6"></div>
-        <p><strong>Username:</strong> {{ profile_user.username }}</p>
-        <p><strong>Email:</strong> {{ profile_user.email }}</p>
-        <p><strong>First Name:</strong> {{ profile_user.first_name }}</p>
-        <p><strong>Last Name:</strong> {{ profile_user.last_name }}</p>
-        <p><strong>Country:</strong> {{ profile_user.profile.country }}</p>
-    </div>
-    <div class="col-md-6">
-        <!-- Change Password Button -->
-        {% if profile_user == request.user %}
-        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-            Change Password
-        </button>
-    {% endif %}
-    </div>
+    <section id="user-details">
+        <h2>My Profile</h2>
+        <div class="row">
+            <div class="col-md-6"></div>
+            <p><strong>Username:</strong> {{ profile_user.username }}</p>
+            <p><strong>Email:</strong> {{ profile_user.email }}</p>
+            <p><strong>First Name:</strong> {{ profile_user.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ profile_user.last_name }}</p>
+            <p><strong>Country:</strong> {{ profile_user.profile.country }}</p>
+        </div>
+        <div class="col-md-6">
+            <!-- Change Password Button -->
+            {% if profile_user == request.user %}
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                Change Password
+            </button>
+        {% endif %}
+        </div>
+    </section>
 
     <!-- Horizontal Line -->
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
-    <div class="row">
-        <h4>Favorite Movies</h4>
-        {% if favorite_movies %}
-            <ul>
+    <section id="user-favorites">
+        <div class="row">
+            <h4>Favorite Movies</h4>
+            {% if favorite_movies and favorite_movies|length > 0 %}
                 {% for movie in favorite_movies %}
-                    <li>{{ movie.title }}</li>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <img src="{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <form method="post" action="{% url 'users:remove_from_favorites' movie.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">Remove</button>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <p>No favorite movies yet.</p>
-        {% endif %}
-    </div>
-
+            {% else %}
+                <p>No favorite movies yet.</p>
+            {% endif %}
+        </div>
+    </section>
 </div>
 
 <!-- Change Password Modal -->

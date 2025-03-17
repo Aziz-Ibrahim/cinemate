@@ -115,11 +115,21 @@ def profile_view(request, username=None):
         "favorite_movies": favorite_movies,
     })
 
+@login_required
 def add_favorite_movie(request, movie_id):
+    """Add a movie to the user's favorites."""
     if request.method == "POST":
-        FavoriteMovie.objects.create(user=request.user, movie_id=movie_id)
-        return redirect('profile') 
-    
+        FavoriteMovie.objects.get_or_create(user=request.user, movie_id=movie_id)
+    return redirect('profile')
+
+@login_required
+def remove_favorite_movie(request, movie_id):
+    """Remove a movie from the user's favorites."""
+    if request.method == "POST":
+        favorite_movie = get_object_or_404(FavoriteMovie, user=request.user, movie_id=movie_id)
+        favorite_movie.delete()
+    return redirect('profile')
+
 
 @login_required
 def change_password(request):

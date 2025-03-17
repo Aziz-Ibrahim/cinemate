@@ -7,6 +7,7 @@
 
 {% block content %}
 <div class="container details-container">
+    <!-- Backdrops -->
     {% if backdrops %}
         {% for backdrop in backdrops %}
             <img src="https://image.tmdb.org/t/p/original/{{ backdrop.file_path }}" alt="Backdrop" class="backdrop-image" style="opacity: 0;">
@@ -16,6 +17,7 @@
     <div class="content-container">
         <div class="row">
             <div class="col-12 col-md-6 mb-4 mb-md-0">
+                <!-- Movie poster -->
                 {% if movie.poster_path %}
                     <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="img-fluid rounded"
                         alt="{{ movie.title }}">
@@ -24,18 +26,21 @@
                         alt="No Image Available">
                 {% endif %}
             </div>
+            <!-- Movie details -->
             <div class="col-12 col-md-6">
+                <!-- Overview -->
                 <div>
                     <h1 class="display-4 display-md-1">{{ movie.title }}</h1>
                     <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
                     <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
                     <p><strong>Overview:</strong> {{ movie.overview }}</p>
                 </div>
+                <!-- Watch providers -->
                 <div>
                     <h3>Where to Watch</h3>
                     {% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
                         <div class="d-flex flex-wrap justify-content-start">
-        
+                            <!-- Stream -->
                             {% if watch_providers.flatrate %}
                                 <div class="provider-logo me-3 mb-2">
                                     <p>Stream:</p>
@@ -48,7 +53,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-        
+                            <!-- Buy -->
                             {% if watch_providers.buy %}
                                 <div class="provider-logo me-3 mb-2">
                                     <p>Buy:</p>
@@ -61,7 +66,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-        
+                            <!-- Rent -->
                             {% if watch_providers.rent %}
                                 <div class="provider-logo mb-2">
                                     <p>Rent:</p>
@@ -76,10 +81,30 @@
                             {% endif %}
         
                         </div>
+                    <!-- Fallback -->
                     {% else %}
                         <p>No streaming providers available for this movie in your country.</p>
                     {% endif %}
-        
+                    
+                </div>
+                <!-- Toggle favorites -->
+                <div>
+                    {% if user.is_authenticated %}
+                    <form method="post" 
+                        action="{% if movie.id in user.profile.favorites.values_list('movie_id', flat=True) %}
+                                    {% url 'users:remove_from_favorites' movie.id %}
+                                {% else %}
+                                    {% url 'users:add_to_favorites' movie.id %}
+                                {% endif %}">
+                        {% csrf_token %}
+                        {% if movie.id in user.profile.favorites.values_list('movie_id', flat=True) %}
+                            <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+                
                 </div>
             </div>
         </div>
