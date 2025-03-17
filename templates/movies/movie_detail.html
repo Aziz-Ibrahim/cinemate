@@ -91,13 +91,13 @@
                 <div>
                     {% if user.is_authenticated %}
                     <form method="post" 
-                        action="{% if movie.id in user.profile.favorites.values_list('movie_id', flat=True) %}
+                        action="{% if user.favoritemovie_set.filter(movie_id=movie.id).exists() %}
                                     {% url 'users:remove_from_favorites' movie.id %}
                                 {% else %}
                                     {% url 'users:add_to_favorites' movie.id %}
                                 {% endif %}">
                         {% csrf_token %}
-                        {% if movie.id in user.profile.favorites.values_list('movie_id', flat=True) %}
+                        {% if user.favoritemovie_set.filter(movie_id=movie.id).exists() %}
                             <button type="submit" class="btn btn-danger">Remove from Favorites</button>
                         {% else %}
                             <button type="submit" class="btn btn-primary">Add to Favorites</button>
