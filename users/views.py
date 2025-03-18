@@ -1,4 +1,6 @@
 import logging
+from django.conf import settings
+import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.views import LoginView
@@ -12,8 +14,6 @@ from django.urls import reverse_lazy
 from django import forms
 from .forms import RegisterForm
 from .models import FavoriteMovie, Profile
-
-
 
 
 # Home view.
@@ -115,11 +115,31 @@ def profile_view(request, username=None):
         "favorite_movies": favorite_movies,
     })
 
+def fetch_movie_details(movie_id):
+    """Fetch movie details from TMDB API"""
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}&language=en-US"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    return None
+
 def add_favorite_movie(request, movie_id):
     if request.method == "POST":
-        FavoriteMovie.objects.create(user=request.user, movie_id=movie_id)
-        return redirect('profile') 
-    
+        # Fetch movie details from TMDb API
+        api_url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}"
+        response = requests.get(api_url)
+        movie_data = response.json()
+
+        # Save movie with full poster URL
+        FavoriteMovie.objects.create(
+            user=request.user,
+            movie_id=movie_id,
+            title=movie_data.get("title", "Unknown Movie"),
+            poster_path=f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path', '')}" if movie_data.get("poster_path") else None,
+            release_date=movie_data.get("release_date", ""),
+            rating=movie_data.get("vote_average", None),
+        )
+        return redirect("profile")
 
 @login_required
 def change_password(request):

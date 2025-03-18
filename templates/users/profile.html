@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
@@ -30,11 +31,21 @@
             <h4>Favorite Movies</h4>
             {% if favorite_movies and favorite_movies|length > 0 %}
                 {% for movie in favorite_movies %}
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <img src="{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
-                        <div class="card-body d-flex flex-column">
+                <div class="col-12 col-md-4 col-lg-3 card-deck d-flex">
+                    <div class="card mb-4 shadow-sm" style="height: 100%;">
+                        {% if movie.poster_path %}
+                        <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
+                            alt="{{ movie.title }}">
+                        {% else %}
+                        <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
+                            alt="No Image Available">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column justify-content-between">
                             <h5 class="card-title">{{ movie.title }}</h5>
+                            <p class="card-text">{{ movie.overview|truncatewords:20 }}</p>
+                            <div class="btn-wrapper text-center d-flex justify-content-between">
+                                <a href="{% url 'movies:movie_detail' movie.movie_id %}" class="btn btn-dark mt-auto">Show Details</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -44,6 +55,8 @@
             {% endif %}
         </div>
     </section>
+    
+    
 </div>
 
 <!-- Change Password Modal -->
