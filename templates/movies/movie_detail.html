@@ -35,6 +35,17 @@
                     <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
                     <p><strong>Overview:</strong> {{ movie.overview }}</p>
                 </div>
+                <!-- Favorite Button -->
+            <div class="mt-3">
+                <button class="btn btn-outline-danger favorite-btn" 
+                        data-movie-id="{{ movie.id }}" 
+                        data-title="{{ movie.title }}" 
+                        data-poster-path="{{ movie.poster_path }}" 
+                        data-release-date="{{ movie.release_date }}" 
+                        data-rating="{{ movie.vote_average }}">
+                    <i class="fa-regular fa-heart"></i> Add to Favorites
+                </button>
+            </div>
                 <!-- Watch providers -->
                 <div>
                     <h3>Where to Watch</h3>
@@ -283,6 +294,15 @@
                         <h6 class="card-title">{{ movie.title }}</h6>
                         <div class="btn-wrapper text-center d-flex justify-content-between">
                             <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">Show More</a>
+                            <!-- Favorite Button -->
+                            <button class="btn btn-outline-danger favorite-btn btn-sm"
+                                    data-movie-id="{{ movie.id }}" 
+                                    data-title="{{ movie.title }}" 
+                                    data-poster-path="{{ movie.poster_path }}" 
+                                    data-release-date="{{ movie.release_date }}" 
+                                    data-rating="{{ movie.vote_average }}">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -117,7 +117,7 @@ def profile_view(request, username=None):
 
 def fetch_movie_details(movie_id):
     """Fetch movie details from TMDB API"""
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}&language=en-US"
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()

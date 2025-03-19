@@ -96,7 +96,7 @@ function toggleFavorite() {
     })
         .then(response => response.json())
         .then(data => {
-            this.innerHTML = `<i class="fa fa-heart"></i> ${data.status === "added" ? "Remove from List" : "Add to List"}`;
+            this.innerHTML = `<i class="fa fa-heart"></i> ${data.status === "added" ? "Remove from favorites" : "Add to favorites"}`;
         })
         .catch(error => console.error("Error toggling favorite:", error));
 }
