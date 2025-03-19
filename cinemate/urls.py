@@ -17,10 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users import views as user_views
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
     path("", user_views.home, name="home"),
     path("admin/", admin.site.urls),
+    path("about/", TemplateView.as_view(template_name="about.html"), name="about"),
     path("movies/", include(("movies.urls", "movies"))),  
     path("users/", include("users.urls")), 
     path("reviews/", include(("reviews.urls", "reviews"))),
