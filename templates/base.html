@@ -50,15 +50,9 @@
                         </a>
                     </li>
     
-                    <!-- Profile & Logout for Logged-in Users -->
+                    <!-- Profile -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger">Logout</button>
-                        </form>
                     </li>
                     {% else %}
                     <!-- Login & Register for Guests -->
@@ -69,6 +63,23 @@
                         <a class="nav-link" href="{% url 'register' %}">Register</a>
                     </li>
                     {% endif %}
+                    <!-- About page -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+                    <!-- Contact Page -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">Contact Us</a>
+                    </li>
+                    <!-- Logout for authenticated users -->
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">Logout</button>
+                        </form>
+                    </li>
+                    {% endif %}                    
                 </ul>
             </div>
         </div>

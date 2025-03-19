@@ -73,3 +73,9 @@ class LoginForm(forms.Form):  # No need to inherit from AuthenticationForm
                 return cleaned_data
 
         raise forms.ValidationError("Invalid username/email or password.")
+    
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={"class": "form-control"}))
+    message = forms.CharField(widget=forms.Textarea(attrs={"class": "form-control", "rows": 4}), required=True)

@@ -1,6 +1,7 @@
 import logging
-from django.conf import settings
+import os
 import requests
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -8,12 +9,12 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from django import forms
-from .forms import RegisterForm
+from .forms import RegisterForm, ContactForm
 from .models import FavoriteMovie, Profile
 
 
@@ -178,3 +179,35 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, "users/change_password.html", {"form": form})
+
+
+def contact_view(request):
+    """
+    Handles the contact form submission and sends an email to the site owner.
+    """
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data["name"]
+            email = form.cleaned_data["email"]
+            message = form.cleaned_data["message"]
+
+            subject = f"New Contact Message from {name}"
+            full_message = f"From: {name} ({email})\n\n{message}"
+
+            send_mail(
+                subject,
+                full_message,
+                os.getenv("EMAIL_HOST_USER"),  # Your email
+                [os.getenv("EMAIL_HOST_USER")],  # Receiver (yourself)
+                fail_silently=False,
+            )
+
+            messages.success(request, "Your message has been sent!")
+            return redirect("contact")  # Redirect back to the form
+
+    else:
+        form = ContactForm()  # Empty form for GET request
+
+    return render(request, "users/contact.html", {"form": form})
+
