@@ -26,6 +26,7 @@
     <!-- Horizontal Line -->
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
+    <!-- User's favotite movies -->
     <section id="user-favorites">
         <div class="row">
             <h4>Favorite Movies</h4>
@@ -45,6 +46,9 @@
                             <p class="card-text">{{ movie.overview|truncatewords:20 }}</p>
                             <div class="btn-wrapper text-center d-flex justify-content-between">
                                 <a href="{% url 'movies:movie_detail' movie.movie_id %}" class="btn btn-dark mt-auto">Show Details</a>
+                                <button class="btn btn-danger remove-favorite-btn" data-movie-id="{{ movie.movie_id }}">
+                                    Remove
+                                </button>
                             </div>
                         </div>
                     </div>

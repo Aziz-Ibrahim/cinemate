@@ -74,13 +74,13 @@
                             <div class="btn-wrapper text-center d-flex justify-content-between">
                                 <a href="{% url 'movies:movie_detail' movie.id %}" class="btn btn-dark card-link">Show
                                     More</a>
-                                <button class="btn btn-outline-danger card-link favorite-btn"
+                                <button class="btn btn-outline-danger card-link favorite-btn btn-sm"
                                     data-movie-id="{{ movie.id }}"
                                     data-title="{{ movie.title }}"
                                     data-posterpath="{{ movie.poster_path }}"
                                     data-releasedate="{{ movie.release_date }}"
                                     data-rating="{{ movie.vote_average }}">
-                                    <i class="fa fa-heart"></i> Add to List
+                                    <i class="fa fa-heart"></i> Add to Favorites
                                 </button>
                             </div>
                         </div>

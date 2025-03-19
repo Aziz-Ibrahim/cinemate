@@ -2,6 +2,7 @@ import logging
 from django.conf import settings
 import requests
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
@@ -124,6 +125,7 @@ def fetch_movie_details(movie_id):
     return None
 
 def add_favorite_movie(request, movie_id):
+    """Add a movie to the user's favorites list."""
     if request.method == "POST":
         # Fetch movie details from TMDb API
         api_url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}"
@@ -140,6 +142,25 @@ def add_favorite_movie(request, movie_id):
             rating=movie_data.get("vote_average", None),
         )
         return redirect("profile")
+
+def remove_favorite_movie(request, movie_id):
+    """
+    Handles the removal of a movie from a user's favorites.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request (must be a POST request).
+        movie_id (int): The ID of the movie to remove from the user's favorites.
+
+    Returns:
+        JsonResponse: A JSON response indicating success ("removed") or failure ("error").
+    """
+    print(f"Request received to remove movie {movie_id}")  # Debugging
+    if request.method == "POST":
+        favorite_movie = get_object_or_404(FavoriteMovie, user=request.user, movie_id=movie_id)
+        favorite_movie.delete()
+        return JsonResponse({"status": "removed"})
+    
+    return JsonResponse({"status": "error"}, status=400)
 
 @login_required
 def change_password(request):
