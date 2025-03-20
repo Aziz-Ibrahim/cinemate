@@ -70,6 +70,71 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
+ * Toggle Favorite Movie
+ * @param {string} movieId - The ID of the movie to toggle favorite status.
+ * @param {string} title - The title of the movie.
+ * @param {string} posterPath - The poster path of the movie.
+ * @param {string} releaseDate - The release date of the movie.
+ * @param {string} rating - The rating of the movie.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".favorite-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let movieId = this.dataset.movieId;
+            let title = this.dataset.title;
+            let posterPath = this.dataset.posterPath;
+            let releaseDate = this.dataset.releaseDate;
+            let rating = this.dataset.rating;
+
+            fetch("{% url 'toggle_favorite' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    movie_id: movieId,
+                    title: title,
+                    poster_path: posterPath,
+                    release_date: releaseDate,
+                    rating: rating
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "added") {
+                    this.innerHTML = '<i class="fa-solid fa-heart"></i> Favorited';
+                    this.classList.remove("btn-outline-danger");
+                    this.classList.add("btn-danger");
+                } else if (data.status === "removed") {
+                    this.innerHTML = '<i class="fa-regular fa-heart"></i> Add to Favorites';
+                    this.classList.remove("btn-danger");
+                    this.classList.add("btn-outline-danger");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+});
+
+/**
+ * Function to get CSRF token
+ */ 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        document.cookie.split(";").forEach(cookie => {
+            let trimmedCookie = cookie.trim();
+            if (trimmedCookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(trimmedCookie.substring(name.length + 1));
+            }
+        });
+    }
+    return cookieValue;
+}
+
+
+/**
  * Displays watch providers in the designated container.
  * @param {Array} providers - An array of watch provider objects.
  */
