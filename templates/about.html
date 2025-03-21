@@ -2,31 +2,58 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>About Cinemate</h2>
-    <p>Welcome to <strong>Cinemate</strong>, your go-to platform for discovering and organizing your favorite movies. 
-        Whether you're looking for new recommendations, tracking your watched films, or curating a personal collection, 
-        Cinemate makes it easy and seamless.</p>
+<div class="container">
+    <div class="row about-hero">
 
-    <h3>About the Developer</h3>
-    <p>Hey there! I'm <strong>Aziz Ibrahim</strong>, a passionate developer with a love for movies and web development. 
-        You can check out more of my work on 
-        <a href="https://github.com/Aziz-Ibrahim" target="_blank" aria-label="Developer's GitHub page, opens in a new tab" class="text-dark link-offset-1-hover"> GitHub <i class="fa-brands fa-github"></i></a>.</p>
-
-    <h3>Powered by TMDb</h3>
-    <p>This project is made possible by <a href="https://www.themoviedb.org/" target="_blank" aria-label="The Movie Database official website, opens in a new tab" class="text-dark link-offset-1-hover">The Movie Database (TMDb)</a>, 
-        which provides rich movie data, including posters, ratings, and summaries. 
-        While we use TMDb's API, <strong>Cinemate</strong> is not officially affiliated with or endorsed by TMDb.</p>
-
-    <h3>Features</h3>
-    <ul>
-        <li><strong>Personalized Favorites:</strong> Save and manage your favorite movies.</li>
-        <li><strong>Infinite Scroll Movie List:</strong> Browse an extensive collection effortlessly.</li>
-        <li><strong>Detailed Movie Information:</strong> Access ratings, summaries, and posters.</li>
-        <li><strong>Dynamic User Experience:</strong> Built using Django, JavaScript, and AJAX for a seamless UI.</li>
-    </ul>
-
-    <p>Thank you for using <strong>Cinemate</strong>! If you have feedback or feature suggestions, feel free to reach out by visiting our <a href="{% url 'contact' %}
-        " aria-label="Contact page" class="text-dark link-offset-1-hover"> contact page <i class="fa-solid fa-message"></i></a>.</p>
+    </div>
+    <div class="row mt-5 about-content">
+        <div class="col mt5">
+            <h2>About Cinemate</h2>
+            <p>Welcome to <strong>Cinemate</strong>, your go-to platform for discovering and organizing your favorite movies. 
+                Whether you're looking for new recommendations, tracking your watched films, or curating a personal collection, 
+                Cinemate makes it easy and seamless.</p>
+        </div>
+        
+    <!-- Horizontal Line -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+    
+        <div class="col mt-5">
+            <h3>About the Developer</h3>
+            <p>Hey there! I'm <strong>Aziz Ibrahim</strong>, a passionate developer with a love for movies and web development. 
+                You can check out more of my work on 
+                <a href="https://github.com/Aziz-Ibrahim" target="_blank" aria-label="Developer's GitHub page, opens in a new tab" class="text-dark link-offset-1-hover"> GitHub <i class="fa-brands fa-github"></i></a>.</p>
+        </div>
+        
+    <!-- Horizontal Line -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+    
+        <div class="col mt-5">
+            <h3>Powered by TMDb</h3>
+            <p>This project is made possible by <a href="https://www.themoviedb.org/" target="_blank" aria-label="The Movie Database official website, opens in a new tab" class="text-dark link-offset-1-hover">The Movie Database (TMDb)</a>, 
+                which provides rich movie data, including posters, ratings, and summaries. 
+                While we use TMDb's API, <strong>Cinemate</strong> is not officially affiliated with or endorsed by TMDb.</p>
+        </div>
+        
+    <!-- Horizontal Line -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+    
+        <div class="col mt-5">
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Personalized Favorites:</strong> Save and manage your favorite movies.</li>
+                <li><strong>Infinite Scroll Movie List:</strong> Browse an extensive collection effortlessly.</li>
+                <li><strong>Detailed Movie Information:</strong> Access ratings, summaries, and posters.</li>
+                <li><strong>Dynamic User Experience:</strong> Built using Django, JavaScript, and AJAX for a seamless UI.</li>
+            </ul>
+        </div>
+        
+    <!-- Horizontal Line -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
+    
+        <div class="col mt-5">
+            <p>Thank you for using <strong>Cinemate</strong>! If you have feedback or feature suggestions, feel free to reach out by visiting our <a href="{% url 'contact' %}
+                " aria-label="Contact page" class="text-dark link-offset-1-hover"> contact page <i class="fa-solid fa-message"></i></a>.</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

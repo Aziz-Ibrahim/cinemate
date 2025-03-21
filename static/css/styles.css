@@ -35,7 +35,7 @@ body {
     background-size: cover; /* Resize the image */
     background-repeat: no-repeat;
     background-position: center;
-    height: 500px; /* Adjust as needed */
+    height: 500px;
 }
 
 /* Movie List Page */
@@ -275,4 +275,18 @@ label:hover ~ input:checked ~ label /* highlight previous selected stars */ { co
     float: none; /* Prevent cards from floating */
     margin-right: 10px; /* Add spacing */
     width: auto; /* Allow cards to take their natural width */
+}
+
+
+/* About Page */
+.about-hero {
+    background-image: url('../images/logo-no-background.png');
+    background-size: cover; /* Resize the image */
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 500px;
+}
+
+.about-content {
+    padding: 20px;
 }
