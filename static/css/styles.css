@@ -29,15 +29,6 @@ body {
     border-radius: 10px;
 }
 
-/* Home page */
-.hero {
-    background-image: url('../images/cinemate-hero-img.jpg');
-    background-size: cover; /* Resize the image */
-    background-repeat: no-repeat;
-    background-position: center;
-    height: 500px;
-}
-
 /* Movie List Page */
 
 /* Search and sort section */
@@ -279,13 +270,6 @@ label:hover ~ input:checked ~ label /* highlight previous selected stars */ { co
 
 
 /* About Page */
-.about-hero {
-    background-image: url('../images/logo-no-background.png');
-    background-size: cover; /* Resize the image */
-    background-repeat: no-repeat;
-    background-position: center;
-    height: 500px;
-}
 
 .about-content {
     padding: 20px;
