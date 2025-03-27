@@ -95,7 +95,7 @@ function toggleFavorite(button) {
  * Updates the UI of the favorite button based on favorite status.
  */
 function updateFavoriteButtonUI(button, isFavorite) {
-    button.innerHTML = `<i class="fa-${isFavorite ? "solid" : "regular"} fa-heart"></i> ${isFavorite ? "Remove from Favorites" : "Add to Favorites"}`;
+    button.innerHTML = `<i class="fa-${isFavorite ? "solid" : "regular"} fa-heart"></i> ${isFavorite ? "Remove from Favs" : "Add to Favs"}`;
     button.classList.toggle("btn-danger", isFavorite);
     button.classList.toggle("btn-outline-danger", !isFavorite);
 }
@@ -207,7 +207,7 @@ function appendMoviesToDOM(movies) {
                                 data-rating="${movie.vote_average || '0'}"
                                 data-is-favorite="${isFavorite}">
                             <i class="fa ${isFavorite ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 
-                            ${isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+                            ${isFavorite ? "Remove from Favs" : "Add to Favs"}
                         </button>
                     </div>
                 </div>
