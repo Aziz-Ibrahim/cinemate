@@ -43,7 +43,8 @@
                     data-title="{{ movie.title }}"
                     data-poster-path="{{ movie.poster_path }}"
                     data-release-date="{{ movie.release_date }}"
-                    data-rating="{{ movie.vote_average }}">
+                    data-rating="{{ movie.vote_average }}"
+                    data-is-favorite="{% if is_favorite %}true{% else %}false{% endif %}">
                     <i class="fa {% if movie.id in favorite_movie_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
                     {% if movie.id in favorite_movie_ids %} Remove from Favorites {% else %} Add to Favorites {% endif %}
                 </button>
@@ -66,6 +67,7 @@
                                     </div>
                                 </div>
                             {% endif %}
+                            <br>
                             <!-- Buy -->
                             {% if watch_providers.buy %}
                                 <div class="provider-logo me-3 mb-2">
@@ -79,6 +81,7 @@
                                     </div>
                                 </div>
                             {% endif %}
+                            <br>
                             <!-- Rent -->
                             {% if watch_providers.rent %}
                                 <div class="provider-logo mb-2">
