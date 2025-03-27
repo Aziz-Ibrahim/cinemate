@@ -3,30 +3,34 @@
  * Listens for clicks on elements with the class "remove-favorite-btn"
  * and sends an AJAX request to remove the selected movie.
  */
-document.addEventListener("click", function (event) {
-    if (event.target.classList.contains("remove-favorite-btn")) {
-        console.log("Remove button clicked"); // Debugging
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".remove-favorite-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const movieId = this.dataset.movieId;
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-        const movieId = event.target.dataset.movieId;
-        console.log("Movie ID:", movieId); // Debugging
-
-        fetch(`/movies/remove_favorite/${movieId}/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "Content-Type": "application/json"
+            if (confirm("Are you sure you want to remove this movie from favorites?")) {
+                fetch(`/users/remove_favorite/${movieId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "removed") {
+                        this.closest(".col-12").remove(); // Remove the movie card from the UI
+                    } else {
+                        alert("Failed to remove the movie. Please try again.");
+                    }
+                })
+                .catch(error => console.error("Error removing favorite:", error));
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Response from server:", data); // Debugging
-            if (data.status === "removed") {
-                event.target.closest(".col-12").remove(); // Remove the movie card from UI
-            }
-        })
-        .catch(error => console.error("Error removing favorite:", error));
-    }
+        });
+    });
 });
+
 
 
 /**

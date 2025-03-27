@@ -108,6 +108,9 @@
     </div>
 </div>
 
+<!-- CSRF Token Form -->
+<form id="csrf-form">{% csrf_token %}</form>
+
 <!-- Show Password Toggle Script -->
 <script>
     document.querySelectorAll(".toggle-password").forEach(button => {
@@ -123,4 +126,5 @@
         });
     });
 </script>
+<script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
