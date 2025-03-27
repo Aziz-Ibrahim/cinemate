@@ -74,14 +74,17 @@
                             <div class="btn-wrapper text-center d-flex justify-content-between">
                                 <a href="{% url 'movies:movie_detail' movie.id %}" class="btn btn-dark card-link">Show
                                     More</a>
-                                <button class="btn btn-outline-danger card-link favorite-btn btn-sm"
-                                    data-movie-id="{{ movie.id }}"
-                                    data-title="{{ movie.title }}"
-                                    data-posterpath="{{ movie.poster_path }}"
-                                    data-releasedate="{{ movie.release_date }}"
+                                <button class="btn {% if movie.is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} card-link favorite-btn btn-sm" 
+                                    data-movie-id="{{ movie.id }}" 
+                                    data-title="{{ movie.title }}" 
+                                    data-posterpath="{{ movie.poster_path }}" 
+                                    data-releasedate="{{ movie.release_date }}" 
                                     data-rating="{{ movie.vote_average }}">
-                                    <i class="fa fa-heart"></i> Add to Favorites
+                                    <i class="fa {% if movie.id in favorite_movie_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i> 
+                                    {% if movie.is_favorite %} Remove from Favs {% else %} Add to Favs {% endif %}
                                 </button>
+                                
+                                
                             </div>
                         </div>
                     </div>

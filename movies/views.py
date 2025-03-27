@@ -3,10 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
-from users.models import FavoriteMovie
+from users.models import FavoriteMovie, Profile
 from reviews.models import Review
 from reviews.forms import ReviewForm
-from users.models import Profile
 
 # Constants for TMDB API
 TMDB_API_KEY = settings.TMDB_API_KEY
@@ -38,13 +37,14 @@ def movie_list(request):
     """
     Fetch and display a list of movies.
     Supports search, sorting, genre filtering, and pagination.
+    Includes favorite status for each movie.
     """
     search_query = request.GET.get("search", "").strip()
     sort_by = request.GET.get("sort_by", "popularity.desc")
     genre_id = request.GET.get("genre", "")
     page = int(request.GET.get("page", 1))
 
-    # Fetch movies based on search or general movie list
+    # Fetch movies from TMDb API
     if search_query:
         movies = search_movies(search_query)
         total_pages = 1  # Search results usually return a single page
@@ -55,7 +55,19 @@ def movie_list(request):
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return JsonResponse({"movies": movies, "total_pages": total_pages})
 
+    # Retrieve user's favorite movie IDs
+    favorite_movie_ids = set(
+        FavoriteMovie.objects.filter(user=request.user).values_list("movie_id", flat=True)
+    )
+
+    # Annotate movies with favorite status
+    for movie in movies:
+        movie["is_favorite"] = movie["id"] in favorite_movie_ids  #  ensure  template gets the correct favorite status
+        print(f"Movie: {movie['title']} | ID: {movie['id']} | Favorite: {movie['is_favorite']}")  # Debugging log
+
+
     genres = get_movie_genres()
+
     return render(request, "movies/movie_list.html", {
         "movies": movies,
         "sort_by": sort_by,
@@ -63,6 +75,7 @@ def movie_list(request):
         "selected_genre": int(genre_id) if genre_id else "",
         "search_query": search_query,
     })
+
 
 
 def get_all_movies(sort_by="popularity.desc", genre_id="", page=1):
@@ -111,64 +124,64 @@ def get_movie_details(movie_id):
     return None  # Return None if the movie is not found
 
 
+@login_required
 def movie_detail(request, movie_id):
     """
-    Fetch movie details, including images (backdrops and logos), and display them on the movie detail page.
-    Includes reviews, cast, and watch providers based on the user's country.
+    Fetch movie details and determine if the movie is in the user's favorites.
+    Includes images, reviews, cast, and watch providers.
     """
-    print("DEBUG: movie_detail view is running")
+    print("DEBUG: movie_detail view is running")  # Debugging log
 
     # Fetch movie details
     movie = get_movie_details(movie_id)
     if not movie:
         return render(request, "movies/movie_not_found.html", {"movie_id": movie_id})
 
-    # Fetch images (backdrops and logos)
+    # Check if the movie is in the user's favorites
+    is_favorite = FavoriteMovie.objects.filter(user=request.user, movie_id=movie_id).exists()
+
+    # Fetch additional details
     images = get_movie_images(movie_id)
     backdrops = images.get("backdrops", [])
     logos = [image for image in images.get("logos", []) if image.get("iso_639_1") == "en"]
 
     # Get the user's country if logged in, otherwise default to "GB" (United Kingdom)
-    user_country = "GB"  # Default country
+    user_country = "GB"
     if request.user.is_authenticated:
         try:
-            user_country = request.user.profile.country.code or "GB"  # ✅ Ensure fallback
-            print(f"DEBUG: Logged-in user's country is {user_country}")
+            user_country = request.user.profile.country.code or "GB"
         except Profile.DoesNotExist:
             print("WARNING: User has no profile, defaulting to 'GB'")
 
-    # Fetch watch providers based on the user's country
+    # Fetch watch providers
     watch_providers_data = movie.get("watch/providers", {}).get("results", {}).get(user_country, {})
-    print(f"DEBUG: Checking watch providers for country: {user_country}")
-    print(f"DEBUG: Available countries: {list(movie.get('watch/providers', {}).get('results', {}).keys())}")
+    watch_providers = {
+        provider_type: [
+            {**provider, "link": f"https://www.themoviedb.org/movie/{movie_id}/watch"}
+            for provider in watch_providers_data.get(provider_type, [])
+        ]
+        for provider_type in ["flatrate", "buy", "rent"]
+    }
 
-    watch_providers = {}
-    for provider_type in ["flatrate", "buy", "rent"]:
-        providers_list = watch_providers_data.get(provider_type, [])
-        for provider in providers_list:
-            provider["link"] = f"https://www.themoviedb.org/movie/{movie_id}/watch"  # Generic TMDB JustWatch link
-        watch_providers[provider_type] = providers_list
-
-    if not any(watch_providers.values()):
-        print(f"WARNING: No watch providers found for country {user_country}")
-
-    # Retrieve reviews for the movie
+    # Fetch reviews
     reviews = Review.objects.filter(movie_id=movie_id).order_by("-created_at")
     review_form = ReviewForm()
 
-    # Fetch cast members (limit to top 10)
+    # Fetch top 10 cast members
     cast = movie.get("credits", {}).get("cast", [])[:10]
 
     return render(request, "movies/movie_detail.html", {
         "movie": movie,
+        "is_favorite": is_favorite,
         "reviews": reviews,
         "review_form": review_form,
         "watch_providers": watch_providers,
         "cast": cast,
         "backdrops": backdrops,
         "logos": logos,
-        "user_country": user_country,  # Pass user country for debugging in template
+        "user_country": user_country,
     })
+
 
 
 def get_movie_images(movie_id):
@@ -200,6 +213,19 @@ def movie_detail_api(request, movie_id):
 
     return JsonResponse(movie)  # Return movie data as JSON
 
+
+@login_required
+def get_favorite_movies(request):
+    """Returns a list of movie IDs (integers) that the user has favorited."""
+    user_favorites = FavoriteMovie.objects.filter(user=request.user).values_list('movie_id', flat=True)
+
+    # Convert movie_ids to integers
+    favorite_movie_ids = list(map(int, user_favorites))
+
+    # Debugging print (check if IDs are correctly returned as integers)
+    print("User favorite movies (integers):", favorite_movie_ids)
+
+    return JsonResponse({"favorite_movie_ids": favorite_movie_ids})
 
 @login_required
 def toggle_favorite(request):

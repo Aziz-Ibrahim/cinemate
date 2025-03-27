@@ -37,13 +37,15 @@
                 </div>
                 <!-- Favorite Button -->
             <div class="mt-3">
-                <button class="btn btn-outline-danger favorite-btn" 
-                        data-movie-id="{{ movie.id }}" 
-                        data-title="{{ movie.title }}" 
-                        data-poster-path="{{ movie.poster_path }}" 
-                        data-release-date="{{ movie.release_date }}" 
-                        data-rating="{{ movie.vote_average }}">
-                    <i class="fa-regular fa-heart"></i> Add to Favorites
+                <button class="btn favorite-btn 
+                    {% if movie.id in favorite_movie_ids %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                    data-movie-id="{{ movie.id }}"
+                    data-title="{{ movie.title }}"
+                    data-poster-path="{{ movie.poster_path }}"
+                    data-release-date="{{ movie.release_date }}"
+                    data-rating="{{ movie.vote_average }}">
+                    <i class="fa {% if movie.id in favorite_movie_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+                    {% if movie.id in favorite_movie_ids %} Remove from Favorites {% else %} Add to Favorites {% endif %}
                 </button>
             </div>
                 <!-- Watch providers -->
