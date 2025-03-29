@@ -1,36 +1,3 @@
-/**
- * Initializes various functionalities after the DOM content is fully loaded.
- */
-document.addEventListener("DOMContentLoaded", function () {
-    initializeBackToTopButton();
-    initializeMovieDetails();
-    initializeReviewForm();
-    setupInfiniteScroll();
-    initializeFavoriteButtons();
-    fetch("/movies/get_favorite_movies/")
-    .then(response => response.json())
-    .then(data => {
-        console.log("Fetched favorite IDs:", data.favorite_movie_ids); // Debugging output
-
-        document.querySelectorAll(".favorite-btn").forEach(button => {
-            const movieId = parseInt(button.dataset.movieId);
-            
-            if (isNaN(movieId)) {
-                console.error("Invalid movie ID:", button);
-                return;
-            }
-
-            const isFavorite = data.favorite_movie_ids.includes(movieId);
-            
-            console.log(`Movie ID: ${movieId}, Is Favorite: ${isFavorite}`); // Debugging
-            updateFavoriteButtonUI(button, isFavorite);
-            
-            // Ensure data-is-favorite attribute is updated
-            button.dataset.isFavorite = isFavorite.toString();
-        });
-    })
-    .catch(error => console.error("Error fetching favorites:", error));
-});
 
 /**
  * Adds a "Back to Top" button that appears when the user scrolls down.
@@ -144,40 +111,75 @@ function initializeReviewForm() {
     });
 }
 
+let currentPage = 0;
+let totalPages = Infinity;
+let isFetching = false;
+const fetchedPages = new Set();
+
 /**
- * Enables infinite scroll functionality for loading more movies.
+ * Debounces a function to limit its execution until a certain time has passed
+ * after the last call. Prevents excessive function calls from rapid events.
+ *
+ * @param {Function} func - The function to debounce.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {Function} - A debounced version of the function.
  */
-function setupInfiniteScroll() {
-    let currentPage = 1;
-    let totalPages = Infinity;
-
-    window.addEventListener("scroll", function () {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50 && currentPage < totalPages) {
-            loadMoreMovies();
-        }
-    });
-
-    function loadMoreMovies() {
-        const sortBySelect = document.getElementById("sortSelect");
-        if (!sortBySelect) return;
-
-        fetch(`/movies/?sort_by=${sortBySelect.value}&page=${currentPage + 1}`, {
-            headers: { "X-Requested-With": "XMLHttpRequest" }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.movies.length > 0) {
-                appendMoviesToDOM(data.movies);
-                currentPage++;
-                totalPages = data.total_pages;
-            }
-        })
-        .catch(error => console.error("Error fetching more movies:", error));
-    }
+function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func(...args), delay);
+    };
 }
 
 /**
- * Appends movie cards to the DOM while maintaining the correct favorite button state.
+ * Fetches and appends the next page of movies to the DOM.
+ * Ensures that movies are not duplicated and updates the current page and total pages.
+ */
+function loadMoreMovies() {
+    if (isFetching || currentPage >= totalPages || fetchedPages.has(currentPage + 1)) {
+        console.log(`Skipping fetch: isFetching=${isFetching}, currentPage=${currentPage}, totalPages=${totalPages}, pageFetched=${fetchedPages.has(currentPage + 1)}`);
+        return;
+    }
+
+    isFetching = true;
+    let nextPage = currentPage + 1;
+    fetchedPages.add(nextPage);
+
+    console.log(`Fetching Page ${nextPage}`);
+
+    const sortBySelect = document.getElementById("sortSelect");
+    let sortByValue = "popularity.desc";
+    if (sortBySelect) {
+        sortByValue = sortBySelect.value;
+    }
+
+    fetch(`/movies/?sort_by=${sortByValue}&page=${nextPage}`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.movies.length > 0) {
+            appendMoviesToDOM(data.movies);
+            currentPage = nextPage;
+            totalPages = data.total_pages;
+            console.log(`Page ${nextPage} loaded.`);
+        } else {
+            console.warn(`No movies found for page ${nextPage}`);
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching more movies:", error);
+    })
+    .finally(() => {
+        isFetching = false;
+    });
+}
+
+/**
+ * Appends movie cards to the DOM, creating HTML elements based on the movie data.
+ *
+ * @param {Array} movies - An array of movie objects to append to the DOM.
  */
 function appendMoviesToDOM(movies) {
     const movieContainer = document.querySelector(".row.mt-4");
@@ -211,13 +213,33 @@ function appendMoviesToDOM(movies) {
                         </button>
                     </div>
                 </div>
-            </div>`;
+            </div>
+        `;
 
         movieRow.appendChild(movieCard);
     });
 
     movieContainer.appendChild(movieRow);
     initializeFavoriteButtons();
+}
+
+/**
+ * Sets up infinite scrolling by adding a debounced scroll event listener.
+ * Loads the first page of movies immediately.
+ */
+function setupInfiniteScroll() {
+    console.log("Setting up infinite scrolling...");
+
+    window.addEventListener("scroll", debounce(() => {
+        const scrollThreshold = document.body.offsetHeight - 200;
+        const scrollPosition = window.innerHeight + window.scrollY;
+
+        if (scrollPosition >= scrollThreshold && currentPage < totalPages && !isFetching) {
+            console.log("Triggering loadMoreMovies()");
+            loadMoreMovies();
+        }
+    }, 250));
+    loadMoreMovies();
 }
 
 /**
@@ -229,3 +251,38 @@ function getCookie(name) {
         return cookieValue;
     }, null);
 }
+
+
+/**
+ * Initializes various functionalities after the DOM content is fully loaded.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    initializeBackToTopButton();
+    initializeMovieDetails();
+    initializeReviewForm();
+    setupInfiniteScroll();
+    initializeFavoriteButtons();
+    fetch("/movies/get_favorite_movies/")
+    .then(response => response.json())
+    .then(data => {
+        console.log("Fetched favorite IDs:", data.favorite_movie_ids); // Debugging output
+
+        document.querySelectorAll(".favorite-btn").forEach(button => {
+            const movieId = parseInt(button.dataset.movieId);
+            
+            if (isNaN(movieId)) {
+                console.error("Invalid movie ID:", button);
+                return;
+            }
+
+            const isFavorite = data.favorite_movie_ids.includes(movieId);
+            
+            console.log(`Movie ID: ${movieId}, Is Favorite: ${isFavorite}`); // Debugging
+            updateFavoriteButtonUI(button, isFavorite);
+            
+            // Ensure data-is-favorite attribute is updated
+            button.dataset.isFavorite = isFavorite.toString();
+        });
+    })
+    .catch(error => console.error("Error fetching favorites:", error));
+});

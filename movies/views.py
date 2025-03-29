@@ -63,7 +63,6 @@ def movie_list(request):
     # Annotate movies with favorite status
     for movie in movies:
         movie["is_favorite"] = movie["id"] in favorite_movie_ids  #  ensure  template gets the correct favorite status
-        print(f"Movie: {movie['title']} | ID: {movie['id']} | Favorite: {movie['is_favorite']}")  # Debugging log
 
 
     genres = get_movie_genres()
@@ -92,6 +91,7 @@ def get_all_movies(sort_by="popularity.desc", genre_id="", page=1):
 
     response = requests.get(url, params=params)
     data = response.json()
+    print(f"Fetching Page: {page}, Movies Count: {len(data.get('results', []))}")  # Debugging
     return data.get("results", []), data.get("total_pages", 1)
 
 
@@ -130,8 +130,6 @@ def movie_detail(request, movie_id):
     Fetch movie details and determine if the movie is in the user's favorites.
     Includes images, reviews, cast, and watch providers.
     """
-    print("DEBUG: movie_detail view is running")  # Debugging log
-
     # Fetch movie details
     movie = get_movie_details(movie_id)
     if not movie:
@@ -205,8 +203,6 @@ def movie_detail_api(request, movie_id):
     API endpoint to return movie details in JSON format.
     If the movie is not found, return a 404 error.
     """
-    print(f"DEBUG: Fetching JSON details for TMDB Movie ID: {movie_id}")  # Debugging log
-
     movie = get_movie_details(movie_id)
     if not movie:
         return JsonResponse({"error": "Movie not found"}, status=404)
@@ -221,9 +217,6 @@ def get_favorite_movies(request):
 
     # Convert movie_ids to integers
     favorite_movie_ids = list(map(int, user_favorites))
-
-    # Debugging print (check if IDs are correctly returned as integers)
-    print("User favorite movies (integers):", favorite_movie_ids)
 
     return JsonResponse({"favorite_movie_ids": favorite_movie_ids})
 
@@ -240,15 +233,12 @@ def toggle_favorite(request):
         try:
             movie_id = int(movie_id)
         except ValueError:
-            print("Error: movie_id is not a valid integer.")  # Debugging log
             return JsonResponse({"status": "error"}, status=400)
 
         title = request.POST.get("title")
         poster_path = request.POST.get("poster_path")
         release_date = request.POST.get("release_date")
         rating = request.POST.get("rating")
-
-        print(f"DEBUG: Processing favorite toggle for Movie ID: {movie_id}")  # Debugging log
 
         favorite, created = FavoriteMovie.objects.get_or_create(
             user=request.user,
