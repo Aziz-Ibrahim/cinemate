@@ -167,7 +167,6 @@ Cinemate is a dynamic web application designed to empower movie enthusiasts to d
 | Feature             | Description                                                                 | Status      |
 | :------------------ | :-------------------------------------------------------------------------- | :---------- |
 | Bookmark Movies          | Include bookmarking movies besides adding to favorite               | 🔄 Planned |
-| Display watch providers separately based on type       | Dynamically change display of providers depending on type instead of grouping by type.            | 🔄 Planned |
 | Dark Mode Toggle    | Introduce a dark mode toggle for improved accessibility and user experience. | 🔄 Planned |
 
 ---

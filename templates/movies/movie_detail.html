@@ -53,55 +53,70 @@
                 <div>
                     <h3>Where to Watch</h3>
                     {% if watch_providers.flatrate or watch_providers.buy or watch_providers.rent %}
-                        <div class="d-flex flex-wrap justify-content-start">
-                            <!-- Stream -->
+                        <ul class="nav nav-tabs">
                             {% if watch_providers.flatrate %}
-                                <div class="provider-logo me-3 mb-2">
-                                    <p>Stream:</p>
-                                    <div class="d-flex flex-wrap">
-                                        {% for provider in watch_providers.flatrate %}
-                                            <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
-                                                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                                <li class="nav-item">
+                                    <a class="nav-link link-light active" data-bs-toggle="tab" href="#stream">Stream</a>
+                                </li>
                             {% endif %}
-                            <br>
-                            <!-- Buy -->
                             {% if watch_providers.buy %}
-                                <div class="provider-logo me-3 mb-2">
-                                    <p>Buy:</p>
-                                    <div class="d-flex flex-wrap">
-                                        {% for provider in watch_providers.buy %}
-                                            <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
-                                                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                                <li class="nav-item">
+                                    <a class="nav-link link-light {% if not watch_providers.flatrate %}active{% endif %}" data-bs-toggle="tab" href="#buy">Buy</a>
+                                </li>
                             {% endif %}
-                            <br>
-                            <!-- Rent -->
                             {% if watch_providers.rent %}
-                                <div class="provider-logo mb-2">
-                                    <p>Rent:</p>
-                                    <div class="d-flex flex-wrap">
-                                        {% for provider in watch_providers.rent %}
-                                            <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
-                                                <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
-                                            </a>
-                                        {% endfor %}
+                                <li class="nav-item">
+                                    <a class="nav-link link-light {% if not watch_providers.flatrate and not watch_providers.buy %}active{% endif %}" data-bs-toggle="tab" href="#rent">Rent</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                
+                        <div class="tab-content">
+                            {% if watch_providers.flatrate %}
+                                <div class="tab-pane fade show active" id="stream">
+                                    <div class="provider-logo me-3 mb-2">
+                                        <div class="d-flex flex-wrap">
+                                            {% for provider in watch_providers.flatrate %}
+                                                <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
+                                                    <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                                </a>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             {% endif %}
-        
+                
+                            {% if watch_providers.buy %}
+                                <div class="tab-pane fade {% if not watch_providers.flatrate %}show active{% endif %}" id="buy">
+                                    <div class="provider-logo me-3 mb-2">
+                                        <div class="d-flex flex-wrap">
+                                            {% for provider in watch_providers.buy %}
+                                                <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
+                                                    <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                
+                            {% if watch_providers.rent %}
+                                <div class="tab-pane fade {% if not watch_providers.flatrate and not watch_providers.buy %}show active{% endif %}" id="rent">
+                                    <div class="provider-logo mb-2">
+                                        <div class="d-flex flex-wrap">
+                                            {% for provider in watch_providers.rent %}
+                                                <a href="{{ provider.link }}" target="_blank" class="provider-logo me-2 mb-2">
+                                                    <img src="https://image.tmdb.org/t/p/w92/{{ provider.logo_path }}" alt="{{ provider.provider_name }}" class="img-fluid rounded">
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
-                    <!-- Fallback -->
                     {% else %}
                         <p>No streaming providers available for this movie in your country.</p>
                     {% endif %}
-                    
                 </div>
             </div>
         </div>
