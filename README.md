@@ -180,3 +180,7 @@ Cinemate is a dynamic web application designed to empower movie enthusiasts to d
 ## License
 
 * This project is open-source and available under the MIT License.
+
+
+testadmin
+siteadmin123
