@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container details-container">
+<section class="container details-container">
     <!-- Backdrops -->
     {% if backdrops %}
         {% for backdrop in backdrops %}
@@ -22,7 +22,7 @@
                     <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="img-fluid rounded"
                         alt="{{ movie.title }}">
                 {% else %}
-                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded"
+                    <img src="{% static 'images/img-not-found.png' %}" class="img-fluid rounded"
                         alt="No Image Available">
                 {% endif %}
             </div>
@@ -121,7 +121,7 @@
             </div>
         </div>
     </div>
-</div>
+</section>
 <!-- Horizontal Line -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"></div>
 
@@ -252,7 +252,7 @@
                 {% if actor.profile_path %}
                     <img src="https://image.tmdb.org/t/p/w92/{{ actor.profile_path }}" class="img-fluid rounded-circle" alt="{{ actor.name }}" style="max-width: 100px;">
                 {% else %}
-                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="img-fluid rounded-circle" alt="No Image Available" style="max-width: 100px;">
+                    <img src="{% static 'images/img-not-found.png' %}" class="img-fluid rounded-circle" alt="No Image Available" style="max-width: 100px;">
                 {% endif %}
                 <p class="mt-2">
                     <strong><a href="{% url 'actor_detail' actor.id %}" class="link-dark">{{ actor.name }}</a></strong>
@@ -308,7 +308,7 @@
                     {% if movie.poster_path %}
                     <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
                     {% else %}
-                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top" alt="No Image Available">
+                    <img src="{% static 'images/img-not-found.png' %}" class="card-img-top" alt="No Image Available">
                     {% endif %}
                     <div class="card-body d-flex flex-column justify-content-between">
                         <h6 class="card-title">{{ movie.title }}</h6>
@@ -336,7 +336,7 @@
 
 
 <!-- Edit Review Modal -->
-<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+<aside class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -364,7 +364,7 @@
             </div>
         </div>
     </div>
-</div>
+</aside>
 
 
 <script src="{% static 'js/movie_details.js' %}"></script>

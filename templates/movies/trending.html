@@ -13,7 +13,7 @@
                     <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
                         alt="{{ movie.title }}">
                     {% else %}
-                    <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
+                    <img src="{% static 'images/img-not-found.png' %}" class="card-img-top"
                         alt="No Image Available">
                     {% endif %}
                     <div class="card-body d-flex flex-column justify-content-between">

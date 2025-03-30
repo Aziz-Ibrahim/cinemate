@@ -21,13 +21,22 @@ body {
 /* Base */
 .container-wrapper {
     width: 90%;
-    max-width: 1600px; /* Limit the width */
-    margin: 20px auto; /* Centers the content */
+    max-width: 1600px; 
+    margin: 20px auto;
     padding: 20px;
     background: #fff;
     box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1), -5px 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
+
+/* Image not available */
+.img-na {
+    width: 100%; 
+    height: auto; 
+    max-height: 300px; 
+    object-fit: cover; 
+}
+
 
 /* Movie List Page */
 
@@ -56,11 +65,6 @@ body {
     border-radius: 5px;
     overflow: hidden;
     display: inline-block;
-    transition: transform 0.5s;
-}
-
-.card:hover {
-    transform: scale(1.05);
 }
 
 .movie-card {
