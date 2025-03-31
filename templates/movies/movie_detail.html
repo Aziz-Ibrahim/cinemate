@@ -1,5 +1,12 @@
 {% extends "base.html" %}
+
 {% load static %}
+
+{% block extra_title %}
+| {{ movie.title }}
+{% endblock %}
+
+
 {% block extra_head %}
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">

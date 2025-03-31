@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
+
 {% load static %}
+
+{% block extra_title %}
+| {{ user.username }}
+{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -38,7 +43,7 @@
                         <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
                             alt="{{ movie.title }}">
                         {% else %}
-                        <img src="{% static 'images/movie-card-placeholder-img.png' %}" class="card-img-top"
+                        <img src="{% static 'images/img-not-found.png' %}" class="card-img-top"
                             alt="No Image Available">
                         {% endif %}
                         <div class="card-body d-flex flex-column justify-content-between">
@@ -64,7 +69,7 @@
 </div>
 
 <!-- Change Password Modal -->
-<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+<aside class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -106,7 +111,7 @@
             </div>
         </div>
     </div>
-</div>
+</aside>
 
 <!-- CSRF Token Form -->
 <form id="csrf-form">{% csrf_token %}</form>
