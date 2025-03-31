@@ -11,19 +11,34 @@ TMDB_API_KEY = settings.TMDB_API_KEY
 
 @login_required
 def submit_review(request, movie_id):
+    """
+    Handles the submission of movie reviews and ratings.
+
+    Allows logged-in users to submit or update reviews for a specific movie.
+    The review and rating are stored locally and sent to TMDB API.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+        movie_id (int): The TMDB movie ID for the movie being reviewed.
+
+    Returns:
+        HttpResponse: Renders the movie detail page with the review form or 
+        redirects to the movie detail page after successful submission.
+    """
+
     # Check if user already has a review for this movie
     existing_review = Review.objects.filter(movie_id=movie_id, user=request.user).first()
 
     if request.method == "POST":
-        form = ReviewForm(request.POST, instance=existing_review)  # Prefill if exists
+        form = ReviewForm(request.POST, instance=existing_review) # Prefill if exists
         if form.is_valid():
             review = form.save(commit=False)
             review.user = request.user
             review.movie_id = movie_id  # Store movie ID from TMDB
             review.save()
 
-            # Convert rating to TMDB’s scale (1-5 → 2-10)
-            user_rating = float(form.cleaned_data["rating"]) * 2  
+            # Convert rating to TMDB’s scale (0-5 → 0-10), or more accurately, (0-5 --> 0-10)
+            user_rating = float(form.cleaned_data["rating"]) * 2
 
             # Send rating to TMDB
             tmdb_url = f"https://api.themoviedb.org/3/movie/{movie_id}/rating"

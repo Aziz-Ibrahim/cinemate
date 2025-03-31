@@ -134,7 +134,7 @@ function setupReviewActions() {
             document.getElementById("edit-review-id").value = this.dataset.reviewId;
             document.getElementById("edit-review-text").value = this.dataset.reviewText;
             document.getElementById("edit-review-rating").value = this.dataset.reviewRating;
-            
+
             new bootstrap.Modal(document.getElementById("editReviewModal")).show();
         });
     });
@@ -154,6 +154,11 @@ function setupReviewActions() {
         .then(data => {
             if (data.success) {
                 document.getElementById(`review-text-${reviewId}`).textContent = reviewText;
+                // Update the rating display
+                const ratingElement = document.getElementById(`review-rating-${reviewId}`);
+                if (ratingElement) {
+                    ratingElement.textContent = `${reviewRating}/5`;
+                }
                 bootstrap.Modal.getInstance(document.getElementById("editReviewModal")).hide();
             } else {
                 alert("Error updating review.");
@@ -200,7 +205,7 @@ function displayWatchProviders(providers) {
 }
 
 /**
- * Displays videos (e.g., trailers).
+ * Displays videos (trailers).
  */
 function displayVideos(videos) {
     const container = document.getElementById("videos");
