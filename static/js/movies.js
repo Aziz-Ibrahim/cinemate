@@ -62,7 +62,7 @@ function toggleFavorite(button) {
  * Updates the UI of the favorite button based on favorite status.
  */
 function updateFavoriteButtonUI(button, isFavorite) {
-    button.innerHTML = `<i class="fa-${isFavorite ? "solid" : "regular"} fa-heart"></i> ${isFavorite ? "Remove from Favs" : "Add to Favs"}`;
+    button.innerHTML = `<i class="fa-${isFavorite ? "solid" : "regular"} fa-heart"></i> ${isFavorite ? "Remove" : "Add to Favs"}`;
     button.classList.toggle("btn-danger", isFavorite);
     button.classList.toggle("btn-outline-danger", !isFavorite);
 }
@@ -138,15 +138,12 @@ function debounce(func, delay) {
  */
 function loadMoreMovies() {
     if (isFetching || currentPage >= totalPages || fetchedPages.has(currentPage + 1)) {
-        console.log(`Skipping fetch: isFetching=${isFetching}, currentPage=${currentPage}, totalPages=${totalPages}, pageFetched=${fetchedPages.has(currentPage + 1)}`);
         return;
     }
 
     isFetching = true;
     let nextPage = currentPage + 1;
     fetchedPages.add(nextPage);
-
-    console.log(`Fetching Page ${nextPage}`);
 
     const sortBySelect = document.getElementById("sortSelect");
     let sortByValue = "popularity.desc";
@@ -163,7 +160,6 @@ function loadMoreMovies() {
             appendMoviesToDOM(data.movies);
             currentPage = nextPage;
             totalPages = data.total_pages;
-            console.log(`Page ${nextPage} loaded.`);
         } else {
             console.warn(`No movies found for page ${nextPage}`);
         }
@@ -193,6 +189,9 @@ function appendMoviesToDOM(movies) {
         const movieCard = document.createElement("div");
         movieCard.className = "col-12 col-md-4 col-lg-3 card-deck d-flex";
 
+    // Reinitialize favorite buttons for dynamically loaded movies
+    initializeFavoriteButtons();
+
         movieCard.innerHTML = `
             <div class="card mb-4 shadow-sm" style="height: 100%;">
                 <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/movie-card-placeholder-img.png'}"
@@ -209,7 +208,7 @@ function appendMoviesToDOM(movies) {
                                 data-rating="${movie.vote_average || '0'}"
                                 data-is-favorite="${isFavorite}">
                             <i class="fa ${isFavorite ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 
-                            ${isFavorite ? "Remove from Favs" : "Add to Favs"}
+                            ${isFavorite ? "Remove" : "Add to Favs"}
                         </button>
                     </div>
                 </div>
@@ -228,14 +227,12 @@ function appendMoviesToDOM(movies) {
  * Loads the first page of movies immediately.
  */
 function setupInfiniteScroll() {
-    console.log("Setting up infinite scrolling...");
 
     window.addEventListener("scroll", debounce(() => {
         const scrollThreshold = document.body.offsetHeight - 200;
         const scrollPosition = window.innerHeight + window.scrollY;
 
         if (scrollPosition >= scrollThreshold && currentPage < totalPages && !isFetching) {
-            console.log("Triggering loadMoreMovies()");
             loadMoreMovies();
         }
     }, 250));
@@ -265,7 +262,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/movies/get_favorite_movies/")
     .then(response => response.json())
     .then(data => {
-        console.log("Fetched favorite IDs:", data.favorite_movie_ids); // Debugging output
 
         document.querySelectorAll(".favorite-btn").forEach(button => {
             const movieId = parseInt(button.dataset.movieId);
@@ -277,7 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const isFavorite = data.favorite_movie_ids.includes(movieId);
             
-            console.log(`Movie ID: ${movieId}, Is Favorite: ${isFavorite}`); // Debugging
             updateFavoriteButtonUI(button, isFavorite);
             
             // Ensure data-is-favorite attribute is updated

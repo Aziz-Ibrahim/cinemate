@@ -51,19 +51,18 @@ def movie_list(request):
     else:
         movies, total_pages = get_all_movies(sort_by, genre_id, page)
 
-    # If it's an AJAX request, return JSON response
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return JsonResponse({"movies": movies, "total_pages": total_pages})
-
     # Retrieve user's favorite movie IDs
     favorite_movie_ids = set(
-        FavoriteMovie.objects.filter(user=request.user).values_list("movie_id", flat=True)
+    map(int, FavoriteMovie.objects.filter(user=request.user).values_list("movie_id", flat=True))
     )
 
     # Annotate movies with favorite status
     for movie in movies:
-        movie["is_favorite"] = movie["id"] in favorite_movie_ids  #  ensure  template gets the correct favorite status
+        movie["is_favorite"] = movie["id"] in favorite_movie_ids  #  ensure template gets the correct favorite status
 
+    # If it's an AJAX request, return JSON response
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return JsonResponse({"movies": movies, "total_pages": total_pages})
 
     genres = get_movie_genres()
 
@@ -91,7 +90,6 @@ def get_all_movies(sort_by="popularity.desc", genre_id="", page=1):
 
     response = requests.get(url, params=params)
     data = response.json()
-    print(f"Fetching Page: {page}, Movies Count: {len(data.get('results', []))}")  # Debugging
     return data.get("results", []), data.get("total_pages", 1)
 
 
@@ -194,7 +192,6 @@ def get_movie_images(movie_id):
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching movie images: {e}")
         return {} # Return an empty dictionary in case of an error
 
 
