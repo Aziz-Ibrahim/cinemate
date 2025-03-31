@@ -20,8 +20,8 @@ from .models import FavoriteMovie, Profile
 
 # Home view.
 def home(request):
+    """Renders the home page."""
     return render(request, "users/home.html")
-
 
 
 # Set up logging for debugging
@@ -29,63 +29,86 @@ logging.basicConfig(level=logging.DEBUG)  # Configure logging
 logger = logging.getLogger(__name__)  # Get logger for this module
 
 
-#Registeration view
+# Registration view
 class RegisterView(CreateView):
     """
     Handles user registration using Django's built-in CreateView.
-    Automatically creates a user profile and logs in the user after registration.
+    Automatically creates a user profile and logs in the
+    user after registration.
     """
+
     template_name = "users/register.html"
     form_class = RegisterForm
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        logger.debug("✅ DEBUG: Form is valid, creating user...")
+        """Saves the user and profile if the form is valid."""
+        logger.debug("DEBUG: Form is valid, creating user...")
 
         user = form.save()
-        logger.debug(f"✅ DEBUG: User {user.username} created successfully!")
+        logger.debug(f"DEBUG: User {user.username} created successfully!")
 
-        # ✅ Ensure country is stored in Profile
+        # Ensure country is stored in Profile
         country = form.cleaned_data.get("country")
         profile, created = Profile.objects.get_or_create(user=user)
-        profile.country = country  # ✅ Explicitly set country
-        profile.save()  # ✅ Save profile with country
+        profile.country = country  # Explicitly set country
+        profile.save()  # Save profile with country
 
-        logger.debug(f"✅ DEBUG: Profile saved with country: {profile.country}")
+        logger.debug(f"DEBUG: Profile saved with country: {profile.country}")
 
         login(self.request, user)
-        messages.success(self.request, "Registration successful! Please log in.")
+        messages.success(self.request, "Registration successful! Please login")
 
         return redirect(self.success_url)
 
-
     def form_invalid(self, form):
-        logger.error("❌ DEBUG: Register form is invalid!")
-        logger.error(f"Form Errors: {form.errors}")  # Log errors in the terminal
-        
-        messages.error(self.request, "There were errors in your form. Please check below.")
+        """Renders the form with errors if it's invalid."""
+        logger.error("DEBUG: Register form is invalid!")
+        # Log errors in the terminal
+        logger.error(f"Form Errors: {form.errors}")
+
+        messages.error(
+            self.request, "There were errors in your form. Please check below."
+        )
         return render(self.request, self.template_name, {"form": form})
 
-#log in view
 
+# Log in view
 class CustomLoginForm(forms.Form):
+    """Custom login form with username or email identifier."""
+
     identifier = forms.CharField(
         label="Username or Email",
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter username or email"})
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Enter username or email",
+            }
+        ),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "form-control", "id": "password-field", "placeholder": "Enter password"})
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control",
+                "id": "password-field",
+                "placeholder": "Enter password",
+            }
+        ),
     )
 
+
 class CustomLoginView(LoginView):
-    template_name = 'users/login.html'
+    """Custom login view to handle login with username or email."""
+
+    template_name = "users/login.html"
     authentication_form = None  # Disable default form
 
     def post(self, request, *args, **kwargs):
+        """Handles POST requests for login."""
         form = CustomLoginForm(request.POST)
         if form.is_valid():
-            identifier = form.cleaned_data['identifier']
-            password = form.cleaned_data['password']
+            identifier = form.cleaned_data["identifier"]
+            password = form.cleaned_data["password"]
 
             # Check if identifier is email or username
             user = None
@@ -95,41 +118,57 @@ class CustomLoginView(LoginView):
                 user = User.objects.get(username=identifier)
 
             # Authenticate user
-            if user and authenticate(request, username=user.username, password=password):
+            if user and authenticate(
+                request, username=user.username, password=password
+            ):
                 login(request, user)
                 return redirect("profile")
 
-        return render(request, self.template_name, {"form": form, "error": "Invalid username/email or password."})
-
+        return render(
+            request,
+            self.template_name,
+            {"form": form, "error": "Invalid username/email or password."},
+        )
 
 
 def profile_view(request, username=None):
+    """Displays the user's profile and favorite movies."""
     if username:
         profile_user = get_object_or_404(User, username=username)
     else:
         if not request.user.is_authenticated:
-            return redirect("login")  # Redirect guests trying to access /profile/
+            # Redirect guests trying to access /profile/
+            return redirect("login")
         profile_user = request.user  # Show logged-in user's profile
 
     favorite_movies = FavoriteMovie.objects.filter(user=profile_user)
-    return render(request, "users/profile.html", {
-        "profile_user": profile_user,
-        "favorite_movies": favorite_movies,
-    })
+    return render(
+        request,
+        "users/profile.html",
+        {"profile_user": profile_user, "favorite_movies": favorite_movies},
+    )
+
 
 def fetch_movie_details(movie_id):
-    """Fetch movie details from TMDB API"""
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+    """Fetch movie details from TMDB API."""
+    url = (
+        f"https://api.themoviedb.org/3/movie/{movie_id}?"
+        f"api_key={settings.TMDB_API_KEY}&language=en-US"
+    )
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     return None
 
+
 def add_favorite_movie(request, movie_id):
     """Add a movie to the user's favorites list."""
     if request.method == "POST":
         # Fetch movie details from TMDb API
-        api_url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}"
+        api_url = (
+            f"https://api.themoviedb.org/3/movie/{movie_id}?"
+            f"api_key={settings.TMDB_API_KEY}"
+        )
         response = requests.get(api_url)
         movie_data = response.json()
 
@@ -138,30 +177,39 @@ def add_favorite_movie(request, movie_id):
             user=request.user,
             movie_id=movie_id,
             title=movie_data.get("title", "Unknown Movie"),
-            poster_path=f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path', '')}" if movie_data.get("poster_path") else None,
+            poster_path=f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path', '')}"  # noqa: E501
+            if movie_data.get("poster_path")
+            else None,
             release_date=movie_data.get("release_date", ""),
             rating=movie_data.get("vote_average", None),
         )
         return redirect("profile")
+
 
 def remove_favorite_movie(request, movie_id):
     """
     Handles the removal of a movie from a user's favorites.
 
     Args:
-        request (HttpRequest): The incoming HTTP request (must be a POST request).
-        movie_id (int): The ID of the movie to remove from the user's favorites.
+        request (HttpRequest): The incoming HTTP request
+        (must be a POST request).
+        movie_id (int):
+        The ID of the movie to remove from the user's favorites.
 
     Returns:
-        JsonResponse: A JSON response indicating success ("removed") or failure ("error").
+        JsonResponse: A JSON response indicating success ("removed")
+        or failure ("error").
     """
     print(f"Request received to remove movie {movie_id}")  # Debugging
     if request.method == "POST":
-        favorite_movie = get_object_or_404(FavoriteMovie, user=request.user, movie_id=movie_id)
+        favorite_movie = get_object_or_404(
+            FavoriteMovie, user=request.user, movie_id=movie_id
+        )
         favorite_movie.delete()
         return JsonResponse({"status": "removed"})
-    
+
     return JsonResponse({"status": "error"}, status=400)
+
 
 @login_required
 def change_password(request):
@@ -171,10 +219,11 @@ def change_password(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Keeps user logged in
-            messages.success(request, "✅ Your password has been updated successfully.")
+            messages.success(request, " password updated successfully.")
             return redirect("profile")
         else:
-            messages.error(request, "❌ Error updating password. Please check the form.")
+            messages.error
+            (request, "Error updating password. Please check the form.")
     else:
         form = PasswordChangeForm(request.user)
 
@@ -210,4 +259,3 @@ def contact_view(request):
         form = ContactForm()  # Empty form for GET request
 
     return render(request, "users/contact.html", {"form": form})
-

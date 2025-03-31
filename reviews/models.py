@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Review(models.Model):
     """
     Represents a movie review submitted by a user.
@@ -17,7 +18,7 @@ class Review(models.Model):
     movie_id = models.IntegerField()  # TMDB movie ID
     review_text = models.TextField()
     # Store user's rating locally, Scale: 0.0-5.0
-    rating = models.DecimalField(max_digits=3, decimal_places=1, default=0.0)  
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
