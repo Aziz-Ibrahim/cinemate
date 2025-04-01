@@ -2,7 +2,7 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from users.models import FavoriteMovie, Profile
 from reviews.models import Review
 from reviews.forms import ReviewForm
@@ -134,13 +134,17 @@ def get_movie_details(movie_id):
 
     return None  # Return None if the movie is not found
 
-
 @login_required
 def movie_detail(request, movie_id):
     """
     Fetch movie details and determine if the movie is in the user's favorites.
     Includes images, reviews, cast, and watch providers.
     """
+    try:
+        movie_id = int(movie_id) #Convert to int
+    except ValueError:
+        return HttpResponseBadRequest("Invalid movie ID") #Handle error
+
     # Fetch movie details
     movie = get_movie_details(movie_id)
     if not movie:
@@ -207,7 +211,6 @@ def movie_detail(request, movie_id):
             "user_country": user_country,
         },
     )
-
 
 def get_movie_images(movie_id):
     """Fetch movie images (backdrops and logos) from the TMDB API."""
