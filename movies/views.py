@@ -261,8 +261,8 @@ def toggle_favorite(request):
 
         # Validate movie_id
         try:
-            movie_id = int(movie_id)
-        except ValueError:
+            movie_id = int(movie_id.strip())  # Stripping whitespace if necessary
+        except (ValueError, AttributeError):  # Handle cases where movie_id is None or invalid
             return JsonResponse({"status": "error"}, status=400)
 
         title = request.POST.get("title")

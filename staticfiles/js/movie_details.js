@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function extractMovieIdFromUrl() {
     const path = window.location.pathname;
     const match = path.match(/\/movies\/(\d+)\/?$/);
-    return match ? match[1] : null;
+    return match ? parseInt(match[1], 10) : null;
 }
 
 /**
@@ -67,13 +67,13 @@ function initializeFavoriteButton(movieId) {
     favButton.addEventListener("click", function () {
         const { movieId, title, posterPath, releaseDate, rating } = favButton.dataset;
         
-        fetch("{% url 'toggle_favorite' %}", {
+        fetch("{% url 'movies:toggle_favorite' %}", {
             method: "POST",
             headers: {
                 "X-CSRFToken": getCookie("csrftoken"),
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: new URLSearchParams({ movie_id, title, poster_path: posterPath, release_date: releaseDate, rating })
+            body: new URLSearchParams({ movieId, title, poster_path: posterPath, release_date: releaseDate, rating })
         })
         .then(response => response.json())
         .then(data => {

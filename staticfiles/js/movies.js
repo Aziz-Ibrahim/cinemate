@@ -33,7 +33,7 @@ function initializeFavoriteButtons() {
  * Toggles the favorite status of a movie and updates the UI.
  */
 function toggleFavorite(button) {
-    const movieId = button.dataset.movieId;
+    const movieId = parseInt(button.dataset.movieId, 10);
     const formData = new URLSearchParams({
         "movie_id": movieId,
         "title": button.dataset.title || "",
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const isFavorite = data.favorite_movie_ids.includes(movieId);
+            const isFavorite = data.favorite_movie_ids.includes(parseInt(movieId, 10));
             
             updateFavoriteButtonUI(button, isFavorite);
             
