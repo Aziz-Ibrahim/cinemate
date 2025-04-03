@@ -1,4 +1,3 @@
-
 /**
  * Adds a "Back to Top" button that appears when the user scrolls down.
  */
@@ -23,16 +22,40 @@ function initializeFavoriteButtons() {
         const isFavorite = button.dataset.isFavorite === "true";
         updateFavoriteButtonUI(button, isFavorite);
 
-        button.addEventListener("click", function () {
-            toggleFavorite(this);
+        button.addEventListener("click", function (event) {
+            toggleFavorite(this, event);
         });
     });
 }
 
 /**
+ * Debounces the favorite button click to prevent multiple requests.
+ * @param {Function} func - The function to debounce.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {Function} - A debounced version of the function.
+ */
+function debounceFavoriteClick(func, delay) {
+    let timeoutId;
+    return function (event, ...args) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            func.apply(this, [this, event, ...args]);
+        }, delay);
+    };
+}
+
+/**
  * Toggles the favorite status of a movie and updates the UI.
  */
-function toggleFavorite(button) {
+function toggleFavorite(button, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    button.disabled = true;
+
     const movieId = parseInt(button.dataset.movieId, 10);
     const formData = new URLSearchParams({
         "movie_id": movieId,
@@ -55,8 +78,19 @@ function toggleFavorite(button) {
         const isNowFavorite = data.status === "added";
         updateFavoriteButtonUI(button, isNowFavorite);
     })
-    .catch(error => console.error("Error toggling favorite:", error));
+    .catch(error => console.error("Error toggling favorite:", error))
+    .finally(() => {
+        button.disabled = false;
+    });
 }
+
+// Create a debounced version of toggleFavorite
+const debouncedFavoriteToggle = debounceFavoriteClick(toggleFavorite, 250);
+
+// Modify the event listener to use the debounced function
+document.querySelectorAll(".favorite-btn").forEach(button => {
+    button.addEventListener("click", (event) => debouncedFavoriteToggle(button, event));
+});
 
 /**
  * Updates the UI of the favorite button based on favorite status.
@@ -189,9 +223,6 @@ function appendMoviesToDOM(movies) {
         const movieCard = document.createElement("div");
         movieCard.className = "col-12 col-md-4 col-lg-3 card-deck d-flex";
 
-    // Reinitialize favorite buttons for dynamically loaded movies
-    initializeFavoriteButtons();
-
         movieCard.innerHTML = `
             <div class="card mb-4 shadow-sm" style="height: 100%;">
                 <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/movie-card-placeholder-img.png'}"
@@ -227,7 +258,6 @@ function appendMoviesToDOM(movies) {
  * Loads the first page of movies immediately.
  */
 function setupInfiniteScroll() {
-
     window.addEventListener("scroll", debounce(() => {
         const scrollThreshold = document.body.offsetHeight - 200;
         const scrollPosition = window.innerHeight + window.scrollY;
@@ -236,7 +266,6 @@ function setupInfiniteScroll() {
             loadMoreMovies();
         }
     }, 250));
-    loadMoreMovies();
 }
 
 /**
@@ -249,7 +278,6 @@ function getCookie(name) {
     }, null);
 }
 
-
 /**
  * Initializes various functionalities after the DOM content is fully loaded.
  */
@@ -258,26 +286,23 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeMovieDetails();
     initializeReviewForm();
     setupInfiniteScroll();
-    initializeFavoriteButtons();
+
     fetch("/movies/get_favorite_movies/")
-    .then(response => response.json())
-    .then(data => {
+        .then(response => response.json())
+        .then(data => {
+            document.querySelectorAll(".favorite-btn").forEach(button => {
+                const movieId = parseInt(button.dataset.movieId);
 
-        document.querySelectorAll(".favorite-btn").forEach(button => {
-            const movieId = parseInt(button.dataset.movieId);
-            
-            if (isNaN(movieId)) {
-                console.error("Invalid movie ID:", button);
-                return;
-            }
+                if (isNaN(movieId)) {
+                    console.error("Invalid movie ID:", button);
+                    return;
+                }
 
-            const isFavorite = data.favorite_movie_ids.includes(parseInt(movieId, 10));
-            
-            updateFavoriteButtonUI(button, isFavorite);
-            
-            // Ensure data-is-favorite attribute is updated
-            button.dataset.isFavorite = isFavorite.toString();
-        });
-    })
-    .catch(error => console.error("Error fetching favorites:", error));
+                const isFavorite = data.favorite_movie_ids.includes(parseInt(movieId, 10));
+
+                updateFavoriteButtonUI(button, isFavorite);
+                button.dataset.isFavorite = isFavorite.toString();
+            });
+        })
+        .catch(error => console.error("Error fetching favorites:", error));
 });

@@ -1,4 +1,5 @@
 import requests
+import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.conf import settings
@@ -252,39 +253,59 @@ def get_favorite_movies(request):
 
 @login_required
 def toggle_favorite(request):
-    """
-    Toggle favorite status for a movie.
-    If the movie is already a favorite, remove it. Otherwise, add it.
-    """
+    """Toggles the favorite status of a movie for a user."""
     if request.method == "POST":
-        movie_id = request.POST.get("movie_id")
-
-        # Validate movie_id
         try:
-            movie_id = int(movie_id.strip())  # Stripping whitespace if necessary
-        except (ValueError, AttributeError):  # Handle cases where movie_id is None or invalid
-            return JsonResponse({"status": "error"}, status=400)
+            movie_id = request.POST.get("movie_id")
+            title = request.POST.get("title")
+            poster_path = request.POST.get("poster_path")
+            release_date = request.POST.get("release_date")
+            rating = request.POST.get("rating")
 
-        title = request.POST.get("title")
-        poster_path = request.POST.get("poster_path")
-        release_date = request.POST.get("release_date")
-        rating = request.POST.get("rating")
+            # Validate movie_id
+            try:
+                movie_id = int(movie_id.strip())
+            except (ValueError, AttributeError):
+                return JsonResponse(
+                    {"status": "error", "message": "Invalid movie ID"},
+                    status=400,
+                )
 
-        favorite, created = FavoriteMovie.objects.get_or_create(
-            user=request.user,
-            movie_id=movie_id,
-            defaults={
-                "title": title,
-                "poster_path": poster_path,
-                "release_date": release_date,
-                "rating": rating,
-            },
+            # Convert rating to float, if available
+            try:
+                rating = float(rating) if rating else None
+            except ValueError:
+                rating = None
+
+            # Get or create the FavoriteMovie object
+            favorite, created = FavoriteMovie.objects.get_or_create(
+                user=request.user,
+                movie_id=movie_id,
+                defaults={
+                    "title": title,
+                    "poster_path": poster_path,
+                    "release_date": release_date,
+                    "rating": rating,
+                },
+            )
+
+            if not created:
+                # Movie was already a favorite, so remove it
+                favorite.delete()
+                return JsonResponse({"status": "removed"})
+            else:
+                # Movie was added as a favorite
+                return JsonResponse({"status": "added"})
+
+        except Exception:
+            return JsonResponse(
+                {"status": "error", "message": "Internal server error"},
+                status=500,
+            )
+
+    else:
+        # Handle non-POST requests
+        return JsonResponse(
+            {"status": "error", "message": "Method not allowed"},
+            status=405,
         )
-
-        if not created:
-            favorite.delete()
-            return JsonResponse({"status": "removed"})
-
-        return JsonResponse({"status": "added"})
-
-    return JsonResponse({"status": "error"}, status=400)

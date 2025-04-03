@@ -57,6 +57,8 @@ MIDDLEWARE = [
 # Root URL
 ROOT_URLCONF = 'cinemate.urls'
 
+LOGIN_URL = "/users/login/"
+
 # Templates
 TEMPLATES = [
     {
