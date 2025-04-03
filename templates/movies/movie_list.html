@@ -12,9 +12,9 @@
 <div class="container mt-4">
     <div class="row">
         <!-- Search Form -->
-        <div class="col-md-6">
+        <div class="col-sm-12 col-md-6">
             <form method="get" action="{% url 'movies:movie_list' %}">
-                <div class="input-group">
+                <div class="input-group mb-3">
                     <input type="text" class="form-control" name="search" value="{{ search_query|default_if_none:'' }}"
                         placeholder="Search movies">
                     <button class="btn btn-dark" type="submit">Search</button>
@@ -23,17 +23,14 @@
         </div>
 
         <!-- Sort Form -->
-        <div class="col-md-6">
-            <div class="container">
+        <div class="col-sm-12 col-md-6">
+            <div class="container px-0">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-6 w-50">
                         <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <button class="btn btn-dark" type="button">Sort By</button>
-                            </div>
                             <form method="get" action="{% url 'movies:movie_list' %}" id="sortForm">
                                 <select class="form-select" id="sortSelect" name="sort_by" onchange="document.getElementById('sortForm').submit()">
-                                    <option value="" disabled selected>Choose...</option>
+                                    <option value="" disabled selected>Sort By:</option>
                                     <option value="popularity.desc" {% if sort_by == "popularity.desc" %}selected{% endif %}>Most Popular</option>
                                     <option value="vote_average.desc" {% if sort_by == "vote_average.desc" %}selected{% endif %}>Heighest Rate</option>
                                     <option value="release_date.desc" {% if sort_by == "release_date.desc" %}selected{% endif %}>Latest Release</option>
@@ -42,13 +39,11 @@
                             </form>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-6 w-50">
                         <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <button class="btn btn-dark" type="button">Genre</button>
-                            </div>
                             <form method="get" action="{% url 'movies:movie_list' %}" id="genreForm">
                                 <select class="form-select" id="genreSelect" name="genre" onchange="document.getElementById('genreForm').submit()">
+                                    <option value="" disabled>Choose Genre</option>
                                     <option value="">All Genres</option>
                                     {% for genre in genres %}
                                         <option value="{{ genre.id }}" {% if selected_genre == genre.id %}selected{% endif %}>{{ genre.name }}</option>
@@ -66,7 +61,7 @@
         <div class="row mt-4" id="movie-container">
             <div class="row g-4">
                 {% for movie in movies %}
-                <div class="col-12 col-md-4 col-lg-3 card-deck d-flex">
+                <div class="col-12 col-md-6 col-lg-4 col-xxl-3 card-deck d-flex">
                     <div class="card mb-4 shadow-sm" style="height: 100%;">
                         {% if movie.poster_path %}
                         <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"
