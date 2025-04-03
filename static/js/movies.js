@@ -221,7 +221,7 @@ function appendMoviesToDOM(movies) {
     movies.forEach(movie => {
         const isFavorite = movie.is_favorite;
         const movieCard = document.createElement("div");
-        movieCard.className = "col-12 col-md-4 col-lg-3 card-deck d-flex";
+        movieCard.className = "col-12 col-md-6 col-lg-4 col-xxl-3 card-deck d-flex";
 
         movieCard.innerHTML = `
             <div class="card mb-4 shadow-sm" style="height: 100%;">

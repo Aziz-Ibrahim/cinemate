@@ -1,20 +1,4 @@
 /**
- * Executes initialization functions after the DOM content is fully loaded.
- */
-document.addEventListener("DOMContentLoaded", function () {
-    const movieId = extractMovieIdFromUrl();
-    if (movieId) {
-        fetchMovieDetails(movieId);
-        initializeFavoriteButton(movieId);
-        initializeBackdropCarousel();
-        initializeLogoCarousel();
-        setupReviewActions();
-    } else {
-        console.warn("Movie ID not found in URL. Check if the URL format is correct.");
-    }
-});
-
-/**
  * Extracts the movie ID from the URL.
  * @returns {string|null} The extracted movie ID or null if not found.
  */
@@ -46,6 +30,72 @@ function fetchMovieDetails(movieId) {
         .catch(error => console.error("Error fetching movie details:", error));
 }
 
+/**
+ * Updates the UI of the favorite button based on favorite status.
+ */
+function updateFavoriteButtonUI(button, isFavorite) {
+    button.innerHTML = `<i class="fa-${isFavorite ? "solid" : "regular"} fa-heart"></i> ${isFavorite ? "Remove" : "Add to Favs"}`;
+    button.classList.toggle("btn-danger", isFavorite);
+    button.classList.toggle("btn-outline-danger", !isFavorite);
+}
+
+/**
+ * Toggles the favorite status of a movie and updates the UI.
+ */
+function toggleFavorite(button, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    button.disabled = true;
+
+    const movieId = parseInt(button.dataset.movieId, 10);
+    const formData = new URLSearchParams({
+        "movie_id": movieId,
+        "title": button.dataset.title || "",
+        "poster_path": button.dataset.posterpath || "",
+        "release_date": button.dataset.releasedate || "",
+        "rating": button.dataset.rating || "0"
+    });
+
+    fetch("/movies/toggle_favorite/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: formData.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        const isNowFavorite = data.status === "added";
+        updateFavoriteButtonUI(button, isNowFavorite);
+    })
+    .catch(error => console.error("Error toggling favorite:", error))
+    .finally(() => {
+        button.disabled = false;
+    });
+}
+
+// Create a debounced version of toggleFavorite
+const debouncedFavoriteToggle = debounceFavoriteClick(toggleFavorite, 250);
+
+/**
+ * Debounces the favorite button click to prevent multiple requests.
+ * @param {Function} func - The function to debounce.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {Function} - A debounced version of the function.
+ */
+function debounceFavoriteClick(func, delay) {
+    let timeoutId;
+    return function (event) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            func(this, event); // Pass 'this' (the button) explicitly
+        }, delay);
+    };
+}
 
 /**
  * Initializes the favorite button.
@@ -60,35 +110,18 @@ function initializeFavoriteButton(movieId) {
         .then(response => response.json())
         .then(data => {
             if (data.favorite_movie_ids.includes(parseInt(movieId))) {
-                favButton.innerHTML = '<i class="fa-solid fa-heart"></i> Favorited';
-                favButton.classList.replace("btn-outline-danger", "btn-danger");
-            }
-        });
-
-    favButton.addEventListener("click", function () {
-        const { movieId, title, posterPath, releaseDate, rating } = favButton.dataset;
-        
-        fetch("/movies/toggle_favorite/", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({ movieId, title, poster_path: posterPath, release_date: releaseDate, rating })
-        })
-
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "added") {
-                favButton.innerHTML = '<i class="fa-solid fa-heart"></i> Favorited';
-                favButton.classList.replace("btn-outline-danger", "btn-danger");
-            } else if (data.status === "removed") {
-                favButton.innerHTML = '<i class="fa-regular fa-heart"></i> Add to Favorites';
-                favButton.classList.replace("btn-danger", "btn-outline-danger");
+                updateFavoriteButtonUI(favButton, true);
+                favButton.dataset.isFavorite = "true";
+            } else {
+                updateFavoriteButtonUI(favButton, false);
+                favButton.dataset.isFavorite = "false";
             }
         })
-        .catch(error => console.error("Error:", error));
-    });
+        .catch(error => console.error("Error fetching favorites:", error));
+
+    favButton.addEventListener("click", debounceFavoriteClick(function(button, event) {
+        toggleFavorite(button, event);
+    }, 250));
 }
 
 /**
@@ -235,3 +268,19 @@ function displaySimilarMovies(movies) {
         ? movies.map(m => `<div class="card" style="width: 10rem;"><img class="card-img-top" src="https://image.tmdb.org/t/p/w200/${m.poster_path}" alt="${m.title}"><div class="card-body"><p class="card-text">${m.title}</p></div></div>`).join('')
         : "<p>No similar movies found.</p>";
 }
+
+/**
+ * Executes initialization functions after the DOM content is fully loaded.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    const movieId = extractMovieIdFromUrl();
+    if (movieId) {
+        fetchMovieDetails(movieId);
+        initializeFavoriteButton(movieId);
+        initializeBackdropCarousel();
+        initializeLogoCarousel();
+        setupReviewActions();
+    } else {
+        console.warn("Movie ID not found in URL. Check if the URL format is correct.");
+    }
+});
