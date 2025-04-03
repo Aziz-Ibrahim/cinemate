@@ -286,20 +286,24 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeMovieDetails();
     initializeReviewForm();
     setupInfiniteScroll();
+    initializeFavoriteButtons();
+
+    document.addEventListener("click", function (event) {
+        if (event.target.closest(".favorite-btn")) {
+            debouncedFavoriteToggle(event.target.closest(".favorite-btn"), event);
+        }
+    });
 
     fetch("/movies/get_favorite_movies/")
         .then(response => response.json())
         .then(data => {
             document.querySelectorAll(".favorite-btn").forEach(button => {
                 const movieId = parseInt(button.dataset.movieId);
-
                 if (isNaN(movieId)) {
                     console.error("Invalid movie ID:", button);
                     return;
                 }
-
-                const isFavorite = data.favorite_movie_ids.includes(parseInt(movieId, 10));
-
+                const isFavorite = data.favorite_movie_ids.includes(movieId);
                 updateFavoriteButtonUI(button, isFavorite);
                 button.dataset.isFavorite = isFavorite.toString();
             });
