@@ -73,15 +73,15 @@ function toggleFavorite(button, event) {
         },
         body: formData.toString()
     })
-    .then(response => response.json())
-    .then(data => {
-        const isNowFavorite = data.status === "added";
-        updateFavoriteButtonUI(button, isNowFavorite);
-    })
-    .catch(error => console.error("Error toggling favorite:", error))
-    .finally(() => {
-        button.disabled = false;
-    });
+        .then(response => response.json())
+        .then(data => {
+            const isNowFavorite = data.status === "added";
+            updateFavoriteButtonUI(button, isNowFavorite);
+        })
+        .catch(error => console.error("Error toggling favorite:", error))
+        .finally(() => {
+            button.disabled = false;
+        });
 }
 
 // Create a debounced version of toggleFavorite
@@ -136,16 +136,16 @@ function initializeReviewForm() {
             headers: { "X-CSRFToken": getCookie("csrftoken") },
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") location.reload();
-            else alert("Error submitting review. Please try again.");
-        })
-        .catch(error => console.error("Error submitting review:", error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") location.reload();
+                else alert("Error submitting review. Please try again.");
+            })
+            .catch(error => console.error("Error submitting review:", error));
     });
 }
 
-let currentPage = 0;
+let currentPage = 1;
 let totalPages = Infinity;
 let isFetching = false;
 const fetchedPages = new Set();
@@ -188,22 +188,22 @@ function loadMoreMovies() {
     fetch(`/movies/?sort_by=${sortByValue}&page=${nextPage}`, {
         headers: { "X-Requested-With": "XMLHttpRequest" }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.movies.length > 0) {
-            appendMoviesToDOM(data.movies);
-            currentPage = nextPage;
-            totalPages = data.total_pages;
-        } else {
-            console.warn(`No movies found for page ${nextPage}`);
-        }
-    })
-    .catch(error => {
-        console.error("Error fetching more movies:", error);
-    })
-    .finally(() => {
-        isFetching = false;
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.movies.length > 0) {
+                appendMoviesToDOM(data.movies);
+                currentPage = nextPage;
+                totalPages = data.total_pages;
+            } else {
+                console.warn(`No movies found for page ${nextPage}`);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching more movies:", error);
+        })
+        .finally(() => {
+            isFetching = false;
+        });
 }
 
 /**
@@ -225,7 +225,7 @@ function appendMoviesToDOM(movies) {
 
         movieCard.innerHTML = `
             <div class="card mb-4 shadow-sm" style="height: 100%;">
-                <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/movie-card-placeholder-img.png'}"
+                <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '/static/images/img-not-found.png'}"
                     class="card-img-top" alt="${movie.title}" style="object-fit: cover; height: 300px;">
                 <div class="card-body d-flex flex-column justify-content-between">
                     <h5 class="card-title">${movie.title}</h5>

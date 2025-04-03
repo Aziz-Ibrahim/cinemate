@@ -321,15 +321,18 @@
                     <div class="card-body d-flex flex-column justify-content-between">
                         <h6 class="card-title">{{ movie.title }}</h6>
                         <div class="btn-wrapper text-center d-flex justify-content-between">
-                            <a href="/movies/{{ movie.id }}/" class="btn btn-dark btn-sm">Show More</a>
+                            <a href="/movies/{{ movie.id }}/" class="btn btn-dark mx-1">Show More</a>
                             <!-- Favorite Button -->
-                            <button class="btn btn-outline-danger favorite-btn btn-sm"
-                                    data-movie-id="{{ movie.id }}" 
-                                    data-title="{{ movie.title }}" 
-                                    data-poster-path="{{ movie.poster_path }}" 
-                                    data-release-date="{{ movie.release_date }}" 
-                                    data-rating="{{ movie.vote_average }}">
-                                <i class="fa-regular fa-heart"></i>
+                            <button class="btn favorite-btn mx-1
+                                {% if movie.id in favorite_movie_ids %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                                data-movie-id="{{ movie.id }}"
+                                data-title="{{ movie.title }}"
+                                data-poster-path="{{ movie.poster_path }}"
+                                data-release-date="{{ movie.release_date }}"
+                                data-rating="{{ movie.vote_average }}"
+                                data-is-favorite="{% if is_favorite %}true{% else %}false{% endif %}">
+                                <i class="fa {% if movie.id in favorite_movie_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+                                {% if movie.id in favorite_movie_ids %} Remove {% else %} Add {% endif %}
                             </button>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 /**
  * Extracts the movie ID from the URL.
- * @returns {string|null} The extracted movie ID or null if not found.
+ * @returns {number|null} The extracted movie ID or null if not found.
  */
 function extractMovieIdFromUrl() {
     const path = window.location.pathname;
@@ -10,7 +10,7 @@ function extractMovieIdFromUrl() {
 
 /**
  * Fetches movie details and updates the DOM.
- * @param {string} movieId - The ID of the movie.
+ * @param {number} movieId - The ID of the movie.
  */
 function fetchMovieDetails(movieId) {
     fetch(`/movies/api/details/${movieId}/`)
@@ -99,7 +99,7 @@ function debounceFavoriteClick(func, delay) {
 
 /**
  * Initializes the favorite button.
- * @param {string} movieId - The ID of the movie.
+ * @param {number} movieId - The ID of the movie.
  */
 function initializeFavoriteButton(movieId) {
     const favButton = document.querySelector(".favorite-btn");
@@ -109,7 +109,7 @@ function initializeFavoriteButton(movieId) {
     fetch("/movies/get_favorite_movies/")
         .then(response => response.json())
         .then(data => {
-            if (data.favorite_movie_ids.includes(parseInt(movieId))) {
+            if (data && data.favorite_movie_ids && data.favorite_movie_ids.includes(movieId)) {
                 updateFavoriteButtonUI(favButton, true);
                 favButton.dataset.isFavorite = "true";
             } else {
@@ -283,4 +283,11 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.warn("Movie ID not found in URL. Check if the URL format is correct.");
     }
+    document.addEventListener("click", function (event) {
+        const button = event.target.closest(".favorite-btn");
+        if (button) {
+            toggleFavorite(button, event);
+        }
+    });
+    
 });
