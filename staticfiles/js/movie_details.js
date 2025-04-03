@@ -46,6 +46,7 @@ function fetchMovieDetails(movieId) {
         .catch(error => console.error("Error fetching movie details:", error));
 }
 
+
 /**
  * Initializes the favorite button.
  * @param {string} movieId - The ID of the movie.
@@ -55,7 +56,7 @@ function initializeFavoriteButton(movieId) {
     if (!favButton) return;
 
     // Fetch user's favorite movies and update button state
-    fetch("/movies/get_favorites/")
+    fetch("/movies/get_favorite_movies/")
         .then(response => response.json())
         .then(data => {
             if (data.favorite_movie_ids.includes(parseInt(movieId))) {
@@ -67,7 +68,7 @@ function initializeFavoriteButton(movieId) {
     favButton.addEventListener("click", function () {
         const { movieId, title, posterPath, releaseDate, rating } = favButton.dataset;
         
-        fetch("{% url 'movies:toggle_favorite' %}", {
+        fetch("/movies/toggle_favorite/", {
             method: "POST",
             headers: {
                 "X-CSRFToken": getCookie("csrftoken"),
@@ -75,6 +76,7 @@ function initializeFavoriteButton(movieId) {
             },
             body: new URLSearchParams({ movieId, title, poster_path: posterPath, release_date: releaseDate, rating })
         })
+
         .then(response => response.json())
         .then(data => {
             if (data.status === "added") {
