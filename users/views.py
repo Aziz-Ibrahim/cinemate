@@ -24,11 +24,6 @@ def home(request):
     return render(request, "users/home.html")
 
 
-# Set up logging for debugging
-logging.basicConfig(level=logging.DEBUG)  # Configure logging
-logger = logging.getLogger(__name__)  # Get logger for this module
-
-
 # Registration view
 class RegisterView(CreateView):
     """
@@ -43,18 +38,9 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         """Saves the user and profile if the form is valid."""
-        logger.debug("DEBUG: Form is valid, creating user...")
-
         user = form.save()
-        logger.debug(f"DEBUG: User {user.username} created successfully!")
 
-        # Ensure country is stored in Profile
-        country = form.cleaned_data.get("country")
-        profile, created = Profile.objects.get_or_create(user=user)
-        profile.country = country  # Explicitly set country
-        profile.save()  # Save profile with country
-
-        logger.debug(f"DEBUG: Profile saved with country: {profile.country}")
+        Profile.objects.get_or_create(user=user)
 
         login(self.request, user)
         messages.success(self.request, "Registration successful! Please login")
@@ -63,10 +49,6 @@ class RegisterView(CreateView):
 
     def form_invalid(self, form):
         """Renders the form with errors if it's invalid."""
-        logger.error("DEBUG: Register form is invalid!")
-        # Log errors in the terminal
-        logger.error(f"Form Errors: {form.errors}")
-
         messages.error(
             self.request, "There were errors in your form. Please check below."
         )

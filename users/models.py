@@ -9,10 +9,9 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile"
     )
-    country = CountryField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.country}"
+        return self.user.username
 
 
 class FavoriteMovie(models.Model):

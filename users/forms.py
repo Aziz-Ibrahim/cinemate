@@ -2,8 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from django_countries.fields import CountryField
-from django_countries.widgets import CountrySelectWidget
+
 
 
 class RegisterForm(UserCreationForm):
@@ -24,11 +23,9 @@ class RegisterForm(UserCreationForm):
     """
 
     email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30, required=True, help_text="Required.")  # noqa: E501
-    last_name = forms.CharField(max_length=30, required=True, help_text="Required.")  # noqa: E501
-    country = CountryField().formfield(
-        widget=CountrySelectWidget(attrs={"class": "form-control"})
-    )
+    first_name = forms.CharField(max_length=30, required=True, help_text="Required.")
+    last_name = forms.CharField(max_length=30, required=True, help_text="Required.")
+
 
     class Meta:
         model = User
@@ -39,24 +36,20 @@ class RegisterForm(UserCreationForm):
             "password2",
             "first_name",
             "last_name",
-            "country",
         ]
         widgets = {
-            "username": forms.TextInput(attrs={"class": "form-control"}),
-            "email": forms.EmailInput(attrs={"class": "form-control"}),
-            "password1": forms.PasswordInput(attrs={"class": "form-control"}),
-            "password2": forms.PasswordInput(attrs={"class": "form-control"}),
+            "username": forms.TextInput(),  
+            "email": forms.EmailInput(), 
+            "password1": forms.PasswordInput(),  
+            "password2": forms.PasswordInput(),  
         }
 
     def __init__(self, *args, **kwargs):
         """
         Initialize the form and apply Bootstrap styling to all fields.
-        This ensures a consistent UI appearance without manually adding
-        classes to each field individually.
         """
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            # Adds Bootstrap
             field.widget.attrs.update({"class": "form-control"})
 
 

@@ -9,7 +9,7 @@ class ProfileAdmin(admin.ModelAdmin):
     Provides a customized interface for managing user profiles in the
     Django admin panel.
     """
-    list_display = ('user', 'country')
+    list_display = ('user',)
     search_fields = ('user__username', 'country__name')
 
 @admin.register(FavoriteMovie)

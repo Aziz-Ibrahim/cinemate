@@ -166,19 +166,13 @@ def movie_detail(request, movie_id):
         if image.get("iso_639_1") == "en"
     ]
 
-    # Get the user's country if logged in, otherwise default to "GB"
-    user_country = "GB"
-    if request.user.is_authenticated:
-        try:
-            user_country = request.user.profile.country.code or "GB"
-        except Profile.DoesNotExist:
-            print("WARNING: User has no profile, defaulting to 'GB'")
-
     # Fetch watch providers
     watch_providers_data = (
-        movie.get
-        ("watch/providers", {}).get("results", {}).get(user_country, {})
+    movie.get("watch/providers", {})
+    .get("results", {})
+    .get("GB", {})
     )
+    
     watch_providers = {
         provider_type: [
             {
@@ -203,13 +197,14 @@ def movie_detail(request, movie_id):
         {
             "movie": movie,
             "is_favorite": is_favorite,
+            "movie_id": movie_id,
+            "is_favorite": is_favorite,
             "reviews": reviews,
             "review_form": review_form,
             "watch_providers": watch_providers,
             "cast": cast,
             "backdrops": backdrops,
             "logos": logos,
-            "user_country": user_country,
         },
     )
 
