@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from movies.views import get_movie_details
 from .models import Review
 from .forms import ReviewForm
 
@@ -63,10 +64,12 @@ def submit_review(request, movie_id):
         # Prefill form with existing review
         form = ReviewForm(instance=existing_review)
 
+    movie = get_movie_details(movie_id)
     return render(
         request,
-        "movies/movie_detail.html", {"form": form, "movie_id": movie_id}
+        "movies/movie_detail.html", {"form": form, "movie": movie}
     )
+
 
 
 @login_required

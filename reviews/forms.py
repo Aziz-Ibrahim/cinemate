@@ -18,6 +18,7 @@ class ReviewForm(forms.ModelForm):
         choices=RATING_CHOICES,
         widget=forms.RadioSelect,
         help_text="Rate the movie from 0 to 5 stars.",
+        required=True,
     )
 
     class Meta:

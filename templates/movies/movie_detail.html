@@ -179,36 +179,55 @@
                 {% csrf_token %}
                 
                 <!-- Star Rating System -->
-                <fieldset class="rate">
-                <input type="radio" id="rating10" name="rating" value="5.0" {% if form.rating.value == "5.0" %}checked{% endif %} required/>
-                <label for="rating10" title="5 stars"></label>
-                <input type="radio" id="rating9" name="rating" value="4.5" {% if form.rating.value == "4.5" %}checked{% endif %}/>
-                <label class="half" for="rating9" title="4.5 stars"></label>
-                <input type="radio" id="rating8" name="rating" value="4.0" {% if form.rating.value == "4.0" %}checked{% endif %}/>
-                <label for="rating8" title="4 stars"></label>
-                <input type="radio" id="rating7" name="rating" value="3.5" {% if form.rating.value == "3.5" %}checked{% endif %}/>
-                <label class="half" for="rating7" title="3.5 stars"></label>
-                <input type="radio" id="rating6" name="rating" value="3.0" {% if form.rating.value == "3.0" %}checked{% endif %}/>
-                <label for="rating6" title="3 stars"></label>
-                <input type="radio" id="rating5" name="rating" value="2.5" {% if form.rating.value == "2.5" %}checked{% endif %}/>
-                <label class="half" for="rating5" title="2.5 stars"></label>
-                <input type="radio" id="rating4" name="rating" value="2.0" {% if form.rating.value == "2.0" %}checked{% endif %}/>
-                <label for="rating4" title="2 stars"></label>
-                <input type="radio" id="rating3" name="rating" value="1.5" {% if form.rating.value == "1.5" %}checked{% endif %}/>
-                <label class="half" for="rating3" title="1.5 stars"></label>
-                <input type="radio" id="rating2" name="rating" value="1.0" {% if form.rating.value == "1.0" %}checked{% endif %}/>
-                <label for="rating2" title="1 star"></label>
-                <input type="radio" id="rating1" name="rating" value="0.5" {% if form.rating.value == "0.5" %}checked{% endif %}/>
-                <label class="half" for="rating1" title="0.5 stars"></label>
-                </fieldset>
-            
+                {{ form.rating.as_hidden }}
+                <div class="{% if form.rating.errors %}border border-danger rounded p-2{% endif %}">
+                    <fieldset class="rate">
+                        <input type="radio" id="rating10" name="rating" value="5.0" {% if form.rating.value == "5.0" %}checked{% endif %}/>
+                        <label for="rating10" title="5 stars"></label>
+                        <input type="radio" id="rating9" name="rating" value="4.5" {% if form.rating.value == "4.5" %}checked{% endif %}/>
+                        <label class="half" for="rating9" title="4.5 stars"></label>
+                        <input type="radio" id="rating8" name="rating" value="4.0" {% if form.rating.value == "4.0" %}checked{% endif %}/>
+                        <label for="rating8" title="4 stars"></label>
+                        <input type="radio" id="rating7" name="rating" value="3.5" {% if form.rating.value == "3.5" %}checked{% endif %}/>
+                        <label class="half" for="rating7" title="3.5 stars"></label>
+                        <input type="radio" id="rating6" name="rating" value="3.0" {% if form.rating.value == "3.0" %}checked{% endif %}/>
+                        <label for="rating6" title="3 stars"></label>
+                        <input type="radio" id="rating5" name="rating" value="2.5" {% if form.rating.value == "2.5" %}checked{% endif %}/>
+                        <label class="half" for="rating5" title="2.5 stars"></label>
+                        <input type="radio" id="rating4" name="rating" value="2.0" {% if form.rating.value == "2.0" %}checked{% endif %}/>
+                        <label for="rating4" title="2 stars"></label>
+                        <input type="radio" id="rating3" name="rating" value="1.5" {% if form.rating.value == "1.5" %}checked{% endif %}/>
+                        <label class="half" for="rating3" title="1.5 stars"></label>
+                        <input type="radio" id="rating2" name="rating" value="1.0" {% if form.rating.value == "1.0" %}checked{% endif %}/>
+                        <label for="rating2" title="1 star"></label>
+                        <input type="radio" id="rating1" name="rating" value="0.5" {% if form.rating.value == "0.5" %}checked{% endif %}/>
+                        <label class="half" for="rating1" title="0.5 stars"></label>
+                    </fieldset>
+                </div>
+                <!-- Rating validation -->
+                {% if form.rating.errors %}
+                    <div class="text-danger mb-2 text-center">
+                        {% for error in form.rating.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <!-- Review Textarea -->
                 <div class="input-group mb-4">
                     <span class="input-group-text">Your Review</span>
                     <textarea name="review_text" id="review_text" class="form-control"
                         aria-label="Write your review here" placeholder="Write your review here" required>{% if form.review_text.value and form.review_text.value != 'None' %}{{ form.review_text.value }}{% endif %}</textarea>
                 </div>
-            
+                <!-- Review Textarea validation -->
+                {% if form.review_text.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.review_text.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
