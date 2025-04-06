@@ -2,47 +2,58 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+
 
 
 
 class RegisterForm(UserCreationForm):
     """
-    Custom user registration form that extends Django's built-in
-    UserCreationForm.
-
-    This form allows users to sign up with the following fields:
-    - Username
-    - Email
-    - Password (password1 & password2)
-    - First Name
-    - Last Name
-    - Country of Residence (using django-countries)
-
-    All fields are styled with Bootstrap's "form-control" class for better UI
-    consistency.
+    Custom user registration form with email uniqueness validation.
     """
 
     email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30, required=True, help_text="Required.")
-    last_name = forms.CharField(max_length=30, required=True, help_text="Required.")
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        help_text="Required."
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        help_text="Required."
+    )
 
-
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = [
-            "username",
-            "email",
-            "password1",
-            "password2",
-            "first_name",
-            "last_name",
-        ]
+        fields = UserCreationForm.Meta.fields + (
+            'email',
+            'first_name',
+            'last_name',
+        )
         widgets = {
-            "username": forms.TextInput(),  
-            "email": forms.EmailInput(), 
-            "password1": forms.PasswordInput(),  
-            "password2": forms.PasswordInput(),  
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("This email address is already in use.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        if commit:
+            user.save()
+        return user
 
     def __init__(self, *args, **kwargs):
         """

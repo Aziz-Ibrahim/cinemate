@@ -1,19 +1,18 @@
-import logging
 import os
 import requests
+from django import forms
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib import messages
 from django.core.mail import send_mail
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
-from django import forms
 from .forms import RegisterForm, ContactForm
 from .models import FavoriteMovie, Profile
 
@@ -37,8 +36,8 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        """Saves the user and profile if the form is valid."""
-        user = form.save()
+        """Saves the user and creates the profile if the form is valid."""
+        user = form.save()  # Use the overridden save method from the form
 
         Profile.objects.get_or_create(user=user)
 
@@ -182,7 +181,6 @@ def remove_favorite_movie(request, movie_id):
         JsonResponse: A JSON response indicating success ("removed")
         or failure ("error").
     """
-    print(f"Request received to remove movie {movie_id}")  # Debugging
     if request.method == "POST":
         favorite_movie = get_object_or_404(
             FavoriteMovie, user=request.user, movie_id=movie_id
@@ -229,8 +227,8 @@ def contact_view(request):
             send_mail(
                 subject,
                 full_message,
-                os.getenv("EMAIL_HOST_USER"),  # Your email
-                [os.getenv("EMAIL_HOST_USER")],  # Receiver (yourself)
+                os.getenv("EMAIL_HOST_USER"),
+                [os.getenv("EMAIL_HOST_USER")],
                 fail_silently=False,
             )
 
