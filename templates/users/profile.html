@@ -36,7 +36,7 @@
             <h4>Favorite Movies</h4>
             {% if favorite_movies and favorite_movies|length > 0 %}
                 {% for movie in favorite_movies %}
-                <div class="col-12 col-md-4 col-lg-3 card-deck d-flex">
+                <div class="col-12 col-md-4 col-lg-3 card-deck d-flex mb-3">
                     <div class="card mb-4 shadow-sm" style="height: 100%;">
                         {% if movie.poster_path %}
                         <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="card-img-top"

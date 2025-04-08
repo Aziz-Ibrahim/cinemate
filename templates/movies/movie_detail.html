@@ -48,7 +48,7 @@
                     {% if movie.id in favorite_movie_ids %}btn-danger{% else %}btn-outline-light{% endif %}"
                     data-movie-id="{{ movie.id }}"
                     data-title="{{ movie.title }}"
-                    data-poster-path="{{ movie.poster_path }}"
+                    data-poster-path="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
                     data-release-date="{{ movie.release_date }}"
                     data-rating="{{ movie.vote_average }}"
                     data-is-favorite="{% if is_favorite %}true{% else %}false{% endif %}">
@@ -342,11 +342,11 @@
                         <div class="btn-wrapper text-center d-flex justify-content-between">
                             <a href="/movies/{{ movie.id }}/" class="btn btn-dark mx-1">Show More</a>
                             <!-- Favorite Button -->
-                            <button class="btn favorite-btn mx-1
+                            <button class="btn similar-movie-fav-btn mx-1
                                 {% if movie.id in favorite_movie_ids %}btn-danger{% else %}btn-outline-danger{% endif %}"
                                 data-movie-id="{{ movie.id }}"
                                 data-title="{{ movie.title }}"
-                                data-poster-path="{{ movie.poster_path }}"
+                                data-poster-path="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
                                 data-release-date="{{ movie.release_date }}"
                                 data-rating="{{ movie.vote_average }}"
                                 data-is-favorite="{% if is_favorite %}true{% else %}false{% endif %}">

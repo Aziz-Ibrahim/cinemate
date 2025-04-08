@@ -257,6 +257,10 @@ def toggle_favorite(request):
             release_date = request.POST.get("release_date")
             rating = request.POST.get("rating")
 
+            # Normalize poster path to full URL if needed
+            if poster_path and not poster_path.startswith("http"):
+                poster_path = f"https://image.tmdb.org/t/p/w500{poster_path}"
+
             # Validate movie_id
             try:
                 movie_id = int(movie_id.strip())

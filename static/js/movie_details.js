@@ -48,11 +48,13 @@ function toggleFavorite(button, event) {
     }
     button.disabled = true;
 
+    console.log("Toggling favorite for movie:", button.dataset.movieId);
+
     const movieId = parseInt(button.dataset.movieId, 10);
     const formData = new URLSearchParams({
         "movie_id": movieId,
         "title": button.dataset.title || "",
-        "poster_path": button.dataset.posterpath || "",
+        "poster_path": button.dataset.posterPath || "",
         "release_date": button.dataset.releasedate || "",
         "rating": button.dataset.rating || "0"
     });
@@ -67,17 +69,17 @@ function toggleFavorite(button, event) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Favorite toggle response:", data);
         const isNowFavorite = data.status === "added";
+        console.log("UI should reflect favorite:", isNowFavorite);
         updateFavoriteButtonUI(button, isNowFavorite);
     })
     .catch(error => console.error("Error toggling favorite:", error))
     .finally(() => {
         button.disabled = false;
     });
+    console.log("Sending poster_path:", button.dataset.posterPath);
 }
-
-// Create a debounced version of toggleFavorite
-const debouncedFavoriteToggle = debounceFavoriteClick(toggleFavorite, 250);
 
 /**
  * Debounces the favorite button click to prevent multiple requests.
@@ -85,44 +87,80 @@ const debouncedFavoriteToggle = debounceFavoriteClick(toggleFavorite, 250);
  * @param {number} delay - The delay in milliseconds.
  * @returns {Function} - A debounced version of the function.
  */
-function debounceFavoriteClick(func, delay) {
+function debounce(fn, delay) {
     let timeoutId;
-    return function (event) {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
-        timeoutId = setTimeout(() => {
-            func(this, event); // Pass 'this' (the button) explicitly
-        }, delay);
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn.apply(this, args), delay);
     };
 }
+
 
 /**
  * Initializes the favorite button.
  * @param {number} movieId - The ID of the movie.
  */
-function initializeFavoriteButton(movieId) {
+function initializeFavoriteButtons(movieId) {
     const favButton = document.querySelector(".favorite-btn");
     if (!favButton) return;
 
-    // Fetch user's favorite movies and update button state
+    // Fetch user's favorite movies and check if the current movie is a favorite
     fetch("/movies/get_favorite_movies/")
         .then(response => response.json())
         .then(data => {
-            if (data && data.favorite_movie_ids && data.favorite_movie_ids.includes(movieId)) {
-                updateFavoriteButtonUI(favButton, true);
-                favButton.dataset.isFavorite = "true";
-            } else {
-                updateFavoriteButtonUI(favButton, false);
-                favButton.dataset.isFavorite = "false";
-            }
+            const favoriteMovieIds = data.favorite_movie_ids;
+            // Initialize main movie button first
+            initializeMainMovieFavoriteButton(favButton, movieId, favoriteMovieIds);
+            // Then initialize similar movie buttons
+            initializeSimilarMoviesFavoriteButtons(favoriteMovieIds);
         })
         .catch(error => console.error("Error fetching favorites:", error));
-
-    favButton.addEventListener("click", debounceFavoriteClick(function(button, event) {
-        toggleFavorite(button, event);
-    }, 250));
 }
+
+/**
+ * Initializes main movie favorite button and its event listener.
+ */
+function initializeMainMovieFavoriteButton(favButton, movieId, favoriteMovieIds) {
+    // REMOVE ANY PREVIOUS EVENT LISTENERS
+    favButton.replaceWith(favButton.cloneNode(true));
+    const newButton = document.querySelector(".favorite-btn");
+
+    // Check if the main movie is in the user's favorites
+    const isFavorite = favoriteMovieIds.includes(movieId);
+    updateFavoriteButtonUI(newButton, isFavorite);
+
+    // Create debounced version of toggleFavorite inside here
+    const debouncedToggle = debounce((event) => {
+        toggleFavorite(newButton, event);
+    }, 300);
+
+    newButton.addEventListener("click", debouncedToggle);
+}
+
+/**
+ * Initializes favorite buttons for similar movies.
+ * @param {Array} favoriteMovieIds - Array of favorite movie IDs.
+ */
+function initializeSimilarMoviesFavoriteButtons(favoriteMovieIds) {
+    const similarMovieButtons = document.querySelectorAll(".similar-movie-fav-btn");
+
+    similarMovieButtons.forEach(button => {
+        const movieId = parseInt(button.dataset.movieId, 10);
+
+        // Check if this similar movie is in the user's favorites
+        const isFavorite = favoriteMovieIds.includes(movieId);
+        updateFavoriteButtonUI(button, isFavorite);
+
+        // Create debounced version of toggleFavorite inside here for similar movies
+        const debouncedToggle = debounce((event) => {
+            toggleFavorite(button, event);
+        }, 300);
+
+        button.addEventListener("click", debouncedToggle);
+    });
+}
+
+
 
 /**
  * Initializes backdrop image carousel.
@@ -276,18 +314,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const movieId = extractMovieIdFromUrl();
     if (movieId) {
         fetchMovieDetails(movieId);
-        initializeFavoriteButton(movieId);
+
+        // Initialize both the main movie's and similar movies' favorite buttons
+        initializeFavoriteButtons(movieId);
+
         initializeBackdropCarousel();
         initializeLogoCarousel();
         setupReviewActions();
     } else {
         console.warn("Movie ID not found in URL. Check if the URL format is correct.");
     }
-    document.addEventListener("click", function (event) {
-        const button = event.target.closest(".favorite-btn");
-        if (button) {
-            toggleFavorite(button, event);
-        }
-    });
-    
 });
