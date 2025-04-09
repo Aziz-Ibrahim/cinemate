@@ -24,72 +24,75 @@
 
 <body>
     <header>
-            <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/"><img src="{% static 'images/logo-nav.png' %}"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Movies Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="moviesDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fa-solid fa-clapperboard"></i> Movies
-                        </a>
-                        <ul class="dropdown-menu">
-                            {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="{% url 'movies:movie_list' %}"><i class="fa-solid fa-film"></i> All Movies</a></li>
-                            {% endif %}
-                            <li><a class="dropdown-item" href="{% url 'movies:trending' %}"><i class="fa-solid fa-fire"></i> Trending Now</a></li>
-                        </ul>
-                    </li>
-    
-                    {% if user.is_authenticated %}
-                    <!-- Search Icon (Only for logged-in users) -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
-                            <i class="fa-solid fa-search"></i> Search by title
-                        </a>
-                    </li>
-    
-                    <!-- Profile -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}"><i class="fa-solid fa-user"></i> Profile</a>
-                    </li>
-                    {% else %}
-                    <!-- Login & Register for Guests -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}"><i class="fa-solid fa-user-plus"></i> Register</a>
-                    </li>
-                    {% endif %}
-                    <!-- About page -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}"><i class="fa-solid fa-circle-info"></i> About Cinemate</a>
-                    </li>
-                    <!-- Contact Page -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'contact' %}"><i class="fa-solid fa-envelope"></i> Contact Us</a>
-                    </li>
-                    <!-- Logout for authenticated users -->
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-link text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-                        </form>
-                    </li>
-                    {% endif %}                    
-                </ul>
-            </div>
-        </div>
-    </nav>
-    </header>
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Main Navigation">
+            <div class="container">
+                <a class="navbar-brand" href="/" aria-label="Cinemate home page">
+                    <img src="{% static 'images/logo-nav.png' %}" alt="Cinemate Logo">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation bar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Movies Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="moviesDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-clapperboard" aria-hidden="true"></i> Movies
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="moviesDropdown">
+                                {% if user.is_authenticated %}
+                                <li><a class="dropdown-item" href="{% url 'movies:movie_list' %}"><i class="fa-solid fa-film" aria-hidden="true"></i> All Movies</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'movies:trending' %}"><i class="fa-solid fa-fire" aria-hidden="true"></i> Trending Now</a></li>
+                            </ul>
+                        </li>
 
+                        {% if user.is_authenticated %}
+                        <!-- Search Icon (Only for logged-in users) -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="Open search modal">
+                                <i class="fa-solid fa-search" aria-hidden="true"></i> Search by title
+                            </a>
+                        </li>
+
+                        <!-- Profile -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}" aria-label="Go to profile page"><i class="fa-solid fa-user" aria-hidden="true"></i> Profile</a>
+                        </li>
+                        {% else %}
+                        <!-- Login & Register for Guests -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}" aria-label="Go to login page"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}" aria-label="Go to registration page"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Register</a>
+                        </li>
+                        {% endif %}
+                        <!-- About page -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'about' %}" aria-label="Go to about page"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Cinemate</a>
+                        </li>
+                        <!-- Contact Page -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'contact' %}" aria-label="Go to contact page"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Contact Us</a>
+                        </li>
+                        <!-- Logout for authenticated users -->
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link text-danger" aria-label="Log out of the website">
+                                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <main>
         <!-- Page Content -->
@@ -105,12 +108,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="searchModalLabel">Search Movies</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close search modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="d-flex" method="get" action="{% url 'movies:movie_list' %}">
-                        <input class="form-control me-2" type="search" name="search" value="{{ search_query|default_if_none:'' }}" placeholder="Search movies" aria-label="Search">
-                        <button class="btn btn-dark" type="submit">Search</button>
+                    <form class="d-flex" method="get" action="{% url 'movies:movie_list' %}" aria-label="Search movies">
+                        <input class="form-control me-2" type="search" name="search" value="{{ search_query|default_if_none:'' }}" placeholder="Search movies" aria-label="Search for movies by title">
+                        <button class="btn btn-dark" type="submit" aria-label="Submit search">Search</button>
                     </form>
                 </div>
             </div>
