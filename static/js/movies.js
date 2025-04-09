@@ -15,7 +15,7 @@ function initializeBackToTopButton() {
 }
 
 /**
- * Initializes favorite buttons, ensuring favorite status persists.
+ * Initializes favorite buttons, ensuring favorite status persists and event listeners are bound.
  */
 function initializeFavoriteButtons() {
     document.querySelectorAll(".favorite-btn").forEach(button => {
@@ -29,19 +29,22 @@ function initializeFavoriteButtons() {
 }
 
 /**
- * Debounces the favorite button click to prevent multiple requests.
+ * Debounces the favorite button click to prevent multiple rapid requests.
  * @param {Function} func - The function to debounce.
  * @param {number} delay - The delay in milliseconds.
  * @returns {Function} - A debounced version of the function.
  */
 function debounceFavoriteClick(func, delay) {
     let timeoutId;
-    return function (event, ...args) {
+    return function (...args) {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
+
+        const context = this;
+
         timeoutId = setTimeout(() => {
-            func.apply(this, [this, event, ...args]);
+            func.apply(context, args);
         }, delay);
     };
 }
@@ -50,7 +53,7 @@ function debounceFavoriteClick(func, delay) {
  * Toggles the favorite status of a movie and updates the UI.
  */
 function toggleFavorite(button, event) {
-    if (event) {
+    if (event && typeof event.stopPropagation === "function") {
         event.stopPropagation();
     }
 
@@ -77,20 +80,13 @@ function toggleFavorite(button, event) {
         .then(data => {
             const isNowFavorite = data.status === "added";
             updateFavoriteButtonUI(button, isNowFavorite);
+            button.dataset.isFavorite = isNowFavorite.toString();
         })
         .catch(error => console.error("Error toggling favorite:", error))
         .finally(() => {
             button.disabled = false;
         });
 }
-
-// Create a debounced version of toggleFavorite
-const debouncedFavoriteToggle = debounceFavoriteClick(toggleFavorite, 250);
-
-// Modify the event listener to use the debounced function
-document.querySelectorAll(".favorite-btn").forEach(button => {
-    button.addEventListener("click", (event) => debouncedFavoriteToggle(button, event));
-});
 
 /**
  * Updates the UI of the favorite button based on favorite status.
@@ -287,12 +283,6 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeReviewForm();
     setupInfiniteScroll();
     initializeFavoriteButtons();
-
-    document.addEventListener("click", function (event) {
-        if (event.target.closest(".favorite-btn")) {
-            debouncedFavoriteToggle(event.target.closest(".favorite-btn"), event);
-        }
-    });
 
     fetch("/movies/get_favorite_movies/")
         .then(response => response.json())
