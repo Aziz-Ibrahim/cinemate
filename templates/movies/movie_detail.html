@@ -26,7 +26,7 @@
             <div class="col-12 col-md-6 mb-4 mb-md-0">
                 <!-- Movie poster -->
                 {% if movie.poster_path %}
-                    <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="img-fluid rounded"
+                    <img id="movie-poster" src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" class="img-fluid rounded"
                         alt="{{ movie.title }}">
                 {% else %}
                     <img src="{% static 'images/img-not-found.png' %}" class="img-fluid rounded"
@@ -37,10 +37,10 @@
             <div class="col-12 col-md-6">
                 <!-- Overview -->
                 <div>
-                    <h1 class="display-4 display-md-1">{{ movie.title }}</h1>
-                    <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
-                    <p><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
-                    <p><strong>Overview:</strong> {{ movie.overview }}</p>
+                    <h1 id="movie-title" class="display-4 display-md-1">{{ movie.title }}</h1>
+                    <p id="release-date"><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                    <p id="rating"><strong>Rating:</strong> {{ movie.vote_average }}/10</p>
+                    <p id="overview"><strong>Overview:</strong> {{ movie.overview }}</p>
                 </div>
                 <!-- Favorite Button -->
             <div class="mt-3">
