@@ -123,7 +123,7 @@
     <!-- Custom Javascript -->
     {% if request.resolver_match.view_name == "movies:movie_list" %}
         <script src="{% static 'js/movies.js' %}"></script>
-    {% elif request.resolver_match.view_name == "movies:movie_details" %}
+    {% elif request.resolver_match.view_name == "movies:movie_detail" %}
         <script src="{% static 'js/movie_details.js' %}"></script>
     {% endif %}
     <!-- Bootstrap Javascript -->
