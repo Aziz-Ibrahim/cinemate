@@ -17,9 +17,15 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
     path("profile/", profile_view, name="profile"),  # Logged-in user's profile
     path("profile/<str:username>/", profile_view, name="user_profile"),
-    path("add_favorite/<int:movie_id>/", add_favorite_movie, name="add_favorite"),  # noqa: E501
     path(
-        "remove_favorite/<int:movie_id>/", remove_favorite_movie, name="remove_favorite"  # noqa: E501
+        "add_favorite/<int:movie_id>/",
+        add_favorite_movie,
+        name="add_favorite",
+    ),
+    path(
+        "remove_favorite/<int:movie_id>/",
+        remove_favorite_movie,
+        name="remove_favorite"
     ),
     path("change-password/", change_password, name="change_password"),
     path("contact/", contact_view, name="contact"),

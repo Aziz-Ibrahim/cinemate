@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Actor(models.Model):
     tmdb_id = models.IntegerField(unique=True)  # Link to TMDB ID
     name = models.CharField(max_length=255)

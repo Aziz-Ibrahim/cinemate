@@ -135,6 +135,7 @@ def get_movie_details(movie_id):
 
     return None  # Return None if the movie is not found
 
+
 @login_required
 def movie_detail(request, movie_id):
     """
@@ -142,9 +143,9 @@ def movie_detail(request, movie_id):
     Includes images, reviews, cast, and watch providers.
     """
     try:
-        movie_id = int(movie_id) #Convert to int
+        movie_id = int(movie_id)  # Convert to int
     except ValueError:
-        return HttpResponseBadRequest("Invalid movie ID") #Handle error
+        return HttpResponseBadRequest("Invalid movie ID")  # Handle error
 
     # Fetch movie details
     movie = get_movie_details(movie_id)
@@ -168,11 +169,11 @@ def movie_detail(request, movie_id):
 
     # Fetch watch providers
     watch_providers_data = (
-    movie.get("watch/providers", {})
-    .get("results", {})
-    .get("GB", {})
-    )
-    
+            movie.get("watch/providers", {})
+            .get("results", {})
+            .get("GB", {})
+        )
+
     watch_providers = {
         provider_type: [
             {
@@ -208,10 +209,14 @@ def movie_detail(request, movie_id):
         },
     )
 
+
 def get_movie_images(movie_id):
     """Fetch movie images (backdrops and logos) from the TMDB API."""
     api_key = TMDB_API_KEY
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}/images?api_key={api_key}"
+    url = (
+        f"https://api.themoviedb.org/3/movie/{movie_id}/images?"
+        f"api_key={api_key}"
+    )
 
     try:
         response = requests.get(url)

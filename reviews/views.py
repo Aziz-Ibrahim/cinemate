@@ -71,7 +71,6 @@ def submit_review(request, movie_id):
     )
 
 
-
 @login_required
 def update_review(request, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)

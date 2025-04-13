@@ -158,7 +158,10 @@ def add_favorite_movie(request, movie_id):
             user=request.user,
             movie_id=movie_id,
             title=movie_data.get("title", "Unknown Movie"),
-            poster_path=f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path', '')}"  # noqa: E501
+            poster_path=(
+                f"https://image.tmdb.org/t/p/w500"
+                f"{movie_data.get('poster_path', '')}"
+            )
             if movie_data.get("poster_path")
             else None,
             release_date=movie_data.get("release_date", ""),

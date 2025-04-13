@@ -9,7 +9,8 @@ def actor_detail(request, actor_id):
     """Fetches and displays details for a specific actor."""
     actor_url = (
         f"https://api.themoviedb.org/3/person/{actor_id}"
-        f"?api_key={TMDB_API_KEY}&append_to_response=movie_credits,external_ids"
+        f"?api_key={TMDB_API_KEY}"
+        f"&append_to_response=movie_credits,external_ids"
     )
     response = requests.get(actor_url)
 
@@ -20,7 +21,9 @@ def actor_detail(request, actor_id):
 
     actor = response.json()
 
-    similar_actors = get_similar_actors_by_genre(actor.get("movie_credits", {}))
+    similar_actors = get_similar_actors_by_genre(
+        actor.get("movie_credits", {})
+    )
 
     # Extract social media links
     external_ids = actor.get('external_ids', {})
@@ -29,8 +32,10 @@ def actor_detail(request, actor_id):
         if external_ids.get('imdb_id') else None,
         "twitter": f"https://twitter.com/{external_ids.get('twitter_id')}"
         if external_ids.get('twitter_id') else None,
-        "instagram": f"https://instagram.com/{external_ids.get('instagram_id')}"
-        if external_ids.get('instagram_id') else None,
+        "instagram": (
+            f"https://instagram.com/{external_ids.get('instagram_id')}"
+            if external_ids.get('instagram_id') else None
+        ),
         "facebook": f"https://facebook.com/{external_ids.get('facebook_id')}"
         if external_ids.get('facebook_id') else None,
     }

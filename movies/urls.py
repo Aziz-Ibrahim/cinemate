@@ -6,7 +6,7 @@ from .views import (
     movie_detail_api,
     trending_movies,
     get_favorite_movies
-) 
+)
 
 app_name = "movies"
 
@@ -18,8 +18,10 @@ urlpatterns = [
         "get_favorite_movies/", get_favorite_movies, name="get_favorite_movies"
     ),
     path(
-        "api/details/<int:movie_id>/", movie_detail_api, name="movie_detail_api"
+        "api/details/<int:movie_id>/",
+        movie_detail_api,
+        name="movie_detail_api",
     ),
     path("trending/", trending_movies, name="trending"),
-    path("reviews/", include("reviews.urls")),  
+    path("reviews/", include("reviews.urls")),
 ]
