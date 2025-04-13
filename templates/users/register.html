@@ -40,6 +40,7 @@
                 <div class="mb-3">
                     {{ form.username.label_tag }}
                     {{ form.username }}
+                    <div id="id_username_helptext" class="form-text text-secondary">Enter your desired username.</div>
                 </div>
                 
                 <div class="mb-3">
@@ -50,16 +51,13 @@
                 <div class="mb-3">
                     {{ form.first_name.label_tag }}
                     {{ form.first_name }}
+                    <div id="id_first_name_helptext" class="form-text text-secondary">Please enter your first name.</div>
                 </div>
                 
                 <div class="mb-3">
                     {{ form.last_name.label_tag }}
                     {{ form.last_name }}
-                </div>
-                
-                <div class="mb-3">
-                    {{ form.country.label_tag }}
-                    {{ form.country }}
+                    <div id="id_last_name_helptext" class="form-text text-secondary">Please enter your last name.</div>
                 </div>
 
                 <div class="mb-3">
@@ -70,6 +68,7 @@
                             <i class="fa fa-eye"></i>
                         </button>
                     </div>
+                    <div id="id_password1_helptext" class="form-text text-secondary">Your password must be at least 8 characters long.</div>
                 </div>
 
                 <div class="mb-3">
@@ -80,6 +79,7 @@
                             <i class="fa fa-eye"></i>
                         </button>
                     </div>
+                    <div id="id_password2_helptext" class="form-text text-secondary">Please confirm your password.</div>
                 </div>
 
                 <button type="submit" class="btn btn-dark w-100">Register</button>

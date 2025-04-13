@@ -182,25 +182,25 @@
                 {{ form.rating.as_hidden }}
                 <div class="{% if form.rating.errors %}border border-danger rounded p-2{% endif %}">
                     <fieldset class="rate">
-                        <input type="radio" id="rating10" name="rating" value="5.0" {% if form.rating.value == "5.0" %}checked{% endif %}/>
+                        <input type="radio" id="rating10" name="rating" value="5.0" {% if form.rating.value == "5.0" %}checked{% endif %}>
                         <label for="rating10" title="5 stars"></label>
-                        <input type="radio" id="rating9" name="rating" value="4.5" {% if form.rating.value == "4.5" %}checked{% endif %}/>
+                        <input type="radio" id="rating9" name="rating" value="4.5" {% if form.rating.value == "4.5" %}checked{% endif %}>
                         <label class="half" for="rating9" title="4.5 stars"></label>
-                        <input type="radio" id="rating8" name="rating" value="4.0" {% if form.rating.value == "4.0" %}checked{% endif %}/>
+                        <input type="radio" id="rating8" name="rating" value="4.0" {% if form.rating.value == "4.0" %}checked{% endif %}>
                         <label for="rating8" title="4 stars"></label>
-                        <input type="radio" id="rating7" name="rating" value="3.5" {% if form.rating.value == "3.5" %}checked{% endif %}/>
+                        <input type="radio" id="rating7" name="rating" value="3.5" {% if form.rating.value == "3.5" %}checked{% endif %}>
                         <label class="half" for="rating7" title="3.5 stars"></label>
-                        <input type="radio" id="rating6" name="rating" value="3.0" {% if form.rating.value == "3.0" %}checked{% endif %}/>
+                        <input type="radio" id="rating6" name="rating" value="3.0" {% if form.rating.value == "3.0" %}checked{% endif %}>
                         <label for="rating6" title="3 stars"></label>
-                        <input type="radio" id="rating5" name="rating" value="2.5" {% if form.rating.value == "2.5" %}checked{% endif %}/>
+                        <input type="radio" id="rating5" name="rating" value="2.5" {% if form.rating.value == "2.5" %}checked{% endif %}>
                         <label class="half" for="rating5" title="2.5 stars"></label>
-                        <input type="radio" id="rating4" name="rating" value="2.0" {% if form.rating.value == "2.0" %}checked{% endif %}/>
+                        <input type="radio" id="rating4" name="rating" value="2.0" {% if form.rating.value == "2.0" %}checked{% endif %}>
                         <label for="rating4" title="2 stars"></label>
-                        <input type="radio" id="rating3" name="rating" value="1.5" {% if form.rating.value == "1.5" %}checked{% endif %}/>
+                        <input type="radio" id="rating3" name="rating" value="1.5" {% if form.rating.value == "1.5" %}checked{% endif %}>
                         <label class="half" for="rating3" title="1.5 stars"></label>
-                        <input type="radio" id="rating2" name="rating" value="1.0" {% if form.rating.value == "1.0" %}checked{% endif %}/>
+                        <input type="radio" id="rating2" name="rating" value="1.0" {% if form.rating.value == "1.0" %}checked{% endif %}>
                         <label for="rating2" title="1 star"></label>
-                        <input type="radio" id="rating1" name="rating" value="0.5" {% if form.rating.value == "0.5" %}checked{% endif %}/>
+                        <input type="radio" id="rating1" name="rating" value="0.5" {% if form.rating.value == "0.5" %}checked{% endif %}>
                         <label class="half" for="rating1" title="0.5 stars"></label>
                     </fieldset>
                 </div>
@@ -247,9 +247,9 @@
                 {% for review in movie.reviews.results %}
                 <div class="tmdb-review p-3 mb-3 border rounded">
                     <div class="d-flex align-items-center mb-2">
-                        <a href="https://www.themoviedb.org/u/{{ review.author }}" target="_blank" class="fw-bold me-2 link-dark text-decoration-none">
+                        <p class="fw-bold me-2 text-decoration-none">
                             {{ review.author }}
-                        </a>
+                        </p>
                         <span class="text-muted">{{ review.created_at|date:"F j, Y" }}</span>
                     </div>
                     {% if review.author_details.rating %}
@@ -303,7 +303,7 @@
         <div class="carousel-inner">
             {% for video in movie.videos.results %}
             <div class="carousel-item {% if forloop.first %}active{% endif %} text-center">
-                <iframe width="70%" height="400" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0" allowfullscreen></iframe>
+                <iframe class="trailer-frame" src="https://www.youtube.com/embed/{{ video.key }}" allowfullscreen></iframe>
             </div>
             {% endfor %}
         </div>

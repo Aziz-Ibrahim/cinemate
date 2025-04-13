@@ -91,8 +91,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Limit to 3 lines */
-    line-clamp: 3;
     -webkit-box-orient: vertical;
 }
 
@@ -145,7 +143,7 @@ body {
 .details-container {
     position: relative;
     overflow: hidden;
-    min-height: 500px; /* Adjust as needed */
+    min-height: 500px;
 }
 
 .details-container::before {
@@ -260,6 +258,11 @@ label:hover ~ input:checked ~ label /* highlight previous selected stars */ { co
 .carousel-control-prev,
 .carousel-control-next {
   background-color: rgba(255, 255, 255, 0.2); /* Very light background */
+}
+
+.trailer-frame {
+    width: 70%;
+    height: 400px;
 }
 
 /* Similar movies section */
