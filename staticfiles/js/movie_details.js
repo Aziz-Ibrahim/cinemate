@@ -21,7 +21,7 @@ function fetchMovieDetails(movieId) {
             document.getElementById("release-date").textContent = data.release_date;
             document.getElementById("rating").textContent = data.vote_average;
             document.getElementById("overview").textContent = data.overview;
-        })
+        });
 }
 
 /**
