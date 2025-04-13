@@ -17,6 +17,7 @@ Cinemate is a dynamic web application designed to empower movie enthusiasts to d
   - [Heroku Deployment](#heroku-deployment)
 - [Usage](#usage)
 - [Manual Testing](#manual-testing)
+- [Static Analysis Reports](#static-analysis-reports)
 - [Future Enhancements](#future-enhancements)
 - [Credits](#credits)
 - [License](#license)
@@ -138,27 +139,44 @@ Cinemate is a dynamic web application designed to empower movie enthusiasts to d
 
 ## Manual Testing
 
-| Feature                     | Test Description                                                                 | Status        |
-| :-------------------------- | :------------------------------------------------------------------------------- | :------------ |
-| **User Authentication** |                                                                                  |               |
-| Sign Up                     | Register with valid credentials and verify redirection to the login page.            | ✅ Successful |
-| Login                       | Enter valid credentials and confirm redirection to the homepage.                      | ✅ Successful |
-| Logout                      | Click the logout button and ensure return to the login page.                               | ✅ Successful |
-| **Movie Search and Details** |                                                                                  |               |
-| Search                      | Ensure movie search results display dynamically.                                      | ✅ Successful |
-| Movie Details               | Verify that movie details pages load correctly.                                    | ✅ Successful |
-| Trailers and Providers      | Confirm that correct trailer and provider information is displayed.                        | ✅ Successful |
-| **Review System** |                                                                                  |               |
-| Submit Review               | Ensure that reviews are submitted dynamically without requiring a page reload.             | ✅ Successful |
-| Edit Review                 | Verify that review edits update dynamically.                                         | ✅ Successful |
-| Delete Review               | Confirm that reviews are removed dynamically.                                         | ✅ Successful |
-| **Favorites** |                                                                                  |               |
-| Add to Favorites            | Ensure that movies are added to favorites and the UI updates accordingly.             | ✅ Successful |
-| Remove from Favorites       | Verify that removing movies from favorites is reflected in the UI.                      | ✅ Successful |
-| Favorites Page              | Confirm that added movies appear correctly on the favorites page.                       | ✅ Successful |
-| **Responsiveness** |                                                                                  |               |
-| Mobile and Tablet Testing   | Ensure that the application is fully responsive across mobile and tablet devices. | ✅ Successful |
-| Browser Compatibility       | Verify consistency and functionality across Chrome, Firefox, and Edge browsers.   | ✅ Successful |
+| Feature                     | Test Description                                                                 | Status         |
+| :-------------------------- | :------------------------------------------------------------------------------- | :------------- |
+| **User Authentication** |                                                                                |                |
+| Sign Up                     | Register with valid credentials and verify redirection to the login page.        | ✅ Successful  |
+| Login                       | Enter valid credentials and confirm redirection to the homepage.                 | ✅ Successful  |
+| Logout                      | Click the logout button and ensure return to the login page.                     | ✅ Successful  |
+| **Movie Search and Details** |                                                                                |                |
+| Search                      | Ensure movie search results display dynamically.                                 | ✅ Successful  |
+| Movie Details               | Verify that movie details pages load correctly.                                  | ✅ Successful  |
+| Trailers and Providers      | Confirm that correct trailer and provider information is displayed.              | ✅ Successful  |
+| **Review System** |                                                                                |                |
+| Submit Review               | Ensure that reviews are submitted dynamically without requiring a page reload.   | ✅ Successful  |
+| Edit Review                 | Verify that review edits update dynamically.                                   | ✅ Successful  |
+| Delete Review               | Confirm that reviews are removed dynamically.                                    | ✅ Successful  |
+| **Favorites** |                                                                                |                |
+| Add to Favorites            | Ensure that movies are added to favorites and the UI updates accordingly.         | ✅ Successful  |
+| Remove from Favorites       | Verify that removing movies from favorites is reflected in the UI.              | ✅ Successful  |
+| Favorites Page              | Confirm that added movies appear correctly on the favorites page.                | ✅ Successful  |
+| **Responsiveness** |                                                                                |                |
+| Mobile and Tablet Testing   | Ensure that the application is fully responsive across mobile and tablet devices. | ✅ Successful  |
+| Browser Compatibility       | Verify consistency and functionality across Chrome, Firefox, and Edge browsers.  | ✅ Successful  |
+
+---
+
+## Static Analysis Reports
+
+This project incorporates static analysis to ensure code quality and adherence to best practices. The following reports were generated and are available in the `docs` directory for review:
+
+* [PEP 8 Linter Report](docs/cinemate-pep8-linter-report.pdf) - Details on Python code style compliance.
+* [HTML Markup Validation Report](docs/cinemtate-html-markup-validation-report.pdf) - Results of validating HTML structure and syntax.
+* [CSS Markup Validation Report](docs/cinemate-css-markup-validation-report.pdf) - Results of validating CSS syntax and properties.
+* [JavaScript JSHint Report](docs/cinemate-jshint-report.pdf) - Analysis of JavaScript code for ES6 compliance and potential issues.
+
+Additionally, the following design and planning documents are also available:
+
+* [Entity-Relationship Diagram (ERD)](docs/cinemate-erd.pdf) - Visual representation of the application's data model.
+* [Wireframes](docs/cinemate-wireframes.pdf) - Low-fidelity visual outlines of the application's user interface.
+* [Data Flow Diagram](docs/data-flow-diagram.pdf) - Illustrates the flow of data within the application.
 
 ---
 
@@ -166,8 +184,8 @@ Cinemate is a dynamic web application designed to empower movie enthusiasts to d
 
 | Feature             | Description                                                                 | Status      |
 | :------------------ | :-------------------------------------------------------------------------- | :---------- |
-| Bookmark Movies          | Include bookmarking movies besides adding to favorite               | 🔄 Planned |
-| Dark Mode Toggle    | Introduce a dark mode toggle for improved accessibility and user experience. | 🔄 Planned |
+| Bookmark Movies     | Include bookmarking movies besides adding to favorite                     | 🔄 Planned  |
+| Dark Mode Toggle    | Introduce a dark mode toggle for improved accessibility and user experience. | 🔄 Planned  |
 
 ---
 
@@ -180,7 +198,3 @@ Cinemate is a dynamic web application designed to empower movie enthusiasts to d
 ## License
 
 * This project is open-source and available under the MIT License.
-
-
-testadmin
-siteadmin123
