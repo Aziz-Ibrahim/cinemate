@@ -175,7 +175,10 @@
             {% if user.is_authenticated %}
             <h4>Leave a Review</h4>
             {% if movie.id %}
-            <form method="POST" action="{% url 'reviews:submit_review' movie.id %}">
+            <!-- Error handling -->
+            <div id="review-errors" class="alert alert-danger d-none"></div>
+            <!-- Form -->
+            <form id="review-form" method="POST" action="{% url 'reviews:submit_review' movie.id %}">
                 {% csrf_token %}
                 
                 <!-- Star Rating System -->
@@ -217,7 +220,7 @@
                 <div class="input-group mb-4">
                     <span class="input-group-text">Your Review</span>
                     <textarea name="review_text" id="review_text" class="form-control"
-                        aria-label="Write your review here" placeholder="Write your review here" required>{% if form.review_text.value and form.review_text.value != 'None' %}{{ form.review_text.value }}{% endif %}</textarea>
+                        aria-label="Write your review here" placeholder="Write your review here" >{% if form.review_text.value and form.review_text.value != 'None' %}{{ form.review_text.value }}{% endif %}</textarea>
                 </div>
                 <!-- Review Textarea validation -->
                 {% if form.review_text.errors %}

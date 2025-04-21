@@ -193,6 +193,103 @@ function initializeLogoCarousel() {
 }
 
 /**
+ * Handles review submission.
+ */
+function setupAjaxReviewSubmission() {
+    const form = document.getElementById("review-form");
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const newReview = `
+                <div class="review p-3 mb-3 border rounded" id="review-${data.review_id}">
+                    <div class="d-flex align-items-center mb-2">
+                        <a href="/profile/${data.username}/" class="fw-bold me-2 link-dark text-decoration-none">
+                            ${data.username}
+                        </a>
+                        <span class="text-muted">Just now</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-warning text-dark" id="review-rating-${data.review_id}">${data.rating}/5</span>
+                    </div>
+                    <p id="review-text-${data.review_id}">${data.review_text}</p>
+                    <button class="btn btn-sm btn-outline-dark edit-review-btn" data-review-id="${data.review_id}" data-review-text="${data.review_text}" data-review-rating="${data.rating}">
+                        Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-review-btn" data-review-id="${data.review_id}">
+                        Delete
+                    </button>
+                </div>
+                `;
+
+                // Clear previous errors
+                const errorContainer = document.getElementById("review-errors");
+                if (errorContainer) {
+                    errorContainer.classList.add("d-none");
+                    errorContainer.innerHTML = "";
+                }
+
+
+                // Check if the review already exists in the DOM
+                const existingReview = document.getElementById(`review-${data.review_id}`);
+                if (existingReview) {
+                    existingReview.outerHTML = newReview;
+                } else {
+                    document.getElementById("reviews").insertAdjacentHTML("afterbegin", newReview);
+}
+
+                form.reset(); // Clear the form (including radio stars)
+
+                // Refresh edit/delete handlers
+                setupReviewActions();
+            } else {
+                const errorContainer = document.getElementById("review-errors");
+                if (errorContainer) {
+                    // Clear previous errors
+                    errorContainer.classList.remove("d-none");
+                    errorContainer.innerHTML = "";
+            
+                    // Loop through each field error and show a detailed message
+                    let errorMessages = "";
+            
+                    // Loop through the fields
+                    for (const [field, messages] of Object.entries(data.errors)) {
+                        let fieldName = field.charAt(0).toUpperCase() + field.slice(1); // Capitalize the field name
+            
+                        // For example, if the field is 'rating', change the message to 'Rating is required'
+                        if (field === "rating") {
+                            errorMessages += `<li>Please select a ${fieldName.toLowerCase()}.</li>`;
+                        } else if (field === "review_text") {
+                            errorMessages += `<li>Please enter a review text.</li>`;
+                        } else {
+                            errorMessages += `<li>${fieldName} is required.</li>`;
+                        }
+                    }
+            
+                    // Display the errors
+                    errorContainer.innerHTML = `<ul class="mb-0">${errorMessages}</ul>`;
+                }
+            }            
+        });
+    });
+}
+
+
+
+/**
  * Handles review actions (edit & delete).
  */
 function setupReviewActions() {
@@ -275,6 +372,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initializeBackdropCarousel();
         initializeLogoCarousel();
         setupReviewActions();
+        setupAjaxReviewSubmission();
     } else {
         console.warn("Movie ID not found in URL. Check if the URL format is correct.");
     }

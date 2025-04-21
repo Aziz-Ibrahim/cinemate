@@ -14,38 +14,25 @@ TMDB_API_KEY = settings.TMDB_API_KEY
 @login_required
 def submit_review(request, movie_id):
     """
-    Handles the submission of movie reviews and ratings.
-
-    Allows logged-in users to submit or update reviews for a specific movie.
-    The review and rating are stored locally and sent to TMDB API.
-
-    Args:
-        request (HttpRequest): The incoming HTTP request.
-        movie_id (int): The TMDB movie ID for the movie being reviewed.
-
-    Returns:
-        HttpResponse: Renders the movie detail page with the review form or
-        redirects to the movie detail page after successful submission.
+    Handles submission of movie reviews and ratings, via AJAX or normal POST.
     """
+    is_ajax = request.headers.get("X-Requested-With", "").lower() == \
+        "xmlhttprequest"
 
-    # Check if user already has a review for this movie
     existing_review = Review.objects.filter(
         movie_id=movie_id, user=request.user
     ).first()
 
     if request.method == "POST":
-        # Prefill if exists
         form = ReviewForm(request.POST, instance=existing_review)
         if form.is_valid():
             review = form.save(commit=False)
             review.user = request.user
-            review.movie_id = movie_id  # Store movie ID from TMDB
+            review.movie_id = movie_id
             review.save()
 
-            # Convert rating to TMDB’s scale (0-5 → 0-10)
+            # TMDB rating (0.0–10.0 scale)
             user_rating = float(form.cleaned_data["rating"]) * 2
-
-            # Send rating to TMDB
             tmdb_url = f"https://api.themoviedb.org/3/movie/{movie_id}/rating"
             headers = {
                 "Authorization": f"Bearer {settings.TMDB_API_KEY}",
@@ -54,21 +41,37 @@ def submit_review(request, movie_id):
             payload = {"value": user_rating}
             response = requests.post(tmdb_url, json=payload, headers=headers)
 
-            if response.status_code == 201:
-                print("Rating successfully submitted to TMDB!")
-            else:
-                print(f"Error submitting rating: {response.json()}")
+            if response.status_code != 201:
+                print(
+                    f"TMDB rating error: {response.status_code} - "
+                    f"{response.text}"
+                )
+
+            if is_ajax:
+                return JsonResponse({
+                    "success": True,
+                    "username": request.user.username,
+                    "review_text": review.review_text,
+                    "rating": str(review.rating),
+                    "review_id": review.id,
+                })
 
             return redirect("movies:movie_detail", movie_id=movie_id)
-    else:
-        # Prefill form with existing review
-        form = ReviewForm(instance=existing_review)
 
+        # Invalid form
+        if is_ajax:
+            return JsonResponse({"success": False, "errors": form.errors})
+
+    # GET request or other
+    form = ReviewForm(instance=existing_review)
     movie = get_movie_details(movie_id)
     return render(
         request,
-        "movies/movie_detail.html", {"form": form, "movie": movie}
+        "movies/movie_detail.html",
+        {"form": form, "movie": movie}
     )
+
+
 
 
 @login_required
