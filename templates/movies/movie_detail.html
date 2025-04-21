@@ -341,8 +341,10 @@
                     <img src="{% static 'images/img-not-found.png' %}" class="card-img-top" alt="No Image Available">
                     {% endif %}
                     <div class="card-body d-flex flex-column justify-content-between">
-                        <h6 class="card-title">{{ movie.title }}</h6>
+                        <h6 class="card-title mb-3">{{ movie.title }}</h6>
+                        <br>
                         <div class="btn-wrapper text-center d-flex justify-content-between">
+                            
                             <a href="/movies/{{ movie.id }}/" class="btn btn-dark mx-1">Show More</a>
                             <!-- Favorite Button -->
                             <button class="btn similar-movie-fav-btn mx-1
