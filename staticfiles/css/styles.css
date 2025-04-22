@@ -18,6 +18,12 @@ body {
     color: #333;
 }
 
+/* Dark mode overrides */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
 /* Base */
 .container-wrapper {
     width: 90%;
@@ -27,6 +33,11 @@ body {
     background: #fff;
     box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1), -5px 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
+}
+
+/* Dark mode overrides */
+body.dark-mode .container-wrapper {
+    background-color: #1e1e1e;
 }
 
 /* Image not available */
@@ -67,31 +78,10 @@ body {
     display: inline-block;
 }
 
-.movie-card {
-    height: 100%; /* Ensure all cards take the same height */
-    display: flex;
-    flex-direction: column;
-}
-
-.movie-card img {
-    width: 100%;
-    height: 300px; /* Set a fixed height for images */
-    object-fit: cover; /* Prevent distortion */
-    background-color: #ddd; /* Placeholder color */
-}
-
-.movie-card .card-body {
-    flex-grow: 1; /* Makes the body fill available space */
-    display: flex;
-    flex-direction: column;
-}
-
-.movie-card .card-text {
-    flex-grow: 1; /* Pushes the button to the bottom */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+/* Dark mode overrides */
+body.dark-mode .card {
+    background-color: #1e1e1e;
+    color: #ccc;
 }
 
 .card-title {
@@ -244,6 +234,15 @@ input:checked ~ label:hover ~ label, /* highlight previous selected stars for ne
 label:hover ~ input:checked ~ label /* highlight previous selected stars */ { color: #ffc107;  }
 
 
+/* Cast section */
+/* Dark mode link override for actor names */
+body.dark-mode .link-dark {
+    color: #a8d1ff !important;
+}
+/* Dark mode override for muted character name */
+body.dark-mode .text-muted {
+    color: #aaa !important;
+}
 
 /* Trailers section */
 .carousel-control-prev-icon,

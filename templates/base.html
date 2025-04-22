@@ -87,6 +87,12 @@
                                 </button>
                             </form>
                         </li>
+                        <!-- Dark Mode Toggle -->
+                        <li>
+                            <button id="theme-toggle" class="btn nav-link" aria-label="Toggle dark mode">
+                                <i class="fa-solid fa-moon me-1"></i> Dark Mode
+                            </button>
+                        </li>
                         {% endif %}
                     </ul>
                 </div>
@@ -120,6 +126,37 @@
         </div>
     </aside>
 
+    <!-- Dark Mode Toggle Javascript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleBtn = document.getElementById("theme-toggle");
+            const body = document.body;
+            const wrapper = document.querySelector(".container-wrapper");
+
+            // Icon swap helper
+            function updateThemeButton() {
+                const isDark = body.classList.contains("dark-mode");
+                toggleBtn.innerHTML = isDark 
+                    ? '<i class="fa-solid fa-sun me-1"></i> Light Mode' 
+                    : '<i class="fa-solid fa-moon me-1"></i> Dark Mode';
+            }
+
+            // Load saved preference
+            if (localStorage.getItem("dark-mode") === "true") {
+                body.classList.add("dark-mode");
+                if (wrapper) wrapper.classList.add("dark-mode");
+                updateThemeButton();
+            }
+
+            toggleBtn.addEventListener("click", () => {
+                body.classList.toggle("dark-mode");
+                if (wrapper) wrapper.classList.toggle("dark-mode");
+                localStorage.setItem("dark-mode", body.classList.contains("dark-mode"));
+                updateThemeButton();
+            });
+        });
+    </script>
+    
     <!-- Custom Javascript -->
     {% if request.resolver_match.view_name == "movies:movie_list" %}
         <script src="{% static 'js/movies.js' %}"></script>
