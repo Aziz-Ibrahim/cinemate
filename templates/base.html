@@ -87,13 +87,13 @@
                                 </button>
                             </form>
                         </li>
+                        {% endif %}
                         <!-- Dark Mode Toggle -->
                         <li>
                             <button id="theme-toggle" class="btn nav-link" aria-label="Toggle dark mode">
                                 <i class="fa-solid fa-moon me-1"></i> Dark Mode
                             </button>
                         </li>
-                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -132,6 +132,8 @@
             const toggleBtn = document.getElementById("theme-toggle");
             const body = document.body;
             const wrapper = document.querySelector(".container-wrapper");
+            const navbarCollapse = document.querySelector(".navbar-collapse");
+            const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse, { toggle: false });
 
             // Icon swap helper
             function updateThemeButton() {
@@ -153,6 +155,10 @@
                 if (wrapper) wrapper.classList.toggle("dark-mode");
                 localStorage.setItem("dark-mode", body.classList.contains("dark-mode"));
                 updateThemeButton();
+                // Collapse the navbar after clicking
+                if (window.getComputedStyle(navbarCollapse).display !== "none") {
+                    bsCollapse.hide();
+                }
             });
         });
     </script>

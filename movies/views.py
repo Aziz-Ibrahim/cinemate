@@ -161,11 +161,7 @@ def movie_detail(request, movie_id):
 
     # Fetch additional details
     images = get_movie_images(movie_id)
-    backdrops = images.get("backdrops", [])
-    logos = [
-        image for image in images.get("logos", [])
-        if image.get("iso_639_1") == "en"
-    ]
+    backdrops = images.get("backdrops", [])[:5]
 
     # Fetch watch providers
     watch_providers_data = (
@@ -199,19 +195,16 @@ def movie_detail(request, movie_id):
             "movie": movie,
             "is_favorite": is_favorite,
             "movie_id": movie_id,
-            "is_favorite": is_favorite,
             "reviews": reviews,
             "review_form": review_form,
             "watch_providers": watch_providers,
             "cast": cast,
-            "backdrops": backdrops,
-            "logos": logos,
-        },
+            "backdrops": backdrops,        },
     )
 
 
 def get_movie_images(movie_id):
-    """Fetch movie images (backdrops and logos) from the TMDB API."""
+    """Fetch movie images (backdrops) from the TMDB API."""
     api_key = TMDB_API_KEY
     url = (
         f"https://api.themoviedb.org/3/movie/{movie_id}/images?"
@@ -226,16 +219,71 @@ def get_movie_images(movie_id):
         return {}  # Return an empty dictionary in case of an error
 
 
+from django.views.decorators.http import require_GET
+
+@require_GET
 def movie_detail_api(request, movie_id):
     """
-    API endpoint to return movie details in JSON format.
-    If the movie is not found, return a 404 error.
+    API endpoint to return trimmed movie details in JSON format.
     """
     movie = get_movie_details(movie_id)
     if not movie:
         return JsonResponse({"error": "Movie not found"}, status=404)
 
-    return JsonResponse(movie)  # Return movie data as JSON
+    # Fetch lightweight image data
+    images = get_movie_images(movie_id)
+    backdrops = images.get("backdrops", [])[:5]  # Limit to 3 images
+
+    # Trim cast to top 10
+    cast = movie.get("credits", {}).get("cast", [])[:10]
+
+    # Get only 'GB' watch providers
+    providers = (
+        movie.get("watch/providers", {})
+        .get("results", {})
+        .get("GB", {})
+    )
+
+    # Build a smaller dict
+    trimmed_data = {
+        "id": movie.get("id"),
+        "title": movie.get("title"),
+        "overview": movie.get("overview"),
+        "poster_path": movie.get("poster_path"),
+        "release_date": movie.get("release_date"),
+        "vote_average": movie.get("vote_average"),
+        "runtime": movie.get("runtime"),
+        "genres": [g["name"] for g in movie.get("genres", [])],
+
+        "cast": [
+            {
+                "name": c["name"],
+                "character": c["character"],
+                "profile_path": c["profile_path"],
+            }
+            for c in cast
+        ],
+
+        "backdrops": backdrops[:5],
+
+        "watch_providers": {
+            t: providers.get(t, [])
+            for t in ["flatrate", "buy", "rent"]
+        },
+
+        "similar_movies": [
+            {
+                "id": sm["id"],
+                "title": sm["title"],
+                "poster_path": sm["poster_path"],
+                "release_date": sm["release_date"],
+            }
+            for sm in movie.get("similar", {}).get("results", [])[:10]
+        ],
+    }
+
+    return JsonResponse(trimmed_data)
+
 
 
 @login_required
