@@ -134,8 +134,12 @@
             const wrapper = document.querySelector(".container-wrapper");
             const navbarCollapse = document.querySelector(".navbar-collapse");
             const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse, { toggle: false });
+            const img = document.getElementById("about-hero-img");
 
-            // Icon swap helper
+            const lightImg = "{% static 'images/logo-no-background.png' %}";
+            const darkImg = "{% static 'images/logo-no-background-inverted.png' %}";
+
+            // Update toggle button icon
             function updateThemeButton() {
                 const isDark = body.classList.contains("dark-mode");
                 toggleBtn.innerHTML = isDark 
@@ -143,25 +147,36 @@
                     : '<i class="fa-solid fa-moon me-1"></i> Dark Mode';
             }
 
+            // Update logo image based on current mode
+            function updateLogoImage() {
+                if (img) {
+                    img.src = body.classList.contains("dark-mode") ? darkImg : lightImg;
+                }
+            }
+
             // Load saved preference
             if (localStorage.getItem("dark-mode") === "true") {
                 body.classList.add("dark-mode");
                 if (wrapper) wrapper.classList.add("dark-mode");
-                updateThemeButton();
             }
+
+            updateThemeButton();
+            updateLogoImage();
 
             toggleBtn.addEventListener("click", () => {
                 body.classList.toggle("dark-mode");
                 if (wrapper) wrapper.classList.toggle("dark-mode");
                 localStorage.setItem("dark-mode", body.classList.contains("dark-mode"));
                 updateThemeButton();
-                // Collapse the navbar after clicking
+                updateLogoImage();
+
                 if (window.getComputedStyle(navbarCollapse).display !== "none") {
                     bsCollapse.hide();
                 }
             });
         });
     </script>
+
     
     <!-- Custom Javascript -->
     {% if request.resolver_match.view_name == "movies:movie_list" %}

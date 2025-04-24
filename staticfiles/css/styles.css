@@ -288,3 +288,11 @@ body.dark-mode .text-muted {
 .about-content {
     padding: 20px;
 }
+
+/* Actor Page */
+
+/* Actor Social Links */
+
+body.dark-mode .text-dark {
+    color: #aaa !important;
+}
